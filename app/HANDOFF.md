@@ -80,3 +80,19 @@
 验收：服务器 `doctor --deep` 显示现代库、古籍页库和 `ancient_qwen_vector` 均为 `healthy=true`；回归测试 `16 passed`。真实检索“忍冬 金银花 治疗痈疽发背”由古籍向量和重排路径定位到《本草纲目》卷十八忍冬 PDF 第 232 页；`source --mode auto` 已回读同一页全文。双库 Qwen 重排检索“金银花 烧伤 创面修复”同时返回古籍页和现代烧伤文献。
 
 新增正式命令：`embed-ancient-qwen`、`query --mode ancient --retrieval qwen-vector`、`query --mode ancient --retrieval qwen-reranked-hybrid`。运行 Qwen 查询时保持串行，避免在同一张 GPU 上并发加载 8B 嵌入模型。
+
+## 2026-07-28 古籍独立验收与 OCR 审计
+
+新增可公开版本化的 `evaluation/ancient_questions_v1.json` 与 `scripts/evaluate_ancient_retrieval.py`。题集 52 题，其中 46 个正例固定到 `ancient:` book_id 与物理 PDF 页，6 个无答案题。评测在检索前验证标签页存在且每页至少命中一个人工标注的证据词；标签不从向量、重排或融合结果生成。
+
+正式结果写入私有数据目录 `../ancient_ocr/data/ancient_retrieval_eval_v1.json`：
+
+| mode | Recall@5 | Recall@10 | MRR@10 | 页码定位 |
+|---|---:|---:|---:|---:|
+| keyword | 0.8696 | 0.8913 | 0.6837 | 1.0000 |
+| qwen-vector | 0.5652 | 0.6087 | 0.4796 | 1.0000 |
+| qwen-reranked-hybrid | 0.8043 | 0.8043 | 0.7409 | 1.0000 |
+
+结论：古籍默认主通道改为 `keyword`；Qwen 重排仅作补充检索，纯 Qwen 向量不作默认。无答案准确率当前均为 0，因为尚未实现独立校准的拒答阈值；不得把任意返回结果表述为证实性结论。
+
+新增 `ancient_ocr/generate_low_confidence_audit.py`，只读 `ancient_rag.db` 并生成 `low_confidence_audit_v1.csv`。其对目录页降权、对汤火/火疮/忍冬/金银花/甘草等核心项目词加权；当前 282 页低置信页分为 P1 113 页和 P2 169 页。优先人工复核 P1，尤其《外科正宗》与《医宗金鉴》中的项目相关页。

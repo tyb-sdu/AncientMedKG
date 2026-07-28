@@ -88,3 +88,23 @@ Qwen 结果：
 - `doctor --deep`：现代文献库、古籍页库和古籍 Qwen 索引均 `healthy=true`。
 - 服务器回归：`16 passed`。
 - 真实 smoke：古籍 Qwen 向量与重排检索“忍冬 金银花 治疗痈疽发背”均命中《本草纲目》卷十八忍冬 PDF 第 232 页，`source --mode auto` 可回读该页；双库 Qwen 重排检索“金银花 烧伤 创面修复”返回古籍与现代文献的独立证据链。
+
+## 2026-07-28 古籍检索独立验收
+
+本轮新增古籍独立验收和 OCR 人工复核工具，不重建 OCR、不修改古籍数据库、不影响现代语料。新增：
+
+- `app/evaluation/ancient_questions_v1.json`：52 题，46 个固定页正例、6 个无答案题。
+- `app/scripts/evaluate_ancient_retrieval.py`：先校验每个标签页的证据词，再评估关键词、Qwen 向量和 Qwen 重排混合。
+- `ancient_ocr/generate_low_confidence_audit.py`：只读数据库生成低置信 OCR 审核 CSV 和汇总 JSON。
+
+正式评测结果：
+
+| mode | Recall@5 | Recall@10 | MRR@10 | 页码定位率 | 无答案准确率 |
+|---|---:|---:|---:|---:|---:|
+| keyword | 0.8696 | 0.8913 | 0.6837 | 1.0000 | 0.0000 |
+| qwen-vector | 0.5652 | 0.6087 | 0.4796 | 1.0000 | 0.0000 |
+| qwen-reranked-hybrid | 0.8043 | 0.8043 | 0.7409 | 1.0000 | 0.0000 |
+
+解释：古文 OCR、方名和繁简字形使现代医学 Qwen 嵌入对精确方名页的判别弱于关键词；重排提升了 MRR，但没有超过关键词的 Recall@10。古籍生产默认应采用关键词通道，Qwen 重排只作为辅助证据发现。无答案表现为 0 是当前没有拒答阈值的已知限制，后续须用独立的校准集实现，而不是从本评测结果调参。
+
+OCR 审计输出：282 页低置信页，P1 113 页、P2 169 页。P1 通过“正文长度 + OCR 质量 + 核心项目词”优先排序，并对目录页降权；原始 PDF、OCR 页 JSON 和 `ancient_rag.db` 均未修改。

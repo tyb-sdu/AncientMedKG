@@ -97,3 +97,21 @@ $PY rag_cli.py --config config.yaml query --mode dual --retrieval qwen-reranked-
 ```
 
 古籍 `qwen-reranked-hybrid` 使用古籍 FTS5、古籍 Qwen 页向量和 Qwen3-Reranker-8B 重排；双库模式分别检索现代与古籍，之后以 RRF 合并，保持每条结果的语料类型、文件、物理 PDF 页码、`doc_id` 和 `chunk_id`。
+
+## 2026-07-28 古籍独立验收基线
+
+古籍独立题集位于 `evaluation/ancient_questions_v1.json`，共 52 题：46 个固定书籍 ID + 物理 PDF 页标签，6 个无答案题。每一个正例标签均含页内证据词，评测运行前会用 `source` 回读同一页验证标签，避免由检索结果反推标准答案。
+
+```bash
+$PY scripts/evaluate_ancient_retrieval.py --config config.yaml
+$OCR_PY ../ancient_ocr/generate_low_confidence_audit.py \
+  --data-dir ../ancient_ocr/data
+```
+
+| 古籍通道 | Recall@5 | Recall@10 | MRR@10 | 页码定位率 |
+|---|---:|---:|---:|---:|
+| keyword | 0.8696 | 0.8913 | 0.6837 | 1.0000 |
+| qwen-vector | 0.5652 | 0.6087 | 0.4796 | 1.0000 |
+| qwen-reranked-hybrid | 0.8043 | 0.8043 | 0.7409 | 1.0000 |
+
+因此，古籍当前默认应使用 `--retrieval keyword`；Qwen 重排可作为补充对照，纯 Qwen 向量不作为默认。三条通道尚未实现经独立校准的无答案拒答阈值，无答案题准确率为 0，不能把非空检索列表解释为古籍中的医学结论。低置信 OCR 复核队列由审计器生成，共 282 页：P1 113 页、P2 169 页；该过程不会修改原始 PDF、页 JSON 或 SQLite 数据库。
