@@ -116,3 +116,18 @@ Recall@10 is keyword `0.8913`, qwen-vector `0.6522`, and reranked-hybrid `0.8043
 
 The old review packet should not be used to judge column order; regenerate the
 P1 review packet from v2 before manual OCR review.
+
+## 2026-07-29 Vertical order fix
+
+The first layout rule still grouped neighboring vertical lines and sorted their
+segments by page `y`, which caused the reported middle-start and cross-line jumps.
+The final rule now sorts vertical pages by segment `x` from right to left and
+then by `y` within each line. Horizontal pages use page-scale x gaps for column
+detection.
+
+The full sidecar and Qwen page index were rebuilt again. The final relevant test
+suite is `13 passed`; ancient page locating remains `1.0`. Final Recall@10 is
+keyword `0.8913`, qwen-vector `0.6739`, and qwen-reranked-hybrid `0.8043`.
+The 24-page P1 review packet and desktop manifest were regenerated from this
+final sidecar. Blurred-page character errors remain a separate human-review
+problem and are not silently auto-corrected.

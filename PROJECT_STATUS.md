@@ -33,7 +33,7 @@
 
 ## 当前待办
 
-1. 人工对照 `review_packet_v1` 中的 24 个 P1 页面，并在 `review_manifest.csv` 填写 `confirmed`、`corrected`、`unresolved` 或 `not_needed`。
+1. 人工对照 `review_packet_v1` 中的 24 个 P1 页面，并在 `review_manifest.csv` 填写 `verified`、`corrected`、`unreadable` 或 `not_project_relevant`。
 2. 运行 `export_review_overrides.py` 生成独立的 OCR 复核 sidecar；复核结果不得直接改写原始 PDF 或原始 OCR 数据。
 3. 依据人工确认结果建立新的可复现数据版本，并重新运行古籍检索评测。
 4. 补充至少 20 个独立无答案或近似问题，单独校准拒答阈值；当前 6 个无答案问题不足以支持可靠阈值。
@@ -61,3 +61,9 @@
 - `e2fe497 Initial public AncientMedKG codebase`
 
 GitHub `main` 当前仍为初始公开提交 `e2fe497`。后续两个提交包含新的评测与复核工作流代码，是否公开推送需要单独确认公开内容后再执行。
+
+## 2026-07-29 竖排跳行修复
+
+已确认旧规则在竖排页面中先按 `y` 排序，导致不同竖行之间交叉跳转。现已改为：竖排先按文字框 `x` 从右到左，再在同一竖行内按 `y` 从上到下；横排根据页面整体横向间距识别栏；文字框缺失时保留原文并显式标记回退。
+
+修复后全量旁路、古籍 Qwen 向量索引和 P1 复核包均已重新生成。相关测试 `13 passed`，古籍页码定位率仍为 `1.0`，Qwen vector Recall@10 为 `0.6739`，关键词 Recall@10 为 `0.8913`。当前桌面 `review_manifest.csv` 已是最终版面排序版本。

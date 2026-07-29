@@ -142,14 +142,13 @@ def _median(values: list[float]) -> float:
 
 
 def _cluster_columns(records: list[dict[str, Any]]) -> list[list[dict[str, Any]]]:
-    """Cluster x centers using unusually large horizontal gaps."""
+    """Cluster horizontal-layout columns using page-scale x gaps."""
     if len(records) < 2:
         return [records]
     centers = sorted((_center(record)[0] for record in records))
-    widths = [record["box"][2] - record["box"][0] for record in records]
-    typical_width = max(_median(widths), 1.0)
     gaps = [right - left for left, right in zip(centers, centers[1:])]
-    threshold = max(typical_width * 2.5, 18.0)
+    page_span = max(centers) - min(centers)
+    threshold = max(page_span * 0.18, 18.0)
     split_positions = [index + 1 for index, gap in enumerate(gaps) if gap > threshold]
     if not split_positions:
         return [records]
@@ -164,11 +163,14 @@ def _cluster_columns(records: list[dict[str, Any]]) -> list[list[dict[str, Any]]
     return groups if len(groups) <= 6 else [records]
 
 
-def _sort_column(column: list[dict[str, Any]], direction: str) -> list[dict[str, Any]]:
-    vertical = direction.startswith("vertical")
-    if vertical:
-        return sorted(column, key=lambda record: (_center(record)[1], _center(record)[0]))
-    return sorted(column, key=lambda record: (_center(record)[1], _center(record)[0]))
+def _estimate_vertical_columns(records: list[dict[str, Any]]) -> int:
+    centers = sorted((_center(record)[0] for record in records))
+    if len(centers) < 2:
+        return 1
+    widths = [record["box"][2] - record["box"][0] for record in records]
+    threshold = max(_median(widths) * 0.8, 12.0)
+    gaps = [right - left for left, right in zip(centers, centers[1:])]
+    return 1 + sum(gap > threshold for gap in gaps)
 
 
 def order_text_boxes(
@@ -176,13 +178,24 @@ def order_text_boxes(
 ) -> tuple[str, int, str]:
     if not records:
         return "", 0, "no_boxes"
-    columns = _cluster_columns(records)
     vertical = direction.startswith("vertical")
-    columns.sort(key=lambda column: _median([_center(item)[0] for item in column]), reverse=vertical)
-    ordered = [item for column in columns for item in _sort_column(column, direction)]
+    if vertical:
+        # Each OCR segment is normally one vertical reading line. Sorting by
+        # x first prevents y-order from jumping between neighboring columns.
+        ordered = sorted(records, key=lambda record: (-_center(record)[0], _center(record)[1]))
+        column_count = _estimate_vertical_columns(records)
+    else:
+        columns = _cluster_columns(records)
+        columns.sort(key=lambda column: _median([_center(item)[0] for item in column]))
+        ordered = [
+            item
+            for column in columns
+            for item in sorted(column, key=lambda record: (_center(record)[1], _center(record)[0]))
+        ]
+        column_count = len(columns)
     text = "\n".join(item["text"] for item in ordered if item["text"])
-    status = "ordered" if len(columns) > 1 else "single_column"
-    return text, len(columns), status
+    status = "ordered" if column_count > 1 or len(records) > 1 else "single_column"
+    return text, column_count, status
 
 
 def _sha256_text(value: str) -> str:

@@ -133,3 +133,22 @@ was rebuilt and its manifest records `layout_sidecar_sha256`.
 Deep doctor is healthy and the relevant tests report `11 passed`. The next
 step is to regenerate the P1 review packet from v2; the old packet preview is
 not a valid column-order acceptance artifact.
+## 2026-07-29 Vertical order fix
+
+The initial v2 heuristic still used page-level `y` ordering inside some vertical
+groups. This caused cross-column jumps on non-double-column books. The final
+implementation uses `x` descending first for `vertical-rtl` pages and `y`
+ascending within each vertical line. Horizontal pages use page-scale center gaps
+for column separation.
+
+The full sidecar and Qwen3-Embedding-8B page index were rebuilt. The final
+ancient evaluation is:
+
+| mode | Recall@5 | Recall@10 | MRR@10 | page locating |
+|---|---:|---:|---:|---:|
+| keyword | 0.8696 | 0.8913 | 0.6837 | 1.0000 |
+| qwen-vector | 0.6304 | 0.6739 | 0.5479 | 1.0000 |
+| qwen-reranked-hybrid | 0.7826 | 0.8043 | 0.7058 | 1.0000 |
+
+The final P1 review packet uses the final ordered preview. Blurred-page
+character corrections remain a human-reviewed sidecar task.

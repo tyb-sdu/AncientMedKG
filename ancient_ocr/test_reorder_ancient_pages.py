@@ -44,6 +44,17 @@ def test_vertical_columns_are_right_to_left() -> None:
     assert text.splitlines() == ["右栏", "左栏"]
 
 
+def test_vertical_order_does_not_sort_by_page_y_first() -> None:
+    records = [
+        {"text": "右栏上", "box": (110, 10, 120, 20)},
+        {"text": "左栏上", "box": (10, 0, 20, 10)},
+        {"text": "右栏下", "box": (110, 40, 120, 50)},
+        {"text": "左栏下", "box": (10, 50, 20, 60)},
+    ]
+    text, _, _ = order_text_boxes(records, "vertical-rtl")
+    assert text.splitlines() == ["右栏上", "右栏下", "左栏上", "左栏下"]
+
+
 def test_no_boxes_is_explicit() -> None:
     text, columns, status = order_text_boxes([], "horizontal-ltr")
     assert text == ""
