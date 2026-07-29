@@ -115,3 +115,4 @@ $OCR_PY ../ancient_ocr/generate_low_confidence_audit.py \
 | qwen-reranked-hybrid | 0.8043 | 0.8043 | 0.7409 | 1.0000 |
 
 因此，古籍当前默认应使用 `--retrieval keyword`；Qwen 重排可作为补充对照，纯 Qwen 向量不作为默认。三条通道尚未实现经独立校准的无答案拒答阈值，无答案题准确率为 0，不能把非空检索列表解释为古籍中的医学结论。低置信 OCR 复核队列由审计器生成，共 282 页：P1 113 页、P2 169 页；该过程不会修改原始 PDF、页 JSON 或 SQLite 数据库。
+人工复核流程：先用 `ancient_ocr/build_review_packet.py` 生成页图和 `review_manifest.csv`，人工填写 `review_status` 与必要的 `corrected_text`，再用 `ancient_ocr/export_review_overrides.py` 输出独立 JSONL 覆盖层。当前覆盖层不会自动改写页库，必须在人工复核完成并再次验收后才能接入检索。

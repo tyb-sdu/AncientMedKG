@@ -96,3 +96,4 @@
 结论：古籍默认主通道改为 `keyword`；Qwen 重排仅作补充检索，纯 Qwen 向量不作默认。无答案准确率当前均为 0，因为尚未实现独立校准的拒答阈值；不得把任意返回结果表述为证实性结论。
 
 新增 `ancient_ocr/generate_low_confidence_audit.py`，只读 `ancient_rag.db` 并生成 `low_confidence_audit_v1.csv`。其对目录页降权、对汤火/火疮/忍冬/金银花/甘草等核心项目词加权；当前 282 页低置信页分为 P1 113 页和 P2 169 页。优先人工复核 P1，尤其《外科正宗》与《医宗金鉴》中的项目相关页。
+已新增 `ancient_ocr/build_review_packet.py` 和 `ancient_ocr/export_review_overrides.py`。服务器当前已生成 P1 前 24 页的私有审核包：`ancient_ocr/output/review_packet_v1/`。其中 `review_manifest.csv` 初始状态均为 `unreviewed`；人工填写后，导出器会核对当前数据库页 ID、源文件 SHA-256 和原 OCR 文本哈希，再输出旁路 `review_overrides_v1.jsonl`，不会直接改写原始页面。
