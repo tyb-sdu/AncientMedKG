@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import sqlite3
 from pathlib import Path
 from typing import Any
@@ -12,12 +14,50 @@ from .search import (
     normalize_search_text,
 )
 
+_LAYOUT_CACHE: dict[str, dict[str, dict[str, Any]]] = {}
+
 
 def ancient_database_path(cfg: dict[str, Any]) -> Path:
     value = cfg.get("paths", {}).get("ancient_database")
     if not value:
         raise FileNotFoundError("未配置 ancient_database")
     return Path(value)
+
+
+def ancient_layout_sidecar_path(cfg: dict[str, Any]) -> Path | None:
+    value = cfg.get("paths", {}).get("ancient_layout_sidecar")
+    return Path(value) if value else None
+
+
+def _layout_rows(cfg: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    path = ancient_layout_sidecar_path(cfg)
+    if path is None or not path.is_file():
+        return {}
+    key = str(path.resolve())
+    if key not in _LAYOUT_CACHE:
+        rows: dict[str, dict[str, Any]] = {}
+        with path.open(encoding="utf-8") as stream:
+            for line in stream:
+                try:
+                    item = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                page_id = str(item.get("page_id") or "")
+                if page_id:
+                    rows[page_id] = item
+        _LAYOUT_CACHE[key] = rows
+    return _LAYOUT_CACHE[key]
+
+
+def ancient_text_for_row(cfg: dict[str, Any], row: Any) -> tuple[str, str]:
+    raw_text = str(row["text"] or "")
+    item = _layout_rows(cfg).get(str(row["page_id"]))
+    if not item or not item.get("ordered_text"):
+        return raw_text, "database"
+    expected = hashlib.sha256(raw_text.encode("utf-8")).hexdigest()
+    if item.get("original_text_sha256") != expected:
+        return raw_text, "database_hash_mismatch"
+    return str(item["ordered_text"]), str(item.get("layout_status") or "ordered")
 
 
 def ancient_is_available(cfg: dict[str, Any]) -> bool:
@@ -59,7 +99,8 @@ def query_ancient_keyword(
     results: list[dict[str, Any]] = []
     for row in rows:
         title_norm = normalize_search_text(row["title"])
-        text_norm = normalize_search_text(row["text"])
+        text, layout_status = ancient_text_for_row(cfg, row)
+        text_norm = normalize_search_text(text)
         combined = f"{title_norm} {text_norm}"
         exact = 1 if qnorm and qnorm in f"{title_norm} {text_norm}" else 0
         alias_title = any(alias and alias in title_norm for alias in aliases)
@@ -82,7 +123,7 @@ def query_ancient_keyword(
                 "source_filename": row["filename"],
                 "sha256": row["source_sha256"],
                 "snippet": _snippet(
-                    row["text"],
+                    text,
                     question,
                     int(cfg.get("search", {}).get("snippet_chars", 360)),
                 ),
@@ -95,6 +136,7 @@ def query_ancient_keyword(
                 "reading_direction": row["reading_direction"],
                 "average_confidence": row["average_confidence"],
                 "low_confidence": int(row["low_confidence"]),
+                "layout_status": layout_status,
             }
         )
     results.sort(
@@ -127,6 +169,7 @@ def source_ancient_page(
         ).fetchone()
     if not row:
         return None
+    text, layout_status = ancient_text_for_row(cfg, row)
     return {
         "corpus": "ancient",
         "record_type": "page",
@@ -139,10 +182,11 @@ def source_ancient_page(
         "page_label": row["pdf_page_label"],
         "source_filename": row["filename"],
         "sha256": row["source_sha256"],
-        "text": row["text"],
+        "text": text,
         "reading_direction": row["reading_direction"],
         "average_confidence": row["average_confidence"],
         "low_confidence": int(row["low_confidence"]),
+        "layout_status": layout_status,
     }
 
 
@@ -157,6 +201,10 @@ def ancient_doctor(cfg: dict[str, Any]) -> dict[str, Any]:
                 "pages": conn.execute("SELECT COUNT(*) FROM pages").fetchone()[0],
                 "fts_rows": conn.execute("SELECT COUNT(*) FROM pages_fts").fetchone()[0],
             }
+            db_page_ids = {
+                str(page_id)
+                for (page_id,) in conn.execute("SELECT page_id FROM pages").fetchall()
+            }
             low_confidence_pages = conn.execute(
                 "SELECT COUNT(*) FROM pages WHERE low_confidence = 1"
             ).fetchone()[0]
@@ -168,11 +216,30 @@ def ancient_doctor(cfg: dict[str, Any]) -> dict[str, Any]:
             "low_confidence_pages": low_confidence_pages,
             "sqlite_quick_check": quick_check,
         }
+        layout_path = ancient_layout_sidecar_path(cfg)
+        if layout_path and layout_path.is_file():
+            layout_rows = _layout_rows(cfg)
+            sidecar_page_ids = set(layout_rows)
+            checks["layout_sidecar"] = {
+                "present": True,
+                "path": str(layout_path),
+                "rows": len(layout_rows),
+                "missing_db_page_ids": len(db_page_ids - sidecar_page_ids),
+                "orphan_page_ids": len(sidecar_page_ids - db_page_ids),
+                "healthy": sidecar_page_ids == db_page_ids,
+            }
+        else:
+            checks["layout_sidecar"] = {
+                "present": False,
+                "path": str(layout_path) if layout_path else None,
+                "healthy": True,
+            }
         checks["healthy"] = (
             counts["books"] > 0
             and counts["pages"] > 0
             and counts["pages"] == counts["fts_rows"]
             and quick_check == "ok"
+            and checks["layout_sidecar"]["healthy"]
         )
         return checks
     except Exception as exc:  # noqa: BLE001

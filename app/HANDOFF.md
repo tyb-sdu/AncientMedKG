@@ -97,3 +97,22 @@
 
 新增 `ancient_ocr/generate_low_confidence_audit.py`，只读 `ancient_rag.db` 并生成 `low_confidence_audit_v1.csv`。其对目录页降权、对汤火/火疮/忍冬/金银花/甘草等核心项目词加权；当前 282 页低置信页分为 P1 113 页和 P2 169 页。优先人工复核 P1，尤其《外科正宗》与《医宗金鉴》中的项目相关页。
 已新增 `ancient_ocr/build_review_packet.py` 和 `ancient_ocr/export_review_overrides.py`。服务器当前已生成 P1 前 24 页的私有审核包：`ancient_ocr/output/review_packet_v1/`。其中 `review_manifest.csv` 初始状态均为 `unreviewed`；人工填写后，导出器会核对当前数据库页 ID、源文件 SHA-256 和原 OCR 文本哈希，再输出旁路 `review_overrides_v1.jsonl`，不会直接改写原始页面。
+## 2026-07-29 Ancient layout reorder v2
+
+The OCR payload stores structured `segments` with page geometry. A read-only sidecar
+`../ancient_ocr/data/pages_layout_v2.jsonl` now reconstructs reading order from
+`reading_direction` and bounding-box coordinates without changing source PDFs,
+`ancient_rag.db`, or modern `rag.db`.
+
+Full-corpus result: 5,624 rows; 2,561 single-column pages, 156 two-column pages,
+35 three-column pages, 7 four-column pages, 4 five-column pages, 1 six-column page,
+and 2,860 pages with no usable boxes that retain the original text.
+
+The sidecar is used by ancient keyword retrieval, Qwen candidate snippets,
+reranker candidates, and `source`. The Qwen ancient page index was rebuilt from
+the ordered text and records `layout_sidecar_sha256`. Deep doctor is healthy and
+the relevant test suite is `11 passed`. Ancient page locating remains `1.0`;
+Recall@10 is keyword `0.8913`, qwen-vector `0.6522`, and reranked-hybrid `0.8043`.
+
+The old review packet should not be used to judge column order; regenerate the
+P1 review packet from v2 before manual OCR review.

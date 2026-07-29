@@ -109,3 +109,27 @@ Qwen 结果：
 
 OCR 审计输出：282 页低置信页，P1 113 页、P2 169 页。P1 通过“正文长度 + OCR 质量 + 核心项目词”优先排序，并对目录页降权；原始 PDF、OCR 页 JSON 和 `ancient_rag.db` 均未修改。
 已生成 P1 前 24 页私有页图复核包，路径为 `ancient_ocr/output/review_packet_v1/`。抽检两页确认原始扫描页清晰、竖排/横排页面渲染正常。新增导出器会对人工审核状态、源 SHA-256、页 ID 和原 OCR 文本哈希做一致性校验，并把修订写入独立 JSONL 覆盖层；本轮尚未填写任何人工修订。
+## 2026-07-29 Ancient layout reorder v2
+
+The reported issue was confirmed as reading-order reconstruction, not primarily
+character recognition. Existing `payload_json.segments` were used to create
+`ancient_ocr/data/pages_layout_v2.jsonl`; no OCR rerun and no source-data rewrite
+was performed.
+
+The sidecar contains 5,624 page records. Of these, 2,561 are single-column,
+156 two-column, 35 three-column, 7 four-column, 4 five-column, 1 six-column,
+and 2,860 retain original text because no usable boxes were available.
+
+Layout v2 is connected to ancient keyword, Qwen vector candidate text,
+reranker candidate text, and source. The 5,624-page Qwen3-Embedding-8B index
+was rebuilt and its manifest records `layout_sidecar_sha256`.
+
+| mode | Recall@5 | Recall@10 | MRR@10 | page locating |
+|---|---:|---:|---:|---:|
+| keyword | 0.8696 | 0.8913 | 0.6837 | 1.0000 |
+| qwen-vector | 0.6087 | 0.6522 | 0.5145 | 1.0000 |
+| qwen-reranked-hybrid | 0.8043 | 0.8043 | 0.7337 | 1.0000 |
+
+Deep doctor is healthy and the relevant tests report `11 passed`. The next
+step is to regenerate the P1 review packet from v2; the old packet preview is
+not a valid column-order acceptance artifact.

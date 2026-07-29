@@ -12,6 +12,7 @@ paths:
   ancient_database: "../ancient_ocr/data/ancient_rag.db"
   ancient_books_jsonl: "../ancient_ocr/data/books.jsonl"
   ancient_pages_jsonl: "../ancient_ocr/data/pages.jsonl"
+  ancient_layout_sidecar: "../ancient_ocr/data/pages_layout_v2.jsonl"
   ancient_qwen_vector_dir: "../ancient_ocr/data/vector_qwen3_8b_pages"
   ancient_qwen_faiss_index: "../ancient_ocr/data/vector_qwen3_8b_pages/faiss.index"
   ancient_qwen_vector_manifest: "../ancient_ocr/data/vector_qwen3_8b_pages/manifest.json"
