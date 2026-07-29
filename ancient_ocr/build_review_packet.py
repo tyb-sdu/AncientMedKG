@@ -59,6 +59,31 @@ def source_paths(database: Path) -> dict[str, str]:
     return {str(book_id): str(source_path) for book_id, source_path in rows}
 
 
+def load_layout_text(data_dir: Path) -> dict[tuple[str, int], str]:
+    sidecar = data_dir / "pages_layout_v2.jsonl"
+    if not sidecar.is_file():
+        return {}
+    result: dict[tuple[str, int], str] = {}
+    with sidecar.open(encoding="utf-8") as stream:
+        for line in stream:
+            try:
+                item = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            text = str(item.get("ordered_text") or "").strip()
+            if text:
+                result[(str(item.get("book_id") or ""), int(item["physical_page"]))] = text
+    return result
+
+
+def preview_for_row(row: dict[str, str], layout_text: dict[tuple[str, int], str]) -> str:
+    text = layout_text.get(
+        (row.get("book_id") or "", int(row.get("physical_page") or 0)),
+        row.get("text_preview") or "",
+    )
+    return " ".join(text.split())[:180]
+
+
 def page_image_name(order: int, row: dict[str, str]) -> str:
     stem = Path(row["filename"]).stem
     safe = "".join(character if character.isalnum() else "_" for character in stem)
@@ -100,6 +125,7 @@ def build_packet(
         audit_rows = list(csv.DictReader(stream))
     selected = candidate_rows(audit_rows, priority, limit)
     paths = source_paths(database)
+    layout_text = load_layout_text(data_dir)
 
     pages_dir = output_dir / "pages"
     pages_dir.mkdir(parents=True, exist_ok=True)
@@ -125,7 +151,7 @@ def build_packet(
                 "cjk_character_ratio": row["cjk_character_ratio"],
                 "reading_direction": row["reading_direction"],
                 "review_reason": row["review_reason"],
-                "ocr_preview": row["text_preview"],
+                "ocr_preview": preview_for_row(row, layout_text),
                 "review_status": "unreviewed",
                 "review_note": "",
                 "corrected_text": "",
@@ -144,6 +170,12 @@ def build_packet(
         "rendered_pages": len(manifest_rows),
         "dpi": dpi,
         "manifest": str(manifest),
+        "layout_sidecar": str(data_dir / "pages_layout_v2.jsonl"),
+        "layout_sidecar_present": bool(layout_text),
+        "layout_preview_pages": sum(
+            (row.get("book_id") or "", int(row.get("physical_page") or 0)) in layout_text
+            for row in selected
+        ),
         "source_data_modified": False,
     }
     (output_dir / "packet_report.json").write_text(
