@@ -1,0 +1,233 @@
+{
+  "schema_version": "1.0.0",
+  "bundle_id": "public-five-layer-example",
+  "graph_version": "example-v1",
+  "metadata": {
+    "description": "Synthetic public example; not a medical claim.",
+    "parent_version": null
+  },
+  "sources": [
+    {
+      "key": "ancient_demo",
+      "source_id": "kg:source:public-example-ancient",
+      "source_type": "ancient_pdf",
+      "title": "示例古籍",
+      "file_name": "example.pdf",
+      "file_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "work_id": "work:example",
+      "edition_id": "edition:example",
+      "attributes": {
+        "book_id": "ancient:example"
+      }
+    }
+  ],
+  "entities": [
+    {
+      "key": "work",
+      "entity_type": "ClassicWork",
+      "canonical_name": "示例古籍"
+    },
+    {
+      "key": "edition",
+      "entity_type": "Edition",
+      "canonical_name": "示例版本"
+    },
+    {
+      "key": "passage",
+      "entity_type": "Passage",
+      "canonical_name": "示例古籍第十页",
+      "attributes": {
+        "source_id": "kg:source:public-example-ancient",
+        "locator": {
+          "page_id": "ancient:example:p000010",
+          "physical_page": 10
+        }
+      }
+    },
+    {
+      "key": "disease",
+      "entity_type": "Disease",
+      "canonical_name": "示例病证"
+    },
+    {
+      "key": "method",
+      "entity_type": "TreatmentMethod",
+      "canonical_name": "示例治法"
+    },
+    {
+      "key": "formula_concept",
+      "entity_type": "FormulaConcept",
+      "canonical_name": "示例方"
+    },
+    {
+      "key": "formula_variant",
+      "entity_type": "FormulaVariant",
+      "canonical_name": "示例方",
+      "attributes": {
+        "formula_name": "示例方",
+        "composition": [
+          {
+            "herb": "甲药",
+            "dose_value": "1",
+            "dose_unit": "两"
+          },
+          {
+            "herb": "乙药",
+            "dose_value": "3",
+            "dose_unit": "钱"
+          }
+        ],
+        "source_locator": {
+          "source_id": "kg:source:public-example-ancient",
+          "physical_page": 10
+        }
+      }
+    },
+    {
+      "key": "herb_a",
+      "entity_type": "Herb",
+      "canonical_name": "甲药"
+    },
+    {
+      "key": "herb_b",
+      "entity_type": "Herb",
+      "canonical_name": "乙药"
+    }
+  ],
+  "evidence": [
+    {
+      "key": "page_10",
+      "source": "ancient_demo",
+      "locator": {
+        "page_id": "ancient:example:p000010",
+        "physical_page": 10
+      },
+      "quote": "示例病证，用示例治法，示例方由甲药一两、乙药三钱组成。",
+      "evidence_grade": "E1",
+      "evidence_class": "direct_ancient",
+      "review": {
+        "status": "approved",
+        "reviewer": "public-example",
+        "reviewed_at": "2026-07-31"
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "subject": "work",
+      "predicate": "HAS_EDITION",
+      "object": "edition",
+      "evidence": [
+        "page_10"
+      ],
+      "evidence_grade": "E1",
+      "assertion_mode": "explicit",
+      "confidence": 1.0,
+      "review_status": "approved"
+    },
+    {
+      "subject": "edition",
+      "predicate": "HAS_PASSAGE",
+      "object": "passage",
+      "evidence": [
+        "page_10"
+      ],
+      "evidence_grade": "E1",
+      "assertion_mode": "explicit",
+      "confidence": 1.0,
+      "review_status": "approved"
+    },
+    {
+      "subject": "disease",
+      "predicate": "RECORDED_IN",
+      "object": "passage",
+      "evidence": [
+        "page_10"
+      ],
+      "evidence_grade": "E1",
+      "assertion_mode": "explicit",
+      "confidence": 1.0,
+      "review_status": "approved"
+    },
+    {
+      "subject": "disease",
+      "predicate": "HAS_TREATMENT_METHOD",
+      "object": "method",
+      "evidence": [
+        "page_10"
+      ],
+      "evidence_grade": "E1",
+      "assertion_mode": "explicit",
+      "confidence": 1.0,
+      "review_status": "approved"
+    },
+    {
+      "subject": "method",
+      "predicate": "REPRESENTATIVE_FORMULA",
+      "object": "formula_variant",
+      "evidence": [
+        "page_10"
+      ],
+      "evidence_grade": "E1",
+      "assertion_mode": "explicit",
+      "confidence": 1.0,
+      "review_status": "approved"
+    },
+    {
+      "subject": "formula_variant",
+      "predicate": "VARIANT_OF",
+      "object": "formula_concept",
+      "evidence": [
+        "page_10"
+      ],
+      "evidence_grade": "E1",
+      "assertion_mode": "explicit",
+      "confidence": 1.0,
+      "review_status": "approved"
+    },
+    {
+      "subject": "formula_variant",
+      "predicate": "HAS_INGREDIENT",
+      "object": "herb_a",
+      "evidence": [
+        "page_10"
+      ],
+      "evidence_grade": "E1",
+      "assertion_mode": "explicit",
+      "confidence": 1.0,
+      "review_status": "approved",
+      "attributes": {
+        "dose_value": "1",
+        "dose_unit": "两"
+      }
+    },
+    {
+      "subject": "formula_variant",
+      "predicate": "HAS_INGREDIENT",
+      "object": "herb_b",
+      "evidence": [
+        "page_10"
+      ],
+      "evidence_grade": "E1",
+      "assertion_mode": "explicit",
+      "confidence": 1.0,
+      "review_status": "approved",
+      "attributes": {
+        "dose_value": "3",
+        "dose_unit": "钱"
+      }
+    },
+    {
+      "subject": "formula_variant",
+      "predicate": "TREATS",
+      "object": "disease",
+      "evidence": [
+        "page_10"
+      ],
+      "evidence_grade": "E1",
+      "assertion_mode": "explicit",
+      "confidence": 1.0,
+      "review_status": "approved"
+    }
+  ]
+}

@@ -1,0 +1,396 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema_version": "1.0.0",
+  "name": "AncientMedKG evidence-first five-layer schema",
+  "layers": {
+    "L1": "古籍、版本与原文定位",
+    "L2": "疾病、证候、阶段与现代烧伤表型映射",
+    "L3": "治法与操作",
+    "L4": "方剂概念与来源特异方剂变体",
+    "L5": "药材、炮制与基原",
+    "EXT": "现代化合物、靶点、通路、研究结局与安全性扩展域"
+  },
+  "node_types": {
+    "ClassicWork": {
+      "layer": "L1",
+      "required_attributes": []
+    },
+    "Edition": {
+      "layer": "L1",
+      "required_attributes": []
+    },
+    "Passage": {
+      "layer": "L1",
+      "required_attributes": [
+        "source_id",
+        "locator"
+      ]
+    },
+    "Disease": {
+      "layer": "L2",
+      "required_attributes": []
+    },
+    "Syndrome": {
+      "layer": "L2",
+      "required_attributes": []
+    },
+    "BurnStage": {
+      "layer": "L2",
+      "required_attributes": []
+    },
+    "BurnPhenotype": {
+      "layer": "L2",
+      "required_attributes": []
+    },
+    "TreatmentMethod": {
+      "layer": "L3",
+      "required_attributes": []
+    },
+    "FormulaConcept": {
+      "layer": "L4",
+      "required_attributes": []
+    },
+    "FormulaVariant": {
+      "layer": "L4",
+      "required_attributes": [
+        "formula_name",
+        "composition",
+        "source_locator"
+      ]
+    },
+    "Herb": {
+      "layer": "L5",
+      "required_attributes": []
+    },
+    "Compound": {
+      "layer": "EXT",
+      "required_attributes": []
+    },
+    "Target": {
+      "layer": "EXT",
+      "required_attributes": []
+    },
+    "Pathway": {
+      "layer": "EXT",
+      "required_attributes": []
+    },
+    "Study": {
+      "layer": "EXT",
+      "required_attributes": []
+    },
+    "Outcome": {
+      "layer": "EXT",
+      "required_attributes": []
+    },
+    "SafetySignal": {
+      "layer": "EXT",
+      "required_attributes": []
+    }
+  },
+  "relationship_types": {
+    "HAS_EDITION": {
+      "source": [
+        "ClassicWork"
+      ],
+      "target": [
+        "Edition"
+      ],
+      "key_path": true
+    },
+    "HAS_PASSAGE": {
+      "source": [
+        "Edition"
+      ],
+      "target": [
+        "Passage"
+      ],
+      "key_path": true
+    },
+    "RECORDED_IN": {
+      "source": [
+        "Disease",
+        "Syndrome",
+        "BurnStage",
+        "BurnPhenotype",
+        "TreatmentMethod",
+        "FormulaConcept",
+        "FormulaVariant",
+        "Herb"
+      ],
+      "target": [
+        "Passage"
+      ],
+      "key_path": true
+    },
+    "MENTIONS": {
+      "source": [
+        "Passage"
+      ],
+      "target": [
+        "Disease",
+        "Syndrome",
+        "BurnStage",
+        "BurnPhenotype",
+        "TreatmentMethod",
+        "FormulaConcept",
+        "FormulaVariant",
+        "Herb"
+      ],
+      "key_path": false
+    },
+    "HAS_TREATMENT_METHOD": {
+      "source": [
+        "Disease",
+        "Syndrome",
+        "BurnStage",
+        "BurnPhenotype"
+      ],
+      "target": [
+        "TreatmentMethod"
+      ],
+      "key_path": true
+    },
+    "TREATS": {
+      "source": [
+        "TreatmentMethod",
+        "FormulaConcept",
+        "FormulaVariant"
+      ],
+      "target": [
+        "Disease",
+        "Syndrome",
+        "BurnStage",
+        "BurnPhenotype"
+      ],
+      "key_path": true
+    },
+    "REPRESENTATIVE_FORMULA": {
+      "source": [
+        "TreatmentMethod"
+      ],
+      "target": [
+        "FormulaConcept",
+        "FormulaVariant"
+      ],
+      "key_path": true
+    },
+    "HAS_INGREDIENT": {
+      "source": [
+        "FormulaVariant"
+      ],
+      "target": [
+        "Herb"
+      ],
+      "key_path": true
+    },
+    "VARIANT_OF": {
+      "source": [
+        "FormulaVariant"
+      ],
+      "target": [
+        "FormulaConcept"
+      ],
+      "key_path": true
+    },
+    "SAME_AS": {
+      "source": [
+        "Disease",
+        "Syndrome",
+        "TreatmentMethod",
+        "FormulaConcept",
+        "Herb",
+        "Compound",
+        "Target",
+        "Pathway"
+      ],
+      "target": [
+        "Disease",
+        "Syndrome",
+        "TreatmentMethod",
+        "FormulaConcept",
+        "Herb",
+        "Compound",
+        "Target",
+        "Pathway"
+      ],
+      "same_type": true,
+      "key_path": false
+    },
+    "BROADER_THAN": {
+      "source": [
+        "Disease",
+        "Syndrome",
+        "TreatmentMethod",
+        "Herb",
+        "BurnPhenotype"
+      ],
+      "target": [
+        "Disease",
+        "Syndrome",
+        "TreatmentMethod",
+        "Herb",
+        "BurnPhenotype"
+      ],
+      "same_type": true,
+      "key_path": false
+    },
+    "MODERN_MAPS_TO": {
+      "source": [
+        "Disease",
+        "Syndrome",
+        "TreatmentMethod"
+      ],
+      "target": [
+        "BurnStage",
+        "BurnPhenotype"
+      ],
+      "key_path": false,
+      "allowed_grades": [
+        "E2",
+        "E3",
+        "E4",
+        "E5"
+      ],
+      "allowed_modes": [
+        "inferred",
+        "predicted",
+        "hypothesis"
+      ]
+    },
+    "MECHANISM_TRANSFER": {
+      "source": [
+        "Disease",
+        "Syndrome",
+        "TreatmentMethod",
+        "FormulaConcept",
+        "FormulaVariant",
+        "Herb"
+      ],
+      "target": [
+        "BurnPhenotype",
+        "Compound",
+        "Target",
+        "Pathway",
+        "Outcome"
+      ],
+      "key_path": false,
+      "allowed_grades": [
+        "E4",
+        "E5"
+      ],
+      "allowed_modes": [
+        "inferred",
+        "predicted",
+        "hypothesis"
+      ]
+    },
+    "CONTAINS_COMPOUND": {
+      "source": [
+        "Herb"
+      ],
+      "target": [
+        "Compound"
+      ],
+      "key_path": false
+    },
+    "TARGETS": {
+      "source": [
+        "Compound"
+      ],
+      "target": [
+        "Target"
+      ],
+      "key_path": false
+    },
+    "PARTICIPATES_IN": {
+      "source": [
+        "Target"
+      ],
+      "target": [
+        "Pathway"
+      ],
+      "key_path": false
+    },
+    "ASSOCIATED_WITH": {
+      "source": [
+        "Compound",
+        "Target",
+        "Pathway"
+      ],
+      "target": [
+        "Disease",
+        "BurnStage",
+        "BurnPhenotype",
+        "Outcome"
+      ],
+      "key_path": false
+    },
+    "STUDIED_IN": {
+      "source": [
+        "FormulaConcept",
+        "FormulaVariant",
+        "Herb",
+        "Compound",
+        "Target",
+        "Pathway"
+      ],
+      "target": [
+        "Study"
+      ],
+      "key_path": false
+    },
+    "REPORTS_OUTCOME": {
+      "source": [
+        "Study"
+      ],
+      "target": [
+        "Outcome"
+      ],
+      "key_path": false
+    },
+    "HAS_SAFETY_SIGNAL": {
+      "source": [
+        "FormulaConcept",
+        "FormulaVariant",
+        "Herb",
+        "Compound",
+        "Study"
+      ],
+      "target": [
+        "SafetySignal"
+      ],
+      "key_path": false
+    }
+  },
+  "evidence_grades": {
+    "E1": "古籍原文或原始研究中的直接证据",
+    "E2": "权威整理、药典、指南或系统综述证据",
+    "E3": "多来源交叉支持证据",
+    "E4": "数据库、语义或网络计算推断",
+    "E5": "专家假设，尚待验证"
+  },
+  "evidence_classes": [
+    "direct_ancient",
+    "authoritative_curated",
+    "cross_source",
+    "modern_bridge",
+    "database_prediction",
+    "experimental"
+  ],
+  "assertion_modes": [
+    "explicit",
+    "inferred",
+    "predicted",
+    "hypothesis"
+  ],
+  "review_statuses": [
+    "approved",
+    "pending",
+    "rejected"
+  ],
+  "release_thresholds": {
+    "key_path_traceability_rate": 1.0,
+    "ordinary_edge_traceability_rate": 0.98,
+    "formula_variant_completeness_rate": 1.0
+  }
+}
