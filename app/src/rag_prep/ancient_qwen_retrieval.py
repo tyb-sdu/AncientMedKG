@@ -65,6 +65,26 @@ def _page_rows(cfg: dict[str, Any]) -> list[dict[str, Any]]:
     return result
 
 
+def _corpus_text_sha256(pages: list[dict[str, Any]]) -> str:
+    digest = hashlib.sha256()
+    for row in pages:
+        record = {
+            "page_id": str(row.get("page_id") or ""),
+            "title": str(row.get("title") or ""),
+            "text": str(row.get("text") or ""),
+        }
+        digest.update(
+            json.dumps(
+                record,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        )
+        digest.update(b"\n")
+    return digest.hexdigest()
+
+
 def _rows_for_pages(cfg: dict[str, Any], page_ids: list[str]) -> dict[str, dict[str, Any]]:
     if not page_ids:
         return {}
@@ -117,6 +137,8 @@ def build_ancient_qwen_vector_index(
     checkpoint_every = int(qcfg.get("checkpoint_every_batches", 10))
     paths["dir"].mkdir(parents=True, exist_ok=True)
     pages_sha = _sha256(paths["pages_jsonl"])
+    corpus_text_sha = _corpus_text_sha256(pages)
+    database_sha = _sha256(paths["database"])
     layout_path = ancient_layout_sidecar_path(cfg)
     layout_sha = _sha256(layout_path) if layout_path and layout_path.is_file() else None
     model_sha = _model_fingerprint(paths["model"])
@@ -130,6 +152,8 @@ def build_ancient_qwen_vector_index(
                 "query_prompt": _query_prompt(cfg),
                 "unit": "ancient_page",
                 "layout_sidecar_sha256": layout_sha,
+                "corpus_text_sha256": corpus_text_sha,
+                "database_sha256": database_sha,
             },
             ensure_ascii=False,
             sort_keys=True,
@@ -142,6 +166,8 @@ def build_ancient_qwen_vector_index(
         manifest = json.loads(paths["manifest"].read_text(encoding="utf-8"))
         if (
             manifest.get("pages_sha256") == pages_sha
+            and manifest.get("corpus_text_sha256") == corpus_text_sha
+            and manifest.get("database_sha256") == database_sha
             and manifest.get("model_fingerprint") == model_sha
             and manifest.get("embedding_signature") == signature
             and manifest.get("layout_sidecar_sha256") == layout_sha
@@ -160,6 +186,8 @@ def build_ancient_qwen_vector_index(
         compatible = all(
             [
                 progress.get("pages_sha256") == pages_sha,
+                progress.get("corpus_text_sha256") == corpus_text_sha,
+                progress.get("database_sha256") == database_sha,
                 progress.get("model_fingerprint") == model_sha,
                 progress.get("embedding_signature") == signature,
                 progress.get("layout_sidecar_sha256") == layout_sha,
@@ -208,6 +236,8 @@ def build_ancient_qwen_vector_index(
                 paths["progress"],
                 {
                     "pages_sha256": pages_sha,
+                    "corpus_text_sha256": corpus_text_sha,
+                    "database_sha256": database_sha,
                     "model_fingerprint": model_sha,
                     "embedding_signature": signature,
                     "layout_sidecar_sha256": layout_sha,
@@ -235,6 +265,8 @@ def build_ancient_qwen_vector_index(
         "model_id": qcfg.get("embedding_model_id", "Qwen/Qwen3-Embedding-8B"),
         "model_fingerprint": model_sha,
         "pages_sha256": pages_sha,
+        "corpus_text_sha256": corpus_text_sha,
+        "database_sha256": database_sha,
         "embedding_signature": signature,
         "layout_sidecar_sha256": layout_sha,
         "page_count": total,
@@ -393,6 +425,7 @@ def ancient_qwen_doctor(cfg: dict[str, Any]) -> dict[str, Any]:
         index = _read_faiss_index(paths["index"])
         mapping = read_jsonl(paths["mapping"])
         page_rows = _page_rows(cfg)
+        corpus_text_sha = _corpus_text_sha256(page_rows)
         db_ids = {row["page_id"] for row in page_rows}
         manifest = json.loads(paths["manifest"].read_text(encoding="utf-8"))
         mapped_ids = {row["page_id"] for row in mapping}
@@ -406,6 +439,10 @@ def ancient_qwen_doctor(cfg: dict[str, Any]) -> dict[str, Any]:
             "missing_db_page_ids": len(db_ids - mapped_ids),
             "orphan_vector_page_ids": len(mapped_ids - db_ids),
             "pages_sha256_matches": manifest.get("pages_sha256") == _sha256(paths["pages_jsonl"]),
+            "corpus_text_sha256_matches": manifest.get("corpus_text_sha256")
+            == corpus_text_sha,
+            "database_sha256_matches": manifest.get("database_sha256")
+            == _sha256(paths["database"]),
             "layout_sidecar_sha256_matches": manifest.get("layout_sidecar_sha256")
             == (
                 _sha256(ancient_layout_sidecar_path(cfg))
@@ -422,6 +459,8 @@ def ancient_qwen_doctor(cfg: dict[str, Any]) -> dict[str, Any]:
                 checks["missing_db_page_ids"] == 0,
                 checks["orphan_vector_page_ids"] == 0,
                 checks["pages_sha256_matches"],
+                checks["corpus_text_sha256_matches"],
+                checks["database_sha256_matches"],
                 checks["layout_sidecar_sha256_matches"],
             ]
         )

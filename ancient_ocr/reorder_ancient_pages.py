@@ -82,7 +82,15 @@ def _records_from_parallel(
         if not box or not text:
             continue
         score = scores[index] if isinstance(scores, list) and index < len(scores) else None
-        records.append({"text": text, "box": box, "score": _number(score)})
+        records.append(
+            {
+                "text": text,
+                "box": box,
+                "score": _number(score),
+                "stored_order": None,
+                "orientation": None,
+            }
+        )
     return records
 
 
@@ -101,7 +109,17 @@ def extract_text_boxes(payload: Any) -> list[dict[str, Any]]:
             box = _box(item)
             text = _text(item.get("text") or item.get("rec_text") or item.get("transcription"))
             if box and text:
-                records.append({"text": text, "box": box, "score": _number(item.get("score"))})
+                records.append(
+                    {
+                        "text": text,
+                        "box": box,
+                        "score": _number(
+                            item.get("confidence", item.get("score", item.get("rec_score")))
+                        ),
+                        "stored_order": _number(item.get("order")),
+                        "orientation": item.get("orientation"),
+                    }
+                )
         if records:
             return records
         for item in payload:
@@ -163,14 +181,92 @@ def _cluster_columns(records: list[dict[str, Any]]) -> list[list[dict[str, Any]]
     return groups if len(groups) <= 6 else [records]
 
 
-def _estimate_vertical_columns(records: list[dict[str, Any]]) -> int:
-    centers = sorted((_center(record)[0] for record in records))
-    if len(centers) < 2:
-        return 1
-    widths = [record["box"][2] - record["box"][0] for record in records]
-    threshold = max(_median(widths) * 0.8, 12.0)
-    gaps = [right - left for left, right in zip(centers, centers[1:])]
-    return 1 + sum(gap > threshold for gap in gaps)
+def _is_vertical_record(
+    record: dict[str, Any], *, assume_vertical: bool = False
+) -> bool:
+    orientation = str(record.get("orientation") or "").lower()
+    if orientation in {"vertical", "horizontal"}:
+        return orientation == "vertical"
+    if assume_vertical:
+        return True
+    x1, y1, x2, y2 = record["box"]
+    return (y2 - y1) >= (x2 - x1) * 1.35
+
+
+def _cluster_vertical_columns(
+    records: list[dict[str, Any]],
+) -> list[list[dict[str, Any]]]:
+    """Group vertical boxes while tolerating scan skew and detector overlap."""
+    if not records:
+        return []
+    widths = [max(record["box"][2] - record["box"][0], 1.0) for record in records]
+    centers = [_center(record)[0] for record in records]
+    page_span = max(centers) - min(centers) if len(records) > 1 else 0.0
+    median_width = _median(widths)
+    center_tolerance = max(median_width * 0.80, page_span * 0.008, 12.0)
+    overlap_center_tolerance = max(median_width * 0.90, page_span * 0.010, 16.0)
+
+    parent = list(range(len(records)))
+
+    def find(index: int) -> int:
+        while parent[index] != index:
+            parent[index] = parent[parent[index]]
+            index = parent[index]
+        return index
+
+    def union(left: int, right: int) -> None:
+        left_root, right_root = find(left), find(right)
+        if left_root != right_root:
+            parent[right_root] = left_root
+
+    def x_interval_relation(
+        left: dict[str, Any], right: dict[str, Any]
+    ) -> tuple[float, float]:
+        left_x1, _, left_x2, _ = left["box"]
+        right_x1, _, right_x2, _ = right["box"]
+        overlap = min(left_x2, right_x2) - max(left_x1, right_x1)
+        if overlap > 0:
+            min_width = max(
+                min(left_x2 - left_x1, right_x2 - right_x1),
+                1.0,
+            )
+            return 0.0, overlap / min_width
+        if left_x2 < right_x1:
+            return right_x1 - left_x2, 0.0
+        if right_x2 < left_x1:
+            return left_x1 - right_x2, 0.0
+        return 0.0, 0.0
+
+    for left_index, left in enumerate(records):
+        left_center = _center(left)[0]
+        for right_index in range(left_index + 1, len(records)):
+            right = records[right_index]
+            center_gap = abs(left_center - _center(right)[0])
+            _, overlap_ratio = x_interval_relation(left, right)
+            interval_close = (
+                overlap_ratio >= 0.25
+                and center_gap <= overlap_center_tolerance
+            )
+            if center_gap <= center_tolerance or interval_close:
+                union(left_index, right_index)
+
+    grouped: dict[int, list[dict[str, Any]]] = {}
+    for index, record in enumerate(records):
+        grouped.setdefault(find(index), []).append(record)
+
+    columns = list(grouped.values())
+    columns.sort(
+        key=lambda column: -_median([_center(item)[0] for item in column])
+    )
+    return columns
+
+
+def _vertical_sort_key(record: dict[str, Any]) -> tuple[float, float]:
+    stored_order = _number(record.get("stored_order"))
+    return (
+        _center(record)[1],
+        stored_order if stored_order is not None else float("inf"),
+    )
 
 
 def order_text_boxes(
@@ -180,10 +276,31 @@ def order_text_boxes(
         return "", 0, "no_boxes"
     vertical = direction.startswith("vertical")
     if vertical:
-        # Each OCR segment is normally one vertical reading line. Sorting by
-        # x first prevents y-order from jumping between neighboring columns.
-        ordered = sorted(records, key=lambda record: (-_center(record)[0], _center(record)[1]))
-        column_count = _estimate_vertical_columns(records)
+        vertical_records = [
+            record for record in records if _is_vertical_record(record, assume_vertical=True)
+        ]
+        horizontal_records = [
+            record
+            for record in records
+            if str(record.get("orientation") or "").lower() == "horizontal"
+        ]
+        columns = _cluster_vertical_columns(vertical_records)
+        ordered = [
+            item
+            for column in columns
+            for item in sorted(column, key=_vertical_sort_key)
+        ]
+        # Headings, figure labels, and page numbers can be horizontal on an
+        # otherwise vertical page; place them by their x band without allowing
+        # them to reorder the vertical text inside a column.
+        for record in sorted(horizontal_records, key=lambda item: (-_center(item)[0], _center(item)[1])):
+            insert_at = len(ordered)
+            for index, existing in enumerate(ordered):
+                if _center(record)[0] > _center(existing)[0]:
+                    insert_at = index
+                    break
+            ordered.insert(insert_at, record)
+        column_count = len(columns)
     else:
         columns = _cluster_columns(records)
         columns.sort(key=lambda column: _median([_center(item)[0] for item in column]))

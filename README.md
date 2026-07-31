@@ -23,3 +23,48 @@ This public repository does not include PDFs, scanned ancient books, OCR text, S
 Install the dependencies in `app/requirements.txt`, prepare your own licensed or openly accessible corpus, update `app/config.yaml` for local paths, then run `python rag_cli.py --help` from `app/`.
 
 See `app/README.md`, `app/HANDOFF.md`, and `app/RUN_REPORT.md` for the implemented pipeline and verification record.
+
+## Candidate manifest validation
+
+PaddleOCR-VL outputs are not accepted merely because they pass structural validation. Validate a locally generated manifest before review or an explicitly authorized versioned promotion:
+
+```bash
+python ancient_ocr/verify_candidate_manifest.py /path/to/candidate_manifest.csv \
+  --output /path/to/candidate_manifest_integrity.json
+python -m pytest ancient_ocr app/tests -q
+```
+
+The verifier checks required fields, SHA-256 values, book and source identity, physical-page keys, expected candidate/image paths, and empty-candidate flags. Candidate JSON, rendered page images, OCR text, and the generated validation report are local artifacts and are not included in the public repository.
+
+## Release preflight
+
+Before publishing from the actual Git repository, verify that Git does not track private or generated artifacts:
+
+```bash
+python ancient_ocr/release_preflight.py --repository .
+python -m pytest -q
+git diff --check
+```
+
+See `RELEASE_ACCEPTANCE.md` for the vNext promotion decision, evidence, known limitations, and final release gate.
+
+## Promote a complete VLM batch
+
+Create a versioned database without overwriting the accepted source database:
+
+```bash
+python ancient_ocr/promote_vl_candidates.py \
+  --manifest /path/to/candidate_manifest.csv \
+  --candidate-root /path/to/candidate_output \
+  --database ancient_ocr/data/ancient_rag.db \
+  --output-database ancient_ocr/data/versions/vl_vnext/ancient_rag.db \
+  --output-pages-jsonl ancient_ocr/data/versions/vl_vnext/pages.jsonl
+```
+
+Every manifest row receives a promotion audit record. Non-empty candidates become the vNext page text; an empty candidate keeps the original OCR text and is recorded as `original_fallback_empty_candidate`. The new database rebuilds affected FTS rows, keeps `payload_json.text` synchronized, exports a matching `pages.jsonl`, and passes `PRAGMA quick_check` plus the expected 5,624-page count before it replaces its temporary outputs. Point the vNext runtime's `ancient_pages_jsonl` setting at this exported file so the independent vector-index fingerprint belongs to the promoted text.
+
+The 2026-07-31 release promoted 113 audited pages into an independent vNext
+database (105 candidate texts and 8 original-text fallbacks). The complete
+server suite passed 68 tests; deep doctor verified all database, JSONL, corpus,
+and layout fingerprints; the aggregate release validator returned
+`valid=true` with no issues.

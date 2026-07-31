@@ -152,3 +152,40 @@ ancient evaluation is:
 
 The final P1 review packet uses the final ordered preview. Blurred-page
 character corrections remain a human-reviewed sidecar task.
+
+## 2026-07-30 P1 PaddleOCR-VL 候选批次
+
+P1 候选批次已完成 113/113 页：本轮新增 29 页，按相同配置哈希复用 84 页，失败 0。主渲染器为 Poppler；损坏 PDF 页使用 PyMuPDF 修复式回退，并强制写入 `render_fallback` 人工标记。该流程未修改原 PDF、正式 OCR、SQLite 数据库或向量索引。
+
+最终清单分流如下：
+
+| 状态 | 页数 | 含义 |
+|---|---:|---|
+| `vl_candidate_ready_for_review` | 61 | 通过自动质量门，仍需人工确认 |
+| `manual_compare_required` | 52 | 存在版面、字符比例、长度、重复、含图或渲染回退风险，需重点对照 |
+
+质量标记计数为：`contains_non_text_blocks=37`、`low_cjk_ratio=15`、`render_fallback=12`、`empty_candidate=8`、`candidate_too_long=6`、`candidate_too_short=6`、`kana_noise=4`、`repeated_text=4`。同一页面可以带多个标记，因此计数不可相加为页面总数。
+
+新增 `ancient_ocr/verify_candidate_manifest.py` 和对应测试，对必填字段、SHA-256、书籍与来源映射、物理页唯一键、候选/渲染相对路径及空候选标记做只读验证。真实 113 行清单结果为 `valid=true`、`issues=[]`；Windows 导出副本的轻量测试为 `43 passed`。候选 JSON、页图和验收 JSON 均属于本地数据产物，不进入公开仓库。
+
+## 2026-07-30 vNext 直接纳入
+
+本次里程碑不再等待逐页人工对照。113 页 PaddleOCR-VL 记录全部进入独立 vNext 数据库：105 个非空候选采用新文本，8 个空候选保留原 OCR，避免清空页面。`ancient_ocr/promote_vl_candidates.py` 使用 SQLite 在线备份创建新库，验证来源、页 ID、原文/候选哈希，更新 FTS 与 `payload_json.text`，导出匹配的 vNext `pages.jsonl`，并输出逐页推广日志和整库报告；它还核验源库前后 SHA-256 与 5,624 页整库计数，原 `ancient_rag.db` 不修改。
+
+新增公开发布跟踪文件检查器 `ancient_ocr/release_preflight.py`。当前 Windows 导出副本测试更新为 `43 passed`；`extract_json_report.py` 会从 doctor 日志中生成纯 JSON，`validate_vnext_release.py` 再汇总推广、doctor、52 题评测和 preflight 的服务器证据。vNext 服务器验收要求推广计数严格为 113/105/8，SQLite 健康、数据库页、FTS 与 vNext JSONL 均为 5,624 行，且配置中的数据库、页面 JSONL 和新索引属于同一版本；页码定位率须为 `1.0`，关键词 Recall@10 不低于当前基线 `0.8913`。最终发布还需在服务器完整 Git 仓库运行全量测试、跟踪文件检查和 `git diff --check`。
+
+## 2026-07-31 vNext 服务器最终验收
+
+服务器已生成独立版本 `vl_vnext_2026-07-31`。推广报告为 113 条记录，其中 `candidate_adopted=105`、`original_fallback_empty_candidate=8`；数据库页面数、FTS 行数和同版 `pages.jsonl` 行数均为 5,624，SQLite `quick_check=ok`。源数据库 SHA-256 在推广前后均为 `9daee70b...e64d`，未被修改；vNext 数据库 SHA-256 为 `e21ede4f...b9c`。
+
+全新 Qwen3-Embedding-8B 页级索引包含 5,624 条、4,096 维向量。`doctor --deep` 确认 pages JSONL、规范正文、vNext 数据库和冻结 layout sidecar 四类 SHA-256 均与索引 manifest 匹配，古籍页库与向量索引均为 `healthy=true`。
+
+52 题 vNext 回归结果如下：
+
+| mode | Recall@5 | Recall@10 | MRR@10 | page locating |
+|---|---:|---:|---:|---:|
+| keyword | 0.8696 | 0.8913 | 0.6837 | 1.0000 |
+| qwen-vector | 0.6304 | 0.6739 | 0.5280 | 1.0000 |
+| qwen-reranked-hybrid | 0.7609 | 0.7826 | 0.7089 | 1.0000 |
+
+关键词 Recall@10 与发布基线相同，三通道页码定位率均为 1.0。服务器完整测试为 `68 passed`；`release_preflight.py` 返回 `valid=true`、违规 0；`validate_vnext_release.py` 汇总推广、doctor、评测和 preflight 四份真实报告后返回 `valid=true`、`issues=[]`。Qwen 重排混合 Recall@10 较旧版 0.8043 小幅下降至 0.7826，因此仍保持 keyword 为默认古籍检索通道。

@@ -44,18 +44,34 @@ FUTURE_HELP = """
 """
 
 
-def _add_common_args(target: argparse.ArgumentParser) -> None:
+def _add_common_args(
+    target: argparse.ArgumentParser,
+    *,
+    suppress_defaults: bool = False,
+) -> None:
+    scalar_default = argparse.SUPPRESS if suppress_defaults else None
+    flag_default = argparse.SUPPRESS if suppress_defaults else False
     target.add_argument(
         "--config",
-        default=str(ROOT / "config.yaml"),
+        default=argparse.SUPPRESS if suppress_defaults else str(ROOT / "config.yaml"),
         help="配置文件路径（默认 ./config.yaml）",
     )
-    target.add_argument("--resume", action="store_true", help="断点续跑（默认开启，可显式指定）")
-    target.add_argument("--no-resume", action="store_true", help="禁用断点续跑")
-    target.add_argument("--force", action="store_true", help="强制重做当前阶段")
-    target.add_argument("--doc-id", default=None, help="只处理指定文献")
-    target.add_argument("--limit", type=int, default=None, help="小规模测试限制数量")
-    target.add_argument("--verbose", action="store_true", help="详细日志")
+    target.add_argument(
+        "--resume",
+        action="store_true",
+        default=flag_default,
+        help="断点续跑（默认开启，可显式指定）",
+    )
+    target.add_argument(
+        "--no-resume",
+        action="store_true",
+        default=flag_default,
+        help="禁用断点续跑",
+    )
+    target.add_argument("--force", action="store_true", default=flag_default, help="强制重做当前阶段")
+    target.add_argument("--doc-id", default=scalar_default, help="只处理指定文献")
+    target.add_argument("--limit", type=int, default=scalar_default, help="小规模测试限制数量")
+    target.add_argument("--verbose", action="store_true", default=flag_default, help="详细日志")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -67,7 +83,7 @@ def build_parser() -> argparse.ArgumentParser:
     _add_common_args(p)
 
     common = argparse.ArgumentParser(add_help=False)
-    _add_common_args(common)
+    _add_common_args(common, suppress_defaults=True)
 
     sub = p.add_subparsers(dest="command", required=True)
     sub.add_parser("inventory", parents=[common], help="清点 PDF，生成 documents.* 与源校验")

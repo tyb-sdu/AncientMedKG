@@ -18,11 +18,32 @@
 /.conda-ancient-ocr/
 /app/logs/
 /ancient_ocr/logs/
+app/config.vl_vnext_*.yaml
 **/__pycache__/
 **/.pytest_cache/
 *.db
+*.pdf
+*.sqlite
+*.sqlite3
 *.index
+*.faiss
 *.npy
+*.npz
+*.arrow
+*.parquet
+*.onnx
+*.ckpt
+*.pt
+*.pth
+*.safetensors
+*.gguf
+*.bin
+*.pkl
+*.pickle
+*.joblib
+*.h5
+*.hdf5
+*.pyc
 *.log
 
 # Credentials and editor files

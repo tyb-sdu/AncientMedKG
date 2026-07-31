@@ -14,11 +14,30 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from rag_prep.config import load_config
-from rag_prep.dual_retrieval import query_any_corpus, source_any_page
-
-
 MODES = ("keyword", "qwen-vector", "qwen-reranked-hybrid")
+
+
+def load_evaluation_runtime() -> None:
+    """Load the full retrieval stack only for a live corpus evaluation."""
+    try:
+        from rag_prep.config import load_config as runtime_load_config
+        from rag_prep.dual_retrieval import (
+            query_any_corpus as runtime_query_any_corpus,
+            source_any_page as runtime_source_any_page,
+        )
+    except ModuleNotFoundError as exc:
+        if exc.name in {"rag_prep", "rag_prep.config", "rag_prep.dual_retrieval"}:
+            raise RuntimeError(
+                "完整古籍检索评测需要 app/src/rag_prep 和本地检索数据；"
+                "公开包仍可单独校验题集结构。"
+            ) from exc
+        raise
+
+    globals().update(
+        load_config=runtime_load_config,
+        query_any_corpus=runtime_query_any_corpus,
+        source_any_page=runtime_source_any_page,
+    )
 
 
 def load_questions(path: Path) -> list[dict[str, Any]]:
@@ -212,6 +231,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    load_evaluation_runtime()
     cfg = load_config(args.config)
     questions = load_questions(args.questions)
     schema_errors = validate_question_schema(questions)

@@ -55,6 +55,30 @@ def test_vertical_order_does_not_sort_by_page_y_first() -> None:
     assert text.splitlines() == ["右栏上", "右栏下", "左栏上", "左栏下"]
 
 
+def test_vertical_boxes_with_small_x_drift_stay_in_one_column() -> None:
+    records = [
+        {"text": "右上", "box": (200, 0, 260, 80), "orientation": "vertical"},
+        {"text": "右下", "box": (212, 90, 270, 170), "orientation": "vertical"},
+        {"text": "左上", "box": (80, 0, 140, 80), "orientation": "vertical"},
+        {"text": "左下", "box": (92, 90, 150, 170), "orientation": "vertical"},
+    ]
+    text, columns, _ = order_text_boxes(records, "vertical-rtl")
+    assert columns == 2
+    assert text.splitlines() == ["右上", "右下", "左上", "左下"]
+
+
+def test_overlapping_vertical_boxes_are_not_split_into_two_columns() -> None:
+    records = [
+        {"text": "right-top", "box": (200, 0, 300, 80), "orientation": "vertical"},
+        {"text": "right-bottom", "box": (270, 90, 370, 170), "orientation": "vertical"},
+        {"text": "left-top", "box": (40, 0, 140, 80), "orientation": "vertical"},
+        {"text": "left-bottom", "box": (110, 90, 210, 170), "orientation": "vertical"},
+    ]
+    text, columns, _ = order_text_boxes(records, "vertical-rtl")
+    assert columns == 2
+    assert text.splitlines() == ["right-top", "right-bottom", "left-top", "left-bottom"]
+
+
 def test_no_boxes_is_explicit() -> None:
     text, columns, status = order_text_boxes([], "horizontal-ltr")
     assert text == ""

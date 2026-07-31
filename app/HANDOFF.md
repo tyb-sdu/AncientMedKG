@@ -1,6 +1,6 @@
 # Handoff：现代文献 RAG 服务器版
 
-更新时间：2026-07-28
+更新时间：2026-07-30
 
 ## 已验收
 
@@ -131,3 +131,57 @@ keyword `0.8913`, qwen-vector `0.6739`, and qwen-reranked-hybrid `0.8043`.
 The 24-page P1 review packet and desktop manifest were regenerated from this
 final sidecar. Blurred-page character errors remain a separate human-review
 problem and are not silently auto-corrected.
+
+## 2026-07-30 P1 PaddleOCR-VL candidate batch
+
+The full P1 queue now has PaddleOCR-VL 1.6 review candidates for 113/113 pages.
+The resumed run generated 29 new pages, reused 84 candidates with the same
+configuration hash, and recorded zero failures. Poppler remains the primary
+renderer; repaired-PDF fallback pages use PyMuPDF and are always flagged for
+manual comparison.
+
+The final manifest routes 61 pages to `vl_candidate_ready_for_review` and 52
+pages to `manual_compare_required`. These states prioritize human review only;
+neither state authorizes automatic replacement of original OCR text. Review
+flags include empty or short/long candidates, low CJK ratio, repeated output,
+kana noise, non-text blocks, and render fallback.
+
+`ancient_ocr/verify_candidate_manifest.py` validates required fields, SHA-256
+values, book/source identity, physical-page uniqueness, expected candidate and
+image paths, and empty-candidate flags. The 113-row final manifest passes with
+`valid=true` and no issues. The Windows release slice reports `43 passed`; run
+the complete suite again in the server Git repository before the milestone
+commit and exclude all private candidates, page images, OCR data, databases,
+indexes, model files, and logs.
+
+## 2026-07-30 vNext promotion decision
+
+Manual page-by-page comparison is no longer a release prerequisite. Promote all
+113 PaddleOCR-VL rows with `ancient_ocr/promote_vl_candidates.py` into a new
+database: adopt 105 non-empty candidate texts and preserve the original text for
+8 empty candidates. The original `ancient_rag.db` remains the rollback point.
+The promotion also synchronizes `payload_json.text`, exports a matching vNext
+`pages.jsonl`, verifies the source database SHA-256 is unchanged, and enforces
+the expected 5,624-page count. Point `ancient_database` and
+`ancient_pages_jsonl` at the same vNext version and use a fresh vector directory.
+
+Rebuild FTS and the independent ancient index for vNext, then rerun doctor and
+the 52-question evaluation. Release requires page locating `1.0` and keyword
+Recall@10 at least the current `0.8913` baseline. Human review, abstention calibration, and the
+knowledge-graph evidence layer are post-delivery enhancements.
+
+## 2026-07-31 vNext release acceptance
+
+The server promoted all 113 P1 rows into a new rollback-safe version: 105
+non-empty PaddleOCR-VL texts were adopted and 8 empty candidates retained the
+original OCR. The vNext database, FTS table, and exported JSONL each contain
+5,624 pages; SQLite quick check is `ok`, and the source database SHA-256 was
+unchanged.
+
+A fresh Qwen3-Embedding-8B index was built for the vNext corpus. Deep doctor
+reports matching page-JSONL, normalized-corpus, database, and layout-sidecar
+fingerprints. The 52-question results are keyword Recall@10 `0.8913`,
+qwen-vector `0.6739`, and qwen-reranked-hybrid `0.7826`; all three page
+locating rates are `1.0`. The complete server suite reports `68 passed`, public
+release preflight is clean, and the aggregate release validator returns
+`valid=true` with no issues.

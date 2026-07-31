@@ -44,6 +44,8 @@ def main(database: Path, book_id: str, physical_page: int) -> int:
                         "text": item["text"],
                         "box": [round(value, 2) for value in item["box"]],
                         "score": item["score"],
+                        "stored_order": item.get("stored_order"),
+                        "orientation": item.get("orientation"),
                     }
                     for item in records
                 ],
