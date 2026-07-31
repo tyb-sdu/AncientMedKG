@@ -1,0 +1,182 @@
+[
+  {
+    "id": "rendong-001",
+    "category": "source_fact",
+    "question": "《医学心悟》中“一切内外痈肿皆可立消”的忍冬汤原文在哪一页？",
+    "expect_answer": true,
+    "expected_loci": [
+      {
+        "doc_id": "ancient:da1657c4376cd7e6ba9e",
+        "pdf_pages": [138],
+        "evidence_terms": ["忍冬湯", "一切內外癰腫"]
+      }
+    ]
+  },
+  {
+    "id": "rendong-002",
+    "category": "source_fact",
+    "question": "《医学心悟》二味忍冬汤的原文主治是什么？",
+    "expect_answer": true,
+    "expected_loci": [
+      {
+        "doc_id": "ancient:da1657c4376cd7e6ba9e",
+        "pdf_pages": [138],
+        "evidence_terms": ["一切內外癰腫"]
+      }
+    ]
+  },
+  {
+    "id": "rendong-003",
+    "category": "composition",
+    "question": "主治内外痈肿的忍冬汤由哪两味药组成？",
+    "expect_answer": true,
+    "expected_loci": [
+      {
+        "doc_id": "ancient:da1657c4376cd7e6ba9e",
+        "pdf_pages": [138],
+        "evidence_terms": ["金銀花四兩", "甘草三錢"]
+      }
+    ]
+  },
+  {
+    "id": "rendong-004",
+    "category": "composition",
+    "question": "《医学心悟》内外痈肿忍冬汤中金银花与甘草的原始剂量是多少？",
+    "expect_answer": true,
+    "expected_loci": [
+      {
+        "doc_id": "ancient:da1657c4376cd7e6ba9e",
+        "pdf_pages": [138],
+        "evidence_terms": ["金銀花四兩", "甘草三錢"]
+      }
+    ]
+  },
+  {
+    "id": "rendong-005",
+    "category": "preparation",
+    "question": "《医学心悟》内外痈肿忍冬汤如何煎服？",
+    "expect_answer": true,
+    "expected_loci": [
+      {
+        "doc_id": "ancient:da1657c4376cd7e6ba9e",
+        "pdf_pages": [138],
+        "evidence_terms": ["水煎頓服"]
+      }
+    ]
+  },
+  {
+    "id": "rendong-006",
+    "category": "preparation",
+    "question": "能饮酒者服用《医学心悟》忍冬汤时原文如何处理？",
+    "expect_answer": true,
+    "expected_loci": [
+      {
+        "doc_id": "ancient:da1657c4376cd7e6ba9e",
+        "pdf_pages": [138],
+        "evidence_terms": ["能飲者用酒煎服"]
+      }
+    ]
+  },
+  {
+    "id": "rendong-007",
+    "category": "source_fact",
+    "question": "《医学心悟》在哪一页写到胃脘痈由忍冬汤主治？",
+    "expect_answer": true,
+    "expected_loci": [
+      {
+        "doc_id": "ancient:da1657c4376cd7e6ba9e",
+        "pdf_pages": [137],
+        "evidence_terms": ["胃脘癰也忍冬湯主之"]
+      }
+    ]
+  },
+  {
+    "id": "rendong-008",
+    "category": "source_fact",
+    "question": "《医学心悟》忍冬汤条目前文属于哪类内痈语境？",
+    "expect_answer": true,
+    "expected_loci": [
+      {
+        "doc_id": "ancient:da1657c4376cd7e6ba9e",
+        "pdf_pages": [137],
+        "evidence_terms": ["內癰", "忍冬湯主之"]
+      }
+    ]
+  },
+  {
+    "id": "rendong-009",
+    "category": "same_name_disambiguation",
+    "question": "《医学心悟》中用于杨梅结毒的同名忍冬汤位于哪一页？",
+    "expect_answer": true,
+    "expected_loci": [
+      {
+        "doc_id": "ancient:da1657c4376cd7e6ba9e",
+        "pdf_pages": [227],
+        "evidence_terms": ["楊梅結毒", "忍冬湯"]
+      }
+    ]
+  },
+  {
+    "id": "rendong-010",
+    "category": "same_name_disambiguation",
+    "question": "含土茯苓四两的忍冬汤与内外痈肿二味方是否为同一组成？",
+    "expect_answer": true,
+    "expected_loci": [
+      {
+        "doc_id": "ancient:da1657c4376cd7e6ba9e",
+        "pdf_pages": [227],
+        "evidence_terms": ["土茯苓四兩", "忍冬湯"]
+      }
+    ]
+  },
+  {
+    "id": "rendong-011",
+    "category": "same_name_disambiguation",
+    "question": "《医学心悟》杨梅结毒忍冬汤原文还记录了什么煎服频次？",
+    "expect_answer": true,
+    "expected_loci": [
+      {
+        "doc_id": "ancient:da1657c4376cd7e6ba9e",
+        "pdf_pages": [227],
+        "evidence_terms": ["水煎每日一劑須盡飲"]
+      }
+    ]
+  },
+  {
+    "id": "rendong-012",
+    "category": "same_name_disambiguation",
+    "question": "只含金银花四两和甘草三钱的忍冬汤应定位到《医学心悟》哪一页？",
+    "expect_answer": true,
+    "expected_loci": [
+      {
+        "doc_id": "ancient:da1657c4376cd7e6ba9e",
+        "pdf_pages": [138],
+        "evidence_terms": ["金銀花四兩", "甘草三錢"]
+      }
+    ]
+  },
+  {
+    "id": "rendong-013",
+    "category": "evidence_boundary",
+    "question": "《医学心悟》是否直接记载忍冬汤治疗汤火伤或烧伤？",
+    "expect_answer": false,
+    "expected_loci": [],
+    "boundary_reason": "原文主治内外痈肿或杨梅结毒；烧伤关联只能作为现代机制迁移假说。"
+  },
+  {
+    "id": "rendong-014",
+    "category": "evidence_boundary",
+    "question": "《医学心悟》是否记载将忍冬汤外敷于烧伤创面？",
+    "expect_answer": false,
+    "expected_loci": [],
+    "boundary_reason": "第138页记载水煎顿服，不能把现代局部递送反写成古籍事实。"
+  },
+  {
+    "id": "rendong-015",
+    "category": "evidence_boundary",
+    "question": "《医学心悟》忍冬汤中金银花四两和甘草三钱应换算成多少现代克数治疗烧伤？",
+    "expect_answer": false,
+    "expected_loci": [],
+    "boundary_reason": "古籍原量应保留，方案禁止在事实层直接换算现代临床剂量。"
+  }
+]

@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "16dd53c16109a52061cc577fae9e754f8bfb928c",
+  "evaluated_at": "2026-07-31",
+  "database": {
+    "sha256": "e21ede4fad25ad17c38003981ee696b87a203cf007bfd7c52e633a0c2c6c7b9c",
+    "books": 12,
+    "pages": 5624,
+    "quick_check": "ok"
+  },
+  "static_assets": {
+    "valid": true,
+    "ontology_entries": 39,
+    "formula_instances": 2,
+    "specialized_questions": 15
+  },
+  "raw_specialized_baseline": {
+    "note": "现有app检索器原始输出；与研究规划层分开报告",
+    "keyword": {
+      "recall_at_10": 0.0,
+      "mrr_at_10": 0.0,
+      "page_locatable_rate": 1.0,
+      "no_answer_accuracy": 0.0
+    },
+    "qwen-vector": {
+      "recall_at_10": 0.5,
+      "mrr_at_10": 0.08343,
+      "page_locatable_rate": 1.0,
+      "no_answer_accuracy": 0.0
+    },
+    "qwen-reranked-hybrid": {
+      "recall_at_10": 0.75,
+      "mrr_at_10": 0.75,
+      "page_locatable_rate": 1.0,
+      "no_answer_accuracy": 0.0
+    }
+  },
+  "controlled_vocabulary_planner": {
+    "keyword": {
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "mrr_at_10": 1.0,
+      "page_locatable_rate": 1.0,
+      "no_answer_accuracy": 1.0
+    },
+    "qwen-vector": {
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "mrr_at_10": 1.0,
+      "page_locatable_rate": 1.0,
+      "no_answer_accuracy": 1.0
+    },
+    "qwen-reranked-hybrid": {
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "mrr_at_10": 1.0,
+      "page_locatable_rate": 1.0,
+      "no_answer_accuracy": 1.0
+    }
+  },
+  "kg_draft": {
+    "graph_version": "rendongtang-1.0.0-draft",
+    "sources": 2,
+    "nodes": 17,
+    "evidence": 4,
+    "edges": 32,
+    "build_content_fingerprint": "5edd56e17489428e06eca5e9aaea1931a1654b4b7ef0a35047ad33a1bf78b60b",
+    "draft_validation_valid": true,
+    "source_verification": {
+      "valid": true,
+      "verified_ancient_pages": 3,
+      "not_applicable_curated_rules": 1,
+      "quote_match": "exact"
+    },
+    "neo4j_export": {
+      "entity_nodes": 17,
+      "evidence_nodes": 4,
+      "assertion_nodes": 32,
+      "direct_relationships": 32,
+      "provenance_relationships": 102
+    },
+    "release_validation_valid": false,
+    "release_block_codes": [
+      "edge_not_approved",
+      "evidence_not_approved"
+    ],
+    "release_block_is_expected": true
+  },
+  "runtime_report_directory": "research_pipeline/output/acceptance_20260731",
+  "scientific_boundaries_remaining": [
+    "第137、138、227页仍需影像级双人签署",
+    "500条候选双人标注与阈值校准尚未完成",
+    "R_transfer三类对照与专家评分尚未完成",
+    "忍冬汤到烧伤仅为E5机制迁移假说",
+    "现代成分、靶点和通路结论仍需独立证据分级与实验验证"
+  ]
+}

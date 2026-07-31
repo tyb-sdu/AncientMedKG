@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "evidence_package_id": "rendongtang-yixuexinwu-v1",
+  "version": "1.0.0",
+  "created_at": "2026-07-31",
+  "normalized_formula_name": "忍冬汤",
+  "purpose": "区分《医学心悟》中同名异方，并把古籍直接事实与烧伤机制迁移假说物理分开",
+  "work": {
+    "work_id": "work:yixuexinwu",
+    "edition_id": "edition:yixuexinwu-public-scan",
+    "title": "医学心悟_公开扫描版",
+    "book_id": "ancient:da1657c4376cd7e6ba9e",
+    "filename": "医学心悟_公开扫描版.pdf",
+    "source_status": "server_vnext_verified",
+    "page_count": 235
+  },
+  "formula_instances": [
+    {
+      "formula_instance_id": "formula:rendongtang:yixuexinwu:p138-neiyong",
+      "normalized_name": "忍冬汤",
+      "name_original": "忍冬湯",
+      "evidence_level": "E1",
+      "direct_burn_evidence": false,
+      "indication_original": "一切內外癰腫皆可立消但宜蚤服",
+      "indication_normalized": "一切内外痈肿，宜早服",
+      "preparation_original": "水煎頓服能飲者用酒煎服",
+      "administration_route": "原方内服",
+      "ingredients": [
+        {
+          "normalized_name": "金银花",
+          "name_original": "金銀花",
+          "dose_original": "四兩",
+          "dose_modern": null
+        },
+        {
+          "normalized_name": "甘草",
+          "name_original": "甘草",
+          "dose_original": "三錢",
+          "dose_modern": null
+        }
+      ],
+      "source_locus": {
+        "book_id": "ancient:da1657c4376cd7e6ba9e",
+        "expected_title": "医学心悟_公开扫描版",
+        "physical_page": 138,
+        "evidence_terms": [
+          "忍冬湯",
+          "一切內外癰腫",
+          "金銀花四兩",
+          "甘草三錢",
+          "水煎頓服"
+        ]
+      },
+      "review_status": "text_verified_requires_final_image_signoff",
+      "scientific_boundary": "原文支持内外痈肿、组成、剂量和煎服法，不支持直接治疗烧伤或现代外用剂量。"
+    },
+    {
+      "formula_instance_id": "formula:rendongtang:yixuexinwu:p227-yangmei",
+      "normalized_name": "忍冬汤",
+      "name_original": "忍冬湯",
+      "evidence_level": "E1",
+      "direct_burn_evidence": false,
+      "indication_original": "楊梅結毒不可搽輕粉……宜服忍冬湯",
+      "indication_normalized": "杨梅结毒",
+      "preparation_original": "水煎每日一劑須盡飲",
+      "administration_route": "原方内服",
+      "ingredients": [
+        {
+          "normalized_name": "金银花",
+          "name_original": "金銀花",
+          "dose_original": "一[OCR待影像核定]",
+          "dose_modern": null
+        },
+        {
+          "normalized_name": "甘草",
+          "name_original": "甘草",
+          "dose_original": "二錢",
+          "dose_modern": null
+        },
+        {
+          "normalized_name": "黑料豆",
+          "name_original": "黑料豆",
+          "dose_original": "二兩",
+          "dose_modern": null
+        },
+        {
+          "normalized_name": "土茯苓",
+          "name_original": "土茯苓",
+          "dose_original": "四兩",
+          "dose_modern": null
+        }
+      ],
+      "source_locus": {
+        "book_id": "ancient:da1657c4376cd7e6ba9e",
+        "expected_title": "医学心悟_公开扫描版",
+        "physical_page": 227,
+        "evidence_terms": [
+          "楊梅結毒",
+          "忍冬湯",
+          "土茯苓四兩"
+        ]
+      },
+      "review_status": "same_name_variant_requires_image_review",
+      "scientific_boundary": "这是治疗杨梅结毒的同名异方，不能与第138页内外痈肿二味方合并。"
+    }
+  ],
+  "context_loci": [
+    {
+      "context_id": "context:yixuexinwu:p137-weiyong",
+      "book_id": "ancient:da1657c4376cd7e6ba9e",
+      "expected_title": "医学心悟_公开扫描版",
+      "physical_page": 137,
+      "evidence_terms": [
+        "胃脘癰也忍冬湯主之",
+        "內癰"
+      ],
+      "role": "第138页二味忍冬汤的前文主治语境"
+    }
+  ],
+  "relations": [
+    {
+      "relation_id": "rel:rendong-p138-recorded-in-yixuexinwu",
+      "source": "formula:rendongtang:yixuexinwu:p138-neiyong",
+      "relation_type": "recorded_in",
+      "target": "work:yixuexinwu",
+      "evidence_level": "E1",
+      "status": "direct_text"
+    },
+    {
+      "relation_id": "rel:rendong-p138-treats-neiwaiyongzhong",
+      "source": "formula:rendongtang:yixuexinwu:p138-neiyong",
+      "relation_type": "treats",
+      "target": "disease:neiwaiyongzhong",
+      "evidence_level": "E1",
+      "status": "direct_text"
+    },
+    {
+      "relation_id": "rel:rendong-p227-recorded-in-yixuexinwu",
+      "source": "formula:rendongtang:yixuexinwu:p227-yangmei",
+      "relation_type": "recorded_in",
+      "target": "work:yixuexinwu",
+      "evidence_level": "E1",
+      "status": "direct_text"
+    },
+    {
+      "relation_id": "rel:rendong-p227-treats-yangmeijiedu",
+      "source": "formula:rendongtang:yixuexinwu:p227-yangmei",
+      "relation_type": "treats",
+      "target": "disease:yangmeijiedu",
+      "evidence_level": "E1",
+      "status": "direct_text"
+    },
+    {
+      "relation_id": "rel:rendong-same-name-distinct-formula",
+      "source": "formula:rendongtang:yixuexinwu:p138-neiyong",
+      "relation_type": "same_name_distinct_formula",
+      "target": "formula:rendongtang:yixuexinwu:p227-yangmei",
+      "evidence_level": "E1",
+      "status": "composition_distinct"
+    },
+    {
+      "relation_id": "rel:burn-to-neiwaiyongzhong-transfer",
+      "source": "disease:modern_burn",
+      "relation_type": "mechanism_transfer_hypothesis",
+      "target": "disease:neiwaiyongzhong",
+      "evidence_level": "E5",
+      "status": "hypothesis_unvalidated",
+      "direct_ancient_evidence": false,
+      "basis": [
+        "创面红肿热痛表型可能重叠",
+        "烧伤后炎症与感染风险可形成现代桥接",
+        "痈肿与热损伤不是同义词"
+      ]
+    },
+    {
+      "relation_id": "rel:burn-to-rendong-p138-transfer",
+      "source": "disease:modern_burn",
+      "relation_type": "mechanism_transfer_hypothesis",
+      "target": "formula:rendongtang:yixuexinwu:p138-neiyong",
+      "evidence_level": "E5",
+      "status": "hypothesis_unvalidated",
+      "direct_ancient_evidence": false,
+      "basis": [
+        "经内外痈肿表型桥接",
+        "需与直接注明治汤火伤的方剂同框评分",
+        "不得升级为古籍直接烧伤证据"
+      ]
+    }
+  ],
+  "transfer_scoring_template": {
+    "score_id": "R_transfer",
+    "status": "not_scored_pending_controls_and_expert_review",
+    "high_priority_threshold": 0.75,
+    "exploratory_range": [0.6, 0.75],
+    "weights": {
+      "wound_phenotype_overlap": 0.25,
+      "pathogenesis_and_therapy_compatibility": 0.2,
+      "burn_stage_match": 0.2,
+      "modern_formula_or_ingredient_support": 0.15,
+      "route_feasibility": 0.1,
+      "safety": 0.1
+    },
+    "required_control_paths": [
+      "古籍直接注明治汤火伤的方剂",
+      "表型相近但不含金银花或甘草的疮疡方",
+      "含金银花或甘草但主治不相关的方剂"
+    ]
+  },
+  "claim_boundary": {
+    "ancient_direct_burn_claim_allowed": false,
+    "clinical_recommendation_allowed": false,
+    "modern_dose_conversion_allowed": false,
+    "allowed_current_wording": "《医学心悟》忍冬汤是经内外痈肿表型与病机桥接得到的烧伤研究迁移候选，不是古籍直接记载的烧伤专方。"
+  }
+}

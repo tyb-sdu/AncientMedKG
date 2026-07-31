@@ -1,0 +1,420 @@
+{
+  "schema_version": 1,
+  "ontology_id": "ancient-burn-ontology-v1",
+  "version": "1.0.0",
+  "created_at": "2026-07-31",
+  "scope": "古籍烧伤直接证据、创面表型迁移证据、治法及排除语境",
+  "normalization_policy": {
+    "display_text": "保留原字形，不改写古籍原文",
+    "retrieval_text": "允许繁简、异体和稳定俗字映射",
+    "historical_semantics": "现代术语只用于检索与桥接，不反向改写古籍含义"
+  },
+  "retrieval_rules": {
+    "context_window_chars": 40,
+    "classification_labels": [
+      "direct_burn",
+      "suspected_burn",
+      "ulcer_transfer",
+      "irrelevant"
+    ],
+    "direct_channel_threshold_initial": 0.8,
+    "transfer_channel_threshold_initial": 0.7,
+    "transfer_minimum_evidence_classes": 2,
+    "threshold_status": "proposal_initial_value_requires_annotated_calibration",
+    "direct_channel": "至少一个直接病名或热源损伤词，并满足损伤/肌肤上下文",
+    "transfer_channel": "病机、创面表型或疮疡词不得单独升级为直接烧伤证据",
+    "exclusion_precedence": "排除语境在同一窗口内优先于单字火、汤、疮命中"
+  },
+  "entries": [
+    {
+      "term_id": "burn.cause.tang_huo",
+      "canonical": "汤火",
+      "surface_forms": ["汤火", "湯火"],
+      "layer": "direct_cause",
+      "search_weight": 1.0,
+      "evidence_channel": "A_direct",
+      "required_context": ["伤", "傷", "疮", "瘡", "肌", "皮", "肉", "烂", "爛"],
+      "notes": "必须表示热源造成的组织损伤，不能把方剂中的汤字计入。"
+    },
+    {
+      "term_id": "burn.cause.tang_po",
+      "canonical": "汤泼",
+      "surface_forms": ["汤泼", "湯潑", "湯撥"],
+      "layer": "direct_cause",
+      "search_weight": 1.0,
+      "evidence_channel": "A_direct",
+      "required_context": ["伤", "傷", "烧", "燒", "火", "疮", "瘡", "皮肤", "皮膚"],
+      "notes": "覆盖热液泼溅损伤及稳定OCR混淆。"
+    },
+    {
+      "term_id": "burn.cause.huo_shao",
+      "canonical": "火烧",
+      "surface_forms": ["火烧", "火燒"],
+      "layer": "direct_cause",
+      "search_weight": 1.0,
+      "evidence_channel": "A_direct",
+      "required_context": ["伤", "傷", "疮", "瘡", "皮", "肉", "痛", "烂", "爛"],
+      "notes": "排除烹饪、炼制和宗教语境。"
+    },
+    {
+      "term_id": "burn.cause.bei_huo",
+      "canonical": "被火",
+      "surface_forms": ["被火", "為火", "为火"],
+      "layer": "direct_cause",
+      "search_weight": 0.95,
+      "evidence_channel": "A_direct",
+      "required_context": ["伤", "傷", "烧", "燒", "灼", "疮", "瘡"],
+      "notes": "以受伤动作和人体组织上下文确认。"
+    },
+    {
+      "term_id": "burn.cause.hot_liquid",
+      "canonical": "热液",
+      "surface_forms": ["热液", "熱液", "热汤", "熱湯"],
+      "layer": "direct_cause",
+      "search_weight": 0.9,
+      "evidence_channel": "A_direct",
+      "required_context": ["伤", "傷", "泼", "潑", "灼", "皮", "肉", "疮", "瘡"],
+      "notes": "现代检索桥接词，古籍原词必须保留。"
+    },
+    {
+      "term_id": "burn.disease.tang_huo_shang",
+      "canonical": "汤火伤",
+      "surface_forms": ["汤火伤", "湯火傷"],
+      "layer": "direct_disease",
+      "search_weight": 1.0,
+      "evidence_channel": "A_direct",
+      "required_context": [],
+      "notes": "直接烧伤病名。"
+    },
+    {
+      "term_id": "burn.disease.tang_huo_chuang",
+      "canonical": "汤火疮",
+      "surface_forms": ["汤火疮", "湯火瘡"],
+      "layer": "direct_disease",
+      "search_weight": 1.0,
+      "evidence_channel": "A_direct",
+      "required_context": [],
+      "notes": "直接烧伤病名。"
+    },
+    {
+      "term_id": "burn.disease.huo_chuang",
+      "canonical": "火疮",
+      "surface_forms": ["火疮", "火瘡"],
+      "layer": "direct_disease",
+      "search_weight": 1.0,
+      "evidence_channel": "A_direct",
+      "required_context": [],
+      "notes": "需结合篇门或热损伤上下文排除灸疮。"
+    },
+    {
+      "term_id": "burn.disease.huo_shao_chuang",
+      "canonical": "火烧疮",
+      "surface_forms": ["火烧疮", "火燒瘡"],
+      "layer": "direct_disease",
+      "search_weight": 1.0,
+      "evidence_channel": "A_direct",
+      "required_context": [],
+      "notes": "直接烧伤病名。"
+    },
+    {
+      "term_id": "burn.disease.tang_po_huo_shao",
+      "canonical": "汤泼火烧",
+      "surface_forms": ["汤泼火烧", "湯潑火燒"],
+      "layer": "direct_disease",
+      "search_weight": 1.0,
+      "evidence_channel": "A_direct",
+      "required_context": [],
+      "notes": "直接热液或火焰损伤表述。"
+    },
+    {
+      "term_id": "burn.disease.modern_burn",
+      "canonical": "烧伤",
+      "surface_forms": ["烧伤", "燒傷", "烫伤", "燙傷"],
+      "layer": "direct_disease",
+      "search_weight": 1.0,
+      "evidence_channel": "A_direct",
+      "required_context": [],
+      "notes": "现代查询入口，需映射回古籍原词。"
+    },
+    {
+      "term_id": "burn.phenotype.redness",
+      "canonical": "红赤",
+      "surface_forms": ["红赤", "紅赤", "赤红", "赤紅"],
+      "layer": "wound_phenotype",
+      "search_weight": 0.7,
+      "evidence_channel": "B_transfer",
+      "required_context": ["皮", "肉", "疮", "瘡", "肿", "腫", "痛", "烂", "爛"],
+      "notes": "创面表型，不能单独判定烧伤。"
+    },
+    {
+      "term_id": "burn.phenotype.swelling_pain",
+      "canonical": "肿痛",
+      "surface_forms": ["肿痛", "腫痛", "赤肿痛", "赤腫痛"],
+      "layer": "wound_phenotype",
+      "search_weight": 0.65,
+      "evidence_channel": "B_transfer",
+      "required_context": ["疮", "瘡", "创", "創", "皮", "肉", "热", "熱", "火"],
+      "notes": "用于迁移通道。"
+    },
+    {
+      "term_id": "burn.phenotype.blister",
+      "canonical": "发泡",
+      "surface_forms": ["发泡", "發泡", "起泡", "泡起"],
+      "layer": "wound_phenotype",
+      "search_weight": 0.85,
+      "evidence_channel": "B_transfer",
+      "required_context": ["皮", "肉", "火", "汤", "湯", "热", "熱", "伤", "傷"],
+      "notes": "与热源或损伤上下文共现时高度相关。"
+    },
+    {
+      "term_id": "burn.phenotype.raw_flesh_pain",
+      "canonical": "肉赤烂痛",
+      "surface_forms": ["肉赤烂痛", "肉赤爛痛"],
+      "layer": "wound_phenotype",
+      "search_weight": 0.85,
+      "evidence_channel": "B_transfer",
+      "required_context": ["火", "汤", "湯", "伤", "傷", "疮", "瘡"],
+      "notes": "直接创面描述，仍需热源或病名上下文。"
+    },
+    {
+      "term_id": "burn.phenotype.skin_breakdown",
+      "canonical": "皮肤破烂",
+      "surface_forms": ["皮肤破烂", "皮膚破爛", "皮破肉烂", "皮破肉爛"],
+      "layer": "wound_phenotype",
+      "search_weight": 0.85,
+      "evidence_channel": "B_transfer",
+      "required_context": ["火", "汤", "湯", "热", "熱", "伤", "傷", "灼"],
+      "notes": "高价值创面表型。"
+    },
+    {
+      "term_id": "burn.phenotype.charred",
+      "canonical": "焦烂",
+      "surface_forms": ["焦烂", "焦爛", "焦黑", "焦枯"],
+      "layer": "wound_phenotype",
+      "search_weight": 0.8,
+      "evidence_channel": "B_transfer",
+      "required_context": ["皮", "肉", "火", "灼", "伤", "傷"],
+      "notes": "排除药材炮制焦化。"
+    },
+    {
+      "term_id": "burn.phenotype.putrefaction",
+      "canonical": "腐烂",
+      "surface_forms": ["腐烂", "腐爛", "腐肉", "肉腐"],
+      "layer": "wound_phenotype",
+      "search_weight": 0.6,
+      "evidence_channel": "B_transfer",
+      "required_context": ["疮", "瘡", "创", "創", "皮", "肉", "脓", "膿"],
+      "notes": "可提示坏死或感染阶段，不限于烧伤。"
+    },
+    {
+      "term_id": "burn.phenotype.ulceration",
+      "canonical": "溃烂",
+      "surface_forms": ["溃烂", "潰爛", "溃疡", "潰瘍", "破溃", "破潰"],
+      "layer": "wound_phenotype",
+      "search_weight": 0.55,
+      "evidence_channel": "B_transfer",
+      "required_context": ["疮", "瘡", "创", "創", "皮", "肉", "脓", "膿"],
+      "notes": "只作为疮疡迁移或病程表型。"
+    },
+    {
+      "term_id": "burn.pathogenesis.heat_toxin",
+      "canonical": "热毒",
+      "surface_forms": ["热毒", "熱毒"],
+      "layer": "pathogenesis",
+      "search_weight": 0.7,
+      "evidence_channel": "B_transfer",
+      "required_context": [],
+      "notes": "病机迁移词，不能单独判定烧伤。"
+    },
+    {
+      "term_id": "burn.pathogenesis.fire_toxin",
+      "canonical": "火毒",
+      "surface_forms": ["火毒"],
+      "layer": "pathogenesis",
+      "search_weight": 0.7,
+      "evidence_channel": "B_transfer",
+      "required_context": [],
+      "notes": "病机迁移词。"
+    },
+    {
+      "term_id": "burn.pathogenesis.toxin_interior",
+      "canonical": "毒气入里",
+      "surface_forms": ["毒气入里", "毒氣入裏", "毒入于里", "毒入於裏"],
+      "layer": "pathogenesis",
+      "search_weight": 0.65,
+      "evidence_channel": "B_transfer",
+      "required_context": [],
+      "notes": "重症或全身反应线索。"
+    },
+    {
+      "term_id": "burn.pathogenesis.restless_thirst",
+      "canonical": "烦躁口干",
+      "surface_forms": ["烦躁口干", "煩躁口乾", "烦渴", "煩渴"],
+      "layer": "pathogenesis",
+      "search_weight": 0.55,
+      "evidence_channel": "B_transfer",
+      "required_context": [],
+      "notes": "全身证候，需与热损伤证据共现。"
+    },
+    {
+      "term_id": "burn.pathogenesis.fluid_damage",
+      "canonical": "津伤",
+      "surface_forms": ["津伤", "津傷", "伤津", "傷津"],
+      "layer": "pathogenesis",
+      "search_weight": 0.55,
+      "evidence_channel": "B_transfer",
+      "required_context": [],
+      "notes": "病机辅助词。"
+    },
+    {
+      "term_id": "burn.therapy.clear_heat_toxin",
+      "canonical": "清热解毒",
+      "surface_forms": ["清热解毒", "清熱解毒", "解热毒", "解熱毒"],
+      "layer": "therapy",
+      "search_weight": 0.5,
+      "evidence_channel": "context_only",
+      "required_context": [],
+      "notes": "补全疾病—治法链，不证明具体方剂适应证。"
+    },
+    {
+      "term_id": "burn.therapy.cool_blood",
+      "canonical": "凉血",
+      "surface_forms": ["凉血", "涼血"],
+      "layer": "therapy",
+      "search_weight": 0.45,
+      "evidence_channel": "context_only",
+      "required_context": [],
+      "notes": "治法辅助词。"
+    },
+    {
+      "term_id": "burn.therapy.reduce_swelling",
+      "canonical": "消肿",
+      "surface_forms": ["消肿", "消腫", "散肿", "散腫"],
+      "layer": "therapy",
+      "search_weight": 0.45,
+      "evidence_channel": "context_only",
+      "required_context": [],
+      "notes": "治法辅助词。"
+    },
+    {
+      "term_id": "burn.therapy.relieve_pain",
+      "canonical": "止痛",
+      "surface_forms": ["止痛", "定痛"],
+      "layer": "therapy",
+      "search_weight": 0.45,
+      "evidence_channel": "context_only",
+      "required_context": [],
+      "notes": "治法辅助词。"
+    },
+    {
+      "term_id": "burn.therapy.generate_flesh",
+      "canonical": "生肌",
+      "surface_forms": ["生肌", "长肉", "長肉"],
+      "layer": "therapy",
+      "search_weight": 0.5,
+      "evidence_channel": "context_only",
+      "required_context": [],
+      "notes": "修复期治法辅助词。"
+    },
+    {
+      "term_id": "burn.therapy.close_wound",
+      "canonical": "敛口",
+      "surface_forms": ["敛口", "斂口", "收口"],
+      "layer": "therapy",
+      "search_weight": 0.45,
+      "evidence_channel": "context_only",
+      "required_context": [],
+      "notes": "修复期治法辅助词。"
+    },
+    {
+      "term_id": "burn.therapy.topical",
+      "canonical": "外涂",
+      "surface_forms": ["外涂", "外塗", "调敷", "調敷", "涂之", "塗之"],
+      "layer": "therapy",
+      "search_weight": 0.4,
+      "evidence_channel": "context_only",
+      "required_context": [],
+      "notes": "内治与外治应分开编码。"
+    },
+    {
+      "term_id": "burn.exclude.cold_damage",
+      "canonical": "伤寒",
+      "surface_forms": ["伤寒", "傷寒"],
+      "layer": "exclusion",
+      "search_weight": -1.0,
+      "evidence_channel": "exclude",
+      "required_context": [],
+      "notes": "排除以火、热为病机但非热损伤的伤寒语境。"
+    },
+    {
+      "term_id": "burn.exclude.fire_needle",
+      "canonical": "火针",
+      "surface_forms": ["火针", "火針"],
+      "layer": "exclusion",
+      "search_weight": -1.0,
+      "evidence_channel": "exclude",
+      "required_context": [],
+      "notes": "治疗技术名称。"
+    },
+    {
+      "term_id": "burn.exclude.moxibustion",
+      "canonical": "灸法",
+      "surface_forms": ["灸法", "艾灸", "灸治"],
+      "layer": "exclusion",
+      "search_weight": -0.9,
+      "evidence_channel": "exclude",
+      "required_context": [],
+      "notes": "排除治疗动作。"
+    },
+    {
+      "term_id": "burn.exclude.moxibustion_sore",
+      "canonical": "灸疮",
+      "surface_forms": ["灸疮", "灸瘡"],
+      "layer": "exclusion",
+      "search_weight": -0.8,
+      "evidence_channel": "exclude",
+      "required_context": [],
+      "notes": "除非研究问题明确纳入医源性热损伤。"
+    },
+    {
+      "term_id": "burn.exclude.huo_dan",
+      "canonical": "火丹",
+      "surface_forms": ["火丹"],
+      "layer": "exclusion",
+      "search_weight": -0.7,
+      "evidence_channel": "exclude",
+      "required_context": [],
+      "notes": "需上下文判定，默认不等同烧伤。"
+    },
+    {
+      "term_id": "burn.exclude.decoction_name",
+      "canonical": "汤剂名",
+      "surface_forms": ["汤", "湯", "汤方", "湯方"],
+      "layer": "exclusion",
+      "search_weight": -0.6,
+      "evidence_channel": "exclude",
+      "required_context": [],
+      "notes": "单独的汤字或方剂名不得触发热液烧伤。"
+    },
+    {
+      "term_id": "burn.exclude.cooking",
+      "canonical": "烹饪",
+      "surface_forms": ["煮熟", "炙熟", "烹", "煎炒"],
+      "layer": "exclusion",
+      "search_weight": -1.0,
+      "evidence_channel": "exclude",
+      "required_context": [],
+      "notes": "排除食品和烹饪语境。"
+    },
+    {
+      "term_id": "burn.exclude.processing",
+      "canonical": "炼制",
+      "surface_forms": ["炼", "煉", "炮制", "炮製", "烧灰", "燒灰"],
+      "layer": "exclusion",
+      "search_weight": -0.8,
+      "evidence_channel": "exclude",
+      "required_context": [],
+      "notes": "排除药物加工中的火、烧语境。"
+    }
+  ]
+}
