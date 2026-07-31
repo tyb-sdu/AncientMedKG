@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "screening_id": "synthetic-public-example",
+  "candidates": [
+    {
+      "candidate_id": "compound:example_a",
+      "canonical_name": "example compound A",
+      "herb_ids": ["herb:example_1"],
+      "gates": {
+        "C0": {"status": "pass", "evidence_ids": ["ev:c0:a"]},
+        "C1": {"status": "pass", "evidence_ids": ["ev:c1:a"]},
+        "C2": {"status": "pass", "evidence_ids": ["ev:c2:a"]},
+        "C3": {"status": "pass", "evidence_ids": ["ev:c3:a"]},
+        "C4": {"status": "pass", "evidence_ids": ["ev:c4:a"]},
+        "C5": {"status": "pass", "evidence_ids": ["ev:c5:a"]}
+      },
+      "scores": {
+        "source_content": {"value": 0.9, "evidence_ids": ["ev:s1:a"], "review_status": "approved"},
+        "formula_exposure": {"value": 0.8, "evidence_ids": ["ev:s2:a"], "review_status": "approved"},
+        "burn_wound_evidence": {"value": 0.9, "evidence_ids": ["ev:s3:a"], "review_status": "approved"},
+        "target_pathway_support": {"value": 0.8, "evidence_ids": ["ev:s4:a"], "review_status": "approved"},
+        "synergy_complementarity": {"value": 0.6, "evidence_ids": ["ev:s5:a"], "review_status": "approved"},
+        "safety_verifiability": {"value": 0.8, "evidence_ids": ["ev:s6:a"], "review_status": "approved"}
+      }
+    },
+    {
+      "candidate_id": "compound:example_b",
+      "canonical_name": "example compound B",
+      "herb_ids": ["herb:example_2"],
+      "gates": {
+        "C0": {"status": "pass", "evidence_ids": ["ev:c0:b"]},
+        "C1": {"status": "pass", "evidence_ids": ["ev:c1:b"]},
+        "C2": {"status": "pending", "evidence_ids": []},
+        "C3": {"status": "pass", "evidence_ids": ["ev:c3:b"]},
+        "C4": {"status": "pending", "evidence_ids": []},
+        "C5": {"status": "pass", "evidence_ids": ["ev:c5:b"]}
+      },
+      "scores": {
+        "source_content": {"value": 0.7, "evidence_ids": ["ev:s1:b"], "review_status": "approved"},
+        "formula_exposure": {"value": 0.5, "evidence_ids": [], "review_status": "pending"},
+        "burn_wound_evidence": {"value": 0.8, "evidence_ids": ["ev:s3:b"], "review_status": "approved"},
+        "target_pathway_support": {"value": 0.5, "evidence_ids": [], "review_status": "pending"},
+        "synergy_complementarity": {"value": 0.5, "evidence_ids": [], "review_status": "pending"},
+        "safety_verifiability": {"value": 0.6, "evidence_ids": ["ev:s6:b"], "review_status": "approved"}
+      }
+    }
+  ]
+}

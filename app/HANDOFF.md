@@ -185,3 +185,37 @@ qwen-vector `0.6739`, and qwen-reranked-hybrid `0.7826`; all three page
 locating rates are `1.0`. The complete server suite reports `68 passed`, public
 release preflight is clean, and the aggregate release validator returns
 `valid=true` with no issues.
+
+## 2026-07-31 KG, Rendongtang, and discovery handoff
+
+The work after vNext is organized in three independent packages:
+
+- `knowledge_graph/` owns the five-layer schema, immutable graph builds,
+  source verification, release validation, and Neo4j/JSON-LD export.
+- `research_pipeline/` owns the burn ontology, Rendongtang same-name formula
+  variants, controlled-vocabulary planning, and the evidence-bundle adapter.
+- `discovery_pipeline/` owns PubChem identity intake, one-pass modern-corpus
+  scanning, C0-C5 compound ranking, sensitivity analysis, and mechanism rules.
+
+The real Rendongtang draft contains 2 sources, 17 entities, 4 evidence records,
+and 32 assertions. Pages 137, 138, and 227 of the vNext `医学心悟` corpus pass
+exact page/quote verification. All evidence and assertions remain `pending`;
+the only links to the burn phenotype are E5 `MECHANISM_TRANSFER` hypotheses.
+The release gate correctly refuses this draft.
+
+The first active-compound intake resolved 13/13 candidates through PubChem and
+found 2,238 traceable modern-literature loci. The aggregate doctor recomputed
+catalog, raw-response, database, summary, and loci fingerprints with no issues.
+It reports `computational_intake_complete=true` and
+`scientific_release_ready=false`.
+
+Private discovery artifacts are stored outside the Git repository under the
+server project-private area. The tracked report
+`discovery_pipeline/reports/intake_baseline_v1.json` contains only public
+identifiers, aggregate counts, fingerprints, and release blockers.
+
+Next work is scientific review, not more infrastructure: image-level double
+signoff for the three ancient pages, 500-item dual annotation and calibration,
+full-text grading of compound loci, C0-C5 decisions, sourced target/pathway
+sets, and experimental validation. Do not convert pending records to approved
+or publish a final compound ranking without those inputs.

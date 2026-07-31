@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "analysis_id": "synthetic-public-example",
+  "disease_genes": [
+    {"gene_symbol": "GENEA", "evidence_channels": ["transcriptome", "database_association"], "evidence_ids": ["ev:d1", "ev:d2"], "wound_phases": ["inflammation"], "review_status": "approved"},
+    {"gene_symbol": "GENEB", "evidence_channels": ["literature_experiment"], "evidence_ids": ["ev:d3"], "wound_phases": ["proliferation"], "review_status": "approved"},
+    {"gene_symbol": "GENEC", "evidence_channels": ["transcriptome", "database_association"], "evidence_ids": ["ev:d4", "ev:d5"], "wound_phases": ["remodeling"], "review_status": "approved"}
+  ],
+  "compound_targets": [
+    {"compound_id": "compound:example_a", "gene_symbol": "GENEA", "evidence_type": "functional_experiment", "evidence_ids": ["ev:t1"], "review_status": "approved"},
+    {"compound_id": "compound:example_a", "gene_symbol": "GENEB", "evidence_type": "molecular_docking", "evidence_ids": ["ev:t2"], "review_status": "approved"},
+    {"compound_id": "compound:example_b", "gene_symbol": "GENEC", "evidence_type": "direct_binding", "evidence_ids": ["ev:t3"], "review_status": "approved"}
+  ],
+  "background_genes": ["GENEA", "GENEB", "GENEC", "GENED", "GENEE", "GENEF"],
+  "ppi_edges": [
+    {"source": "GENEA", "target": "GENEC", "score": 0.8, "database": "STRING", "evidence_ids": ["ev:p1"], "review_status": "approved"}
+  ],
+  "pathways": [
+    {"pathway_id": "pathway:example", "name": "Synthetic pathway", "source": "synthetic", "genes": ["GENEA", "GENEC", "GENED"], "evidence_ids": ["ev:w1"], "review_status": "approved"}
+  ]
+}

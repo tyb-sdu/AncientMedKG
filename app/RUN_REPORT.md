@@ -189,3 +189,34 @@ P1 候选批次已完成 113/113 页：本轮新增 29 页，按相同配置哈�
 | qwen-reranked-hybrid | 0.7609 | 0.7826 | 0.7089 | 1.0000 |
 
 关键词 Recall@10 与发布基线相同，三通道页码定位率均为 1.0。服务器完整测试为 `68 passed`；`release_preflight.py` 返回 `valid=true`、违规 0；`validate_vnext_release.py` 汇总推广、doctor、评测和 preflight 四份真实报告后返回 `valid=true`、`issues=[]`。Qwen 重排混合 Recall@10 较旧版 0.8043 小幅下降至 0.7826，因此仍保持 keyword 为默认古籍检索通道。
+
+## 2026-07-31 五层 KG 与忍冬汤专项验收
+
+新增 `knowledge_graph/` 和 `research_pipeline/`。五层 KG 支持稳定实体 ID、
+同名异方组成指纹、E1-E5 证据、直接证据与机制迁移分离、不可变 JSONL 构建、
+SQLite 来源复核，以及 Neo4j CSV/Cypher 和 JSON-LD 导出。
+
+真实忍冬汤草案为 2 个来源、17 个实体、4 条证据和 32 条断言。古籍数据库中
+第 137、138、227 页的页 ID、物理页、正文 SHA-256 和引文均 `exact`；导出含
+17 个实体节点、4 个证据节点、32 个断言节点、32 条直接关系和 102 条溯源
+关系。所有记录仍为 `pending`，发布模式按预期只报
+`evidence_not_approved`/`edge_not_approved`。烧伤相关边仅为 E5
+`MECHANISM_TRANSFER`，没有古籍直接治疗烧伤的结论。
+
+15 个忍冬汤专项问题验证了同名异方和拒答规划规则。受控词表规划层在 keyword、
+Qwen vector、Qwen reranked hybrid 的 Recall@5/10、MRR@10、页码定位率及
+3 题拒答准确率均为 1.0；原始检索器基线另行保留，二者没有混报。
+
+## 2026-07-31 活性成分发现 intake
+
+新增 `discovery_pipeline/`，实现：PubChem PUG REST 身份解析与原始响应哈希、
+现代文献单遍扫描、ASCII 词边界、防覆盖输出、C0-C5 硬门、六维
+`R_compound`、15 个敏感性情景、实验靶点分层、疾病基因双通道规则、
+PPI `score>=0.7`、至少 5 节点模块、超几何富集与 Benjamini-Hochberg FDR。
+
+真实 intake 结果：13/13 个候选身份解析成功；绿原酸 CID 1794427、甘草酸
+CID 14982 与方案一致；现代 584 篇文献中生成 2,238 条带 `doc_id`、
+`chunk_id`、PDF 页码及双 SHA-256 的复核候选，损坏 topic tags 文档为 0。
+`discovery_pipeline doctor` 复算全部聚合和 6 类指纹后返回 `valid=true`、
+`issues=[]`、`computational_intake_complete=true`，并保守保持
+`scientific_release_ready=false`。候选共现不计为 C3 证据，尚未产生最终排名。

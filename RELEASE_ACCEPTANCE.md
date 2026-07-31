@@ -1,79 +1,86 @@
-# 中药烧伤 RAG 交付验收
+# AncientMedKG release acceptance
 
-验收日期：2026-07-31
+Acceptance date: 2026-07-31
 
-## 发布结论
+## Decision
 
-本项目按“113 页候选直接纳入版本化 vNext、原数据库保留回滚”的方案进入最终验收。人工逐页对照不再是本次里程碑的发布前置条件。
+The local, terminal-only engineering platform is accepted for code release.
+Scientific claims remain unreleased. The repository enforces that distinction:
+pending KG evidence fails release validation, and discovery intake reports
+`scientific_release_ready=false` even when every integrity check passes.
 
-发布范围包括现代文献与古籍双库检索代码、可追溯页码定位、评测题集、OCR 审计与候选生成工具、复核覆盖层工具和测试。PDF、OCR 正文、数据库、向量索引、模型、候选 JSON、渲染页图和日志均不进入公开仓库。
+## Accepted evidence
 
-## 验收证据
+| Area | Result |
+| --- | --- |
+| Modern corpus | 584 documents, 9,870 pages, 10,983 chunks |
+| Ancient corpus | 12 books, 5,624 pages |
+| OCR vNext | 113 rows: 105 candidate-adopted, 8 original-text fallbacks |
+| Ancient keyword retrieval | Recall@10 0.8913, page locating 1.0 |
+| Ancient Qwen vector | Recall@10 0.6739, page locating 1.0 |
+| Ancient Qwen reranked hybrid | Recall@10 0.7826, page locating 1.0 |
+| KG toolkit | Immutable graph builds, source verification, Neo4j/JSON-LD export, release gate |
+| Rendongtang assets | 39 ontology entries, 2 same-name variants, 15 evaluation questions |
+| Rendongtang KG draft | 2 sources, 17 entities, 4 evidence records, 32 assertions |
+| Ancient source verification | 3 exact page/quote matches, 1 curated rule not applicable to SQLite |
+| Discovery intake | 13/13 PubChem identities, 2,238 review loci, 0 integrity issues |
+| Complete server test suite | 113 passed |
 
-| 项目 | 结果 |
-|---|---|
-| 现代文献 | 584 篇、9,870 页、10,983 个 chunk |
-| 古籍 | 12 部、5,624 页 |
-| 古籍关键词检索 | Recall@10 0.8913，页码定位率 1.0 |
-| 古籍 Qwen 向量检索 | Recall@10 0.6739，页码定位率 1.0 |
-| 古籍 Qwen 重排混合 | Recall@10 0.7826，页码定位率 1.0 |
-| P1 VLM 候选 | 113/113，失败 0 |
-| 候选清单完整性 | 113 行，`valid=true`，`issues=[]` |
-| 服务器完整仓库测试 | 68 passed |
-| 深层健康检查 | 现代库、古籍 vNext、FTS 与全部向量指纹均健康 |
-| 发布汇总门 | `valid=true`，`issues=[]` |
+The controlled-vocabulary Rendongtang planner reaches 1.0 on all reported
+metrics for its 15 specialized questions, including three explicit abstention
+cases. This is a rule-level evaluation with fixed page labels; the raw retriever
+baseline is retained separately and the planner result is not presented as a
+general retrieval benchmark.
 
-## vNext 纳入决策
+## Mandatory scientific blocks
 
-- 113 页全部写入 vNext 推广审计记录。
-- 105 个非空候选采用 PaddleOCR-VL 文本；8 个空候选保留原 OCR，避免清空页面。
-- 原 `ancient_rag.db` 不修改，作为整库回滚点；vNext 使用独立 SQLite 数据库和独立索引目录。
-- vNext 同时导出与数据库正文一致的 `pages.jsonl`；索引配置必须指向该文件，避免沿用旧语料指纹。
-- 每页保留来源 SHA-256、原文本 SHA-256、候选文本 SHA-256、实际生效文本 SHA-256、质量标记和推广模式。
-- vNext 重建 FTS 与向量索引后必须重新运行健康检查和 52 题检索回归。
+- Four KG evidence records and all 32 assertions remain `pending`.
+- The draft release gate fails only with `evidence_not_approved` and
+  `edge_not_approved`, as intended.
+- The two burn links are E5 `MECHANISM_TRANSFER` hypotheses, not direct ancient
+  burn-treatment claims.
+- PubChem identity resolution still requires curator review.
+- The 2,238 literature loci require full-text and study-grade review.
+- C0-C5 gates, compound scores, targets, pathways, safety, exposure, and
+  experimental validation are not approved.
 
-## 已知限制
+## Reproducibility
 
-- 低置信古籍页仍可能存在字符识别错误，返回结果必须保留原 PDF 物理页码以便追溯。
-- 当前无答案题仅 6 个，尚不足以支持可靠拒答阈值；非空检索结果不能直接解释为医学结论。
-- VLM 候选中的 52 页带风险标记；本次按用户决定直接纳入 vNext，标记仍保留在推广审计中。
+The private vNext database, indexes, raw PubChem responses, and literature loci
+stay outside Git. Public reports contain fingerprints and aggregate counts only.
+The canonical commands are documented in each module README.
 
-## 服务器发布门
-
-在实际 Git 仓库执行：
+Before every GitHub milestone, run from the actual server repository:
 
 ```bash
-python ancient_ocr/promote_vl_candidates.py \
-  --manifest /path/to/vl_candidate_manifest_p1_final.csv \
-  --candidate-root /path/to/paddleocr_vl_candidates_v3_p1_final \
-  --database ancient_ocr/data/ancient_rag.db \
-  --output-database ancient_ocr/data/versions/vl_vnext_2026-07-31/ancient_rag.db \
-  --output-pages-jsonl ancient_ocr/data/versions/vl_vnext_2026-07-31/pages.jsonl
-python -m pytest -q
-python ancient_ocr/release_preflight.py --repository . \
-  --output /tmp/public_release_preflight.json
-git status --short
+.conda/bin/python -m pytest -q
+.conda/bin/python -m knowledge_graph validate \
+  --graph research_pipeline/output/acceptance_20260731/kg_draft
+.conda/bin/python -m knowledge_graph verify-sources \
+  --graph research_pipeline/output/acceptance_20260731/kg_draft \
+  --ancient-database ancient_ocr/data/versions/vl_vnext_2026-07-31/ancient_rag.db
+.conda/bin/python ancient_ocr/release_preflight.py --repository .
 git diff --check
+git status --short
 ```
 
-将 vNext 配置中的 `ancient_database` 指向新数据库、`ancient_pages_jsonl` 指向新导出文件，并将所有古籍 Qwen 索引路径指向全新目录。vNext 数据验收必须满足：113 条推广记录由 105 条候选采用和 8 条空候选回退组成、源库前后 SHA-256 相同、SQLite `quick_check=ok`、数据库页面数、FTS 行数与导出 JSONL 行数均为 5,624、页码定位率保持 1.0、关键词 Recall@10 不低于当前基线 0.8913。随后只有在全量测试通过、`release_preflight` 返回 `valid=true`、`git diff --check` 无错误，并确认暂存内容仅含代码、测试和公开说明后，才提交并推送 GitHub 里程碑。
+The aggregate KG doctor includes the scientific release gate. For this pending
+draft it must exit non-zero, while source and Neo4j verification remain valid,
+and its issue-code set must be exactly `evidence_not_approved` and
+`edge_not_approved`. A zero exit before documented approvals would be a release
+integrity failure.
 
-`rag_cli.py doctor --deep` 会同时打印日志和 JSON。先把原始输出提取为纯 JSON，再与 promotion、52 题评测和 preflight 一起进入汇总门：
+For a private discovery intake, additionally run:
 
 ```bash
-$PY app/rag_cli.py doctor --config app/config.vl_vnext_2026-07-31.yaml --deep \
-  > /tmp/doctor_vnext.raw.txt
-$PY ancient_ocr/extract_json_report.py /tmp/doctor_vnext.raw.txt \
-  --output /tmp/doctor_vnext.json
+.conda/bin/python -m discovery_pipeline doctor \
+  --resolution /private/run/pubchem_resolution.json \
+  --cache /private/run/pubchem_cache \
+  --coverage-summary /private/run/corpus_scan/compound_coverage_summary.json \
+  --loci /private/run/corpus_scan/compound_loci.jsonl \
+  --database app/data/rag.db \
+  --output /private/run/intake_doctor.json
 ```
 
-四个输入均为服务器实际产物，验证通过才允许进入提交步骤：
-
-```bash
-python ancient_ocr/validate_vnext_release.py \
-  --promotion-report /path/to/ancient_rag_promotion_report.json \
-  --doctor-report /path/to/doctor_vnext.json \
-  --evaluation-report /path/to/ancient_retrieval_eval_vnext.json \
-  --preflight-report /path/to/public_release_preflight.json \
-  --output /path/to/vnext_release_validation.json
-```
+Public release is allowed only when tests pass, preflight reports no violations,
+`git diff --check` is clean, and the staged file list contains no private data.

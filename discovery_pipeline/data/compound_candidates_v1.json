@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "catalog_id": "rendongtang-compound-candidates-v1",
+  "created_at": "2026-07-31",
+  "scientific_status": "identity_resolution_queue_not_ranked",
+  "candidates": [
+    {
+      "candidate_id": "compound:chlorogenic_acid",
+      "canonical_name": "chlorogenic acid",
+      "name_zh": "绿原酸",
+      "aliases": ["chlorogenic acids", "绿原酸", "綠原酸"],
+      "herb_ids": ["herb:lonicera_japonica_flower"],
+      "candidate_role": "parent_compound",
+      "expected_pubchem_cid": 1794427
+    },
+    {
+      "candidate_id": "compound:caffeic_acid",
+      "canonical_name": "caffeic acid",
+      "name_zh": "咖啡酸",
+      "aliases": ["咖啡酸"],
+      "herb_ids": ["herb:lonicera_japonica_flower"],
+      "candidate_role": "backup"
+    },
+    {
+      "candidate_id": "compound:luteolin",
+      "canonical_name": "luteolin",
+      "name_zh": "木犀草素",
+      "aliases": ["木犀草素"],
+      "herb_ids": ["herb:lonicera_japonica_flower"],
+      "candidate_role": "backup"
+    },
+    {
+      "candidate_id": "compound:rutin",
+      "canonical_name": "rutin",
+      "name_zh": "芦丁",
+      "aliases": ["芦丁", "蘆丁"],
+      "herb_ids": ["herb:lonicera_japonica_flower"],
+      "candidate_role": "backup"
+    },
+    {
+      "candidate_id": "compound:loganin",
+      "canonical_name": "loganin",
+      "name_zh": "马钱苷",
+      "aliases": ["马钱苷", "馬錢苷"],
+      "herb_ids": ["herb:lonicera_japonica_flower"],
+      "candidate_role": "backup"
+    },
+    {
+      "candidate_id": "compound:sweroside",
+      "canonical_name": "sweroside",
+      "name_zh": "獐牙菜苷",
+      "aliases": ["獐牙菜苷"],
+      "herb_ids": ["herb:lonicera_japonica_flower"],
+      "candidate_role": "backup"
+    },
+    {
+      "candidate_id": "compound:glycyrrhizic_acid",
+      "canonical_name": "glycyrrhizic acid",
+      "name_zh": "甘草酸",
+      "aliases": ["glycyrrhizin", "甘草酸"],
+      "herb_ids": ["herb:glycyrrhiza_root"],
+      "candidate_role": "parent_compound",
+      "expected_pubchem_cid": 14982
+    },
+    {
+      "candidate_id": "compound:glycyrrhetinic_acid",
+      "canonical_name": "glycyrrhetinic acid",
+      "name_zh": "甘草次酸",
+      "aliases": ["enoxolone", "甘草次酸"],
+      "herb_ids": ["herb:glycyrrhiza_root"],
+      "candidate_role": "metabolite",
+      "metabolite_of": "compound:glycyrrhizic_acid"
+    },
+    {
+      "candidate_id": "compound:liquiritin",
+      "canonical_name": "liquiritin",
+      "name_zh": "甘草苷",
+      "aliases": ["甘草苷"],
+      "herb_ids": ["herb:glycyrrhiza_root"],
+      "candidate_role": "backup"
+    },
+    {
+      "candidate_id": "compound:liquiritigenin",
+      "canonical_name": "liquiritigenin",
+      "name_zh": "甘草素",
+      "aliases": ["甘草素"],
+      "herb_ids": ["herb:glycyrrhiza_root"],
+      "candidate_role": "backup"
+    },
+    {
+      "candidate_id": "compound:isoliquiritigenin",
+      "canonical_name": "isoliquiritigenin",
+      "name_zh": "异甘草素",
+      "aliases": ["异甘草素", "異甘草素"],
+      "herb_ids": ["herb:glycyrrhiza_root"],
+      "candidate_role": "backup"
+    },
+    {
+      "candidate_id": "compound:glabridin",
+      "canonical_name": "glabridin",
+      "name_zh": "光甘草定",
+      "aliases": ["光甘草定"],
+      "herb_ids": ["herb:glycyrrhiza_root"],
+      "candidate_role": "backup"
+    },
+    {
+      "candidate_id": "compound:licochalcone_a",
+      "canonical_name": "licochalcone A",
+      "name_zh": "甘草查尔酮A",
+      "aliases": ["甘草查尔酮A", "甘草查爾酮A"],
+      "herb_ids": ["herb:glycyrrhiza_root"],
+      "candidate_role": "backup"
+    }
+  ]
+}
