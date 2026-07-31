@@ -75,6 +75,36 @@ loci-file hash, candidate count, and proof that the database hash was unchanged
 before and after the scan. The `doctor` recomputes all aggregates from JSONL;
 summary counts alone are not trusted.
 
+## Blinded review and adjudication
+
+`prepare-review` balances the requested batch across all represented compounds,
+targets burn/wound/compound-only contexts, and prefers distinct documents before
+repeating a document. Reviewer sheets contain the same immutable source fields
+in independently shuffled orders. Reviewers must not edit those fields.
+
+Required labels are defined in `ANNOTATION_CODEBOOK.md`. `merge-reviews`
+validates both sheets, calculates per-field Cohen's kappa, and creates a third-
+reviewer queue for every item. Exact dual agreement still requires confirmation.
+`finalize-review` accepts only a distinct adjudicator and refuses approval unless
+full text and PDF page are verified, relevance is evidentiary, and confidence is
+at least 3/5. Reviewer and adjudicator dates must use ISO `YYYY-MM-DD`, and an
+approved item cannot retain an `uncertain` study type. The three decisions are `approve`, `reject`, and
+`needs_more_information`.
+
+Approved records preserve the two reviewer IDs, adjudicator ID, source hashes,
+final labels, and immutable RAG locators. Approval applies to the reviewed
+evidence record only; it does not by itself pass compound identity C0 or imply a
+target, pathway, efficacy, safety, or treatment claim.
+
+## Reviewed KG handoff
+
+`build-reviewed-kg` reopens the modern SQLite database read-only, verifies every
+approved `doc_id`, `chunk_id`, PDF page, document SHA-256, and chunk-text SHA-256,
+and uses exact database text as the evidence quote. The generated overlay is
+limited to `Compound -[STUDIED_IN]-> Study`. Evidence records are approved, but
+the corresponding graph edges remain pending until C0 compound identity is
+curator-approved.
+
 ## Mechanism evidence
 
 Compound-target evidence tiers are: direct binding/functional experiment,

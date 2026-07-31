@@ -24,7 +24,8 @@ pending KG evidence fails release validation, and discovery intake reports
 | Rendongtang KG draft | 2 sources, 17 entities, 4 evidence records, 32 assertions |
 | Ancient source verification | 3 exact page/quote matches, 1 curated rule not applicable to SQLite |
 | Discovery intake | 13/13 PubChem identities, 2,238 review loci, 0 integrity issues |
-| Complete server test suite | 113 passed |
+| Review batch | 500 blank dual-review assignments; 109 burn, 223 wound, 168 compound-only; 151 documents; independent validation passed |
+| Complete server test suite | 121 passed |
 
 The controlled-vocabulary Rendongtang planner reaches 1.0 on all reported
 metrics for its 15 specialized questions, including three explicit abstention
@@ -41,6 +42,8 @@ general retrieval benchmark.
   burn-treatment claims.
 - PubChem identity resolution still requires curator review.
 - The 2,238 literature loci require full-text and study-grade review.
+- The first 500-record review batch is prepared but remains blank; no evidence
+  is approved until two independent reviews and third-party adjudication finish.
 - C0-C5 gates, compound scores, targets, pathways, safety, exposure, and
   experimental validation are not approved.
 

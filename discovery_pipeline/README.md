@@ -3,7 +3,8 @@
 This package implements the auditable computational part of the Rendongtang
 active-compound work package. It is deliberately conservative: retrieval hits,
 database associations, predictions, and docking results are never promoted to
-experimental evidence automatically.
+experimental evidence automatically. It also provides deterministic blinded
+dual review, independent adjudication, and a source-verified KG handoff.
 
 ## Scope
 
@@ -18,7 +19,11 @@ The pipeline provides four analysis stages and one integrity gate:
 4. Build an evidence-tiered mechanism report with disease-gene integration,
    experimental target filtering, PPI modules, pathway enrichment, and
    compound complementarity.
-5. Run an end-to-end doctor that rehashes the catalog, raw PubChem responses,
+5. Create a balanced 500-record review batch, measure dual-review agreement,
+   and require independent adjudication before scientific approval.
+6. Convert only approved evidence to a modern-literature KG overlay while
+   retaining `doc_id`, `chunk_id`, PDF page, source SHA-256, and exact text.
+7. Run an end-to-end doctor that rehashes the catalog, raw PubChem responses,
    modern database, coverage summary, and every literature locus.
 
 It does not perform chemical-content annotation, expert review, wet-lab
@@ -54,7 +59,48 @@ python -m discovery_pipeline doctor \
   --loci /private/rendongtang/corpus_scan/compound_loci.jsonl \
   --database app/data/rag.db \
   --output /private/rendongtang/intake_doctor.json
+
+python -m discovery_pipeline prepare-review \
+  --coverage-summary /private/rendongtang/corpus_scan/compound_coverage_summary.json \
+  --loci /private/rendongtang/corpus_scan/compound_loci.jsonl \
+  --output /private/rendongtang/review/batch-v1 \
+  --batch-size 500
+
+python -m discovery_pipeline validate-review-batch \
+  --manifest /private/rendongtang/review/batch-v1/batch_manifest.json \
+  --output /private/rendongtang/review/batch-v1/validation_report.json
+
+python -m discovery_pipeline merge-reviews \
+  --manifest /private/rendongtang/review/batch-v1/batch_manifest.json \
+  --reviewer-a /private/rendongtang/review/batch-v1/reviewer_A.csv \
+  --reviewer-b /private/rendongtang/review/batch-v1/reviewer_B.csv \
+  --output /private/rendongtang/review/merged-v1
+
+python -m discovery_pipeline finalize-review \
+  --batch-manifest /private/rendongtang/review/batch-v1/batch_manifest.json \
+  --agreement-report /private/rendongtang/review/merged-v1/agreement_report.json \
+  --adjudication /private/rendongtang/review/merged-v1/adjudication_queue.csv \
+  --output /private/rendongtang/review/final-v1
+
+python -m discovery_pipeline build-reviewed-kg \
+  --finalization-report /private/rendongtang/review/final-v1/finalization_report.json \
+  --database app/data/rag.db \
+  --graph-version rendongtang-reviewed-literature-v1 \
+  --parent-version rendongtang-v1-draft \
+  --output /private/rendongtang/review/reviewed_kg_bundle_v1.json
 ```
+
+Reviewer A and B must work independently. The merge command sends every item
+to an identified third adjudicator, including exact agreements. Approval is
+refused unless the full text and source page were checked, relevance is
+evidentiary, and final confidence is at least 3/5. See
+`ANNOTATION_CODEBOOK.md` for the labels.
+
+The KG handoff deliberately creates only `Compound -[STUDIED_IN]-> Study`
+links. It does not invent targets, pathways, efficacy, safety signals, or burn
+treatment claims from categorical labels. Evidence can be approved after
+adjudication, but graph edges remain `pending` while compound C0 identity still
+requires curator review.
 
 Every command refuses to overwrite an existing output. This makes interrupted
 runs visible and prevents a later run from silently replacing an accepted

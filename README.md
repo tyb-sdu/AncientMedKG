@@ -12,7 +12,8 @@ AncientMedKG is a provenance-first, local command-line RAG project for burn and 
   disambiguation, controlled-vocabulary query planning, and evidence-bundle
   construction.
 - `discovery_pipeline/`: PubChem identity resolution, modern-corpus candidate
-  scanning, C0-C5 compound scoring, and evidence-tiered mechanism analysis.
+  scanning, blinded dual review, independent adjudication, reviewed KG handoff,
+  C0-C5 compound scoring, and evidence-tiered mechanism analysis.
 
 ## Deliberately excluded
 
