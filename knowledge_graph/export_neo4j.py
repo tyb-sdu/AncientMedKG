@@ -316,6 +316,12 @@ def export_neo4j(graph: GraphData, output_dir: Path) -> dict[str, Any]:
         "graph_version": graph.graph_version,
         "schema_version": graph.schema_version,
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        "source_graph_content_fingerprint": graph.metadata.get(
+            "build_content_fingerprint", ""
+        ),
+        "source_graph_manifest_sha256": graph.metadata.get(
+            "build_manifest_sha256", ""
+        ),
         "counts": {
             "entity_nodes": len(graph.nodes),
             "source_nodes": len(graph.sources),

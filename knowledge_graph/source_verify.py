@@ -247,6 +247,9 @@ def verify_graph_sources(
     return {
         "valid": failed == 0 and unverified == 0,
         "graph_version": graph.graph_version,
+        "source_graph_content_fingerprint": graph.metadata.get(
+            "build_content_fingerprint", ""
+        ),
         "ancient_database": str(ancient_database or ""),
         "modern_database": str(modern_database or ""),
         "status_counts": status_counts,

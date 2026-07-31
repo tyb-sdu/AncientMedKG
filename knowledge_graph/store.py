@@ -147,6 +147,7 @@ def load_graph(input_dir: Path, *, verify_manifest: bool = True) -> GraphData:
     metadata = json.loads(
         (input_dir / GRAPH_FILES["metadata"]).read_text(encoding="utf-8")
     )
+    manifest: dict[str, Any] = {}
     if verify_manifest:
         manifest = json.loads(
             (input_dir / "manifest.json").read_text(encoding="utf-8")
@@ -158,6 +159,14 @@ def load_graph(input_dir: Path, *, verify_manifest: bool = True) -> GraphData:
                     f"graph file hash mismatch for {file_name}: "
                     f"expected {expected['sha256']}, got {actual}"
                 )
+    graph_metadata = dict(metadata.get("metadata", {}))
+    if manifest:
+        graph_metadata["build_content_fingerprint"] = manifest.get(
+            "content_fingerprint", ""
+        )
+        graph_metadata["build_manifest_sha256"] = file_sha256(
+            input_dir / "manifest.json"
+        )
     return GraphData(
         schema_version=str(metadata["schema_version"]),
         graph_version=str(metadata["graph_version"]),
@@ -178,5 +187,5 @@ def load_graph(input_dir: Path, *, verify_manifest: bool = True) -> GraphData:
             GraphEdge.from_dict(value)
             for value in _read_jsonl(input_dir / GRAPH_FILES["edges"])
         ),
-        metadata=dict(metadata.get("metadata", {})),
+        metadata=graph_metadata,
     )

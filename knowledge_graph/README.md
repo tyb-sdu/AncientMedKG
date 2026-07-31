@@ -71,6 +71,13 @@ python -m knowledge_graph verify-sources \
 python -m knowledge_graph export-neo4j \
   --graph private_build/kg_v1 \
   --output private_build/kg_v1/neo4j
+
+python -m knowledge_graph doctor \
+  --graph private_build/kg_v1 \
+  --neo4j private_build/kg_v1/neo4j \
+  --ancient-database ancient_ocr/data/versions/vl_vnext_2026-07-31/ancient_rag.db \
+  --modern-database app/data/rag.db \
+  --output private_build/kg_v1/release_doctor.json
 ```
 
 `build` 和 `export-neo4j` 默认拒绝覆盖已有版本文件。修订数据时创建新版本目录，并在输入 `metadata.parent_version` 记录父版本。
@@ -84,6 +91,7 @@ python -m knowledge_graph export-neo4j \
 - release 中证据与关系必须已批准；
 - 所有关系端点、类型、等级和断言方式符合 `schema.json`；
 - 每个输出文件都有 SHA-256，加载时自动复核。
+- `doctor` 要求图版本、SQLite 来源核验和 Neo4j 导出使用同一内容指纹。
 
 ## Neo4j 导入
 

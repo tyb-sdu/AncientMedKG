@@ -7,6 +7,7 @@ from typing import Any, Sequence
 
 from .build import BundleError, build_bundle_file
 from .export_neo4j import export_neo4j
+from .release import release_doctor
 from .schema import load_schema
 from .source_verify import verify_graph_sources
 from .store import load_graph, write_graph, write_json
@@ -66,6 +67,19 @@ def _schema_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _doctor_command(args: argparse.Namespace) -> int:
+    report = release_doctor(
+        args.graph,
+        neo4j_dir=args.neo4j,
+        ancient_database=args.ancient_database,
+        modern_database=args.modern_database,
+    )
+    if args.output:
+        write_json(args.output, report)
+    _print_json(report)
+    return 0 if report["valid"] else 2
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="python -m knowledge_graph",
@@ -122,6 +136,17 @@ def build_parser() -> argparse.ArgumentParser:
 
     schema_parser = subparsers.add_parser("schema", help="Print the active graph schema.")
     schema_parser.set_defaults(handler=_schema_command)
+
+    doctor_parser = subparsers.add_parser(
+        "doctor",
+        help="Apply the aggregate graph, source, and Neo4j release gate.",
+    )
+    doctor_parser.add_argument("--graph", type=Path, required=True)
+    doctor_parser.add_argument("--neo4j", type=Path, required=True)
+    doctor_parser.add_argument("--ancient-database", type=Path)
+    doctor_parser.add_argument("--modern-database", type=Path)
+    doctor_parser.add_argument("--output", type=Path)
+    doctor_parser.set_defaults(handler=_doctor_command)
     return parser
 
 

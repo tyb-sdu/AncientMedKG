@@ -8,6 +8,7 @@
 - [ ] `python -m knowledge_graph build ... --release` 通过
 - [ ] `python -m knowledge_graph verify-sources ...` 返回 `valid=true`
 - [ ] `python -m knowledge_graph validate ... --release` 返回 `valid=true`
+- [ ] `python -m knowledge_graph doctor ...` 返回 `valid=true`
 - [ ] Neo4j 导出 manifest 的计数与 SHA-256 已核对
 - [ ] 关键路径可追溯率为 1.0，普通关系可追溯率不低于 0.98
 - [ ] 私有 PDF、引文数据包、数据库和索引未进入 Git 暂存区
