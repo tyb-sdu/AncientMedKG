@@ -23,18 +23,20 @@ PUNCTUATION = set("，。！？；：、（）《》〈〉【】〔〕［］“�
 PAGE_ANCHOR_RE = re.compile(r"<pb:([^>]+)>\s*¶?")
 ORG_LINE_RE = re.compile(r"(?m)^#\+[^\n]*\n?")
 DIRECT_BURN_TERMS = (
-    "湯火",
-    "汤火",
-    "火燒",
-    "火烧",
-    "灼傷",
-    "灼伤",
-    "熱油",
-    "热油",
-    "湯泡",
-    "汤泡",
-    "火瘡",
-    "火疮",
+    "湯火傷",
+    "汤火伤",
+    "治湯火",
+    "治汤火",
+    "湯火灼",
+    "汤火灼",
+    "熱油及火燒",
+    "热油及火烧",
+    "火燒傷",
+    "火烧伤",
+    "湯潑火傷",
+    "汤泼火伤",
+    "湯火瘡",
+    "汤火疮",
 )
 EXTERNAL_MEDICINE_TERMS = (
     "外科",
@@ -564,7 +566,7 @@ def relevance_audit(output_dir: Path) -> dict[str, Any]:
             catalog_fit = _term_evidence(
                 connection, item["book_id"], item.get("project_fit", [])
             )
-            direct_burn = _term_evidence(
+            burn_context = _term_evidence(
                 connection, item["book_id"], DIRECT_BURN_TERMS
             )
             external_medicine = _term_evidence(
@@ -578,11 +580,11 @@ def relevance_audit(output_dir: Path) -> dict[str, Any]:
                     "source_commit": item["source_commit"],
                     "project_fit_terms": item.get("project_fit", []),
                     "catalog_fit": catalog_fit,
-                    "direct_burn": direct_burn,
+                    "burn_context": burn_context,
                     "external_medicine": external_medicine,
                     "has_alignment_evidence": bool(
                         catalog_fit["matching_pages"]
-                        or direct_burn["matching_pages"]
+                        or burn_context["matching_pages"]
                         or external_medicine["matching_pages"]
                     ),
                 }
@@ -593,8 +595,8 @@ def relevance_audit(output_dir: Path) -> dict[str, Any]:
         "books_with_alignment_evidence": sum(
             item["has_alignment_evidence"] for item in books
         ),
-        "books_with_direct_burn_evidence": sum(
-            item["direct_burn"]["matching_pages"] > 0 for item in books
+        "books_with_burn_context": sum(
+            item["burn_context"]["matching_pages"] > 0 for item in books
         ),
         "books_with_external_medicine_evidence": sum(
             item["external_medicine"]["matching_pages"] > 0 for item in books

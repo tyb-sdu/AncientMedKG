@@ -138,5 +138,5 @@ def test_build_keeps_base_immutable_and_marks_auto_acceptance(tmp_path: Path) ->
     assert check["auto_accepted_rows"] == 2
     relevance = relevance_audit(output)
     assert relevance["healthy"] is True
-    assert relevance["books_with_direct_burn_evidence"] == 1
-    assert relevance["books"][0]["direct_burn"]["samples"][0]["page_anchor"]
+    assert relevance["books_with_burn_context"] == 1
+    assert relevance["books"][0]["burn_context"]["samples"][0]["page_anchor"]
