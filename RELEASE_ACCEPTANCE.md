@@ -1,6 +1,6 @@
 # AncientMedKG release acceptance
 
-Acceptance date: 2026-07-31
+Acceptance date: 2026-08-02
 
 ## Decision
 
@@ -23,9 +23,13 @@ pending KG evidence fails release validation, and discovery intake reports
 | Rendongtang assets | 39 ontology entries, 2 same-name variants, 15 evaluation questions |
 | Rendongtang KG draft | 2 sources, 17 entities, 4 evidence records, 32 assertions |
 | Ancient source verification | 3 exact page/quote matches, 1 curated rule not applicable to SQLite |
+| Twelve-book candidate KG | 314 pages, 369 entities, 1,316 evidence records, 2,234 assertions |
+| Candidate source verification | 1,316/1,316 exact SQLite page/quote checks; draft structural errors 0 |
+| Candidate Neo4j export | 369 entity, 1,316 evidence, 2,234 assertion, 12,732 provenance relationships |
 | Discovery intake | 13/13 PubChem identities, 2,238 review loci, 0 integrity issues |
 | Review batch | 500 blank dual-review assignments; 109 burn, 223 wound, 168 compound-only; 151 documents; independent validation passed |
-| Complete server test suite | 121 passed |
+| Calibration pilot | 50 parent-verified blank assignments; 25 burn, 15 wound, 10 compound-only; 47 documents |
+| Complete server test suite | 123 passed for this milestone |
 
 The controlled-vocabulary Rendongtang planner reaches 1.0 on all reported
 metrics for its 15 specialized questions, including three explicit abstention
@@ -44,6 +48,10 @@ general retrieval benchmark.
 - The 2,238 literature loci require full-text and study-grade review.
 - The first 500-record review batch is prepared but remains blank; no evidence
   is approved until two independent reviews and third-party adjudication finish.
+- All 1,316 candidate-layer evidence records and 2,234 assertions remain
+  `pending`; this broad layer does not replace the accepted Rendongtang sample.
+- The 50-item calibration pilot is blank and approves no evidence. It must be
+  reviewed before the remaining 450 formal-batch records.
 - C0-C5 gates, compound scores, targets, pathways, safety, exposure, and
   experimental validation are not approved.
 
@@ -65,6 +73,20 @@ Before every GitHub milestone, run from the actual server repository:
 .conda/bin/python ancient_ocr/release_preflight.py --repository .
 git diff --check
 git status --short
+```
+
+The separate private candidate layer is regenerated and checked with:
+
+```bash
+.conda/bin/python -m research_pipeline.build_ancient_candidate_kg \
+  --database ancient_ocr/data/versions/vl_vnext_2026-07-31/ancient_rag.db \
+  --output-bundle /private/kg/ancient-candidate-v1/kg_evidence_bundle.json \
+  --output-manifest /private/kg/ancient-candidate-v1/candidate_pages.jsonl \
+  --graph-version ancient-candidate-2026-07-31-v1
+
+.conda/bin/python -m knowledge_graph verify-sources \
+  --graph /private/kg/ancient-candidate-v1/graph \
+  --ancient-database ancient_ocr/data/versions/vl_vnext_2026-07-31/ancient_rag.db
 ```
 
 The aggregate KG doctor includes the scientific release gate. For this pending

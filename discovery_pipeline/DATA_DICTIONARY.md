@@ -82,6 +82,14 @@ targets burn/wound/compound-only contexts, and prefers distinct documents before
 repeating a document. Reviewer sheets contain the same immutable source fields
 in independently shuffled orders. Reviewers must not edit those fields.
 
+`prepare-calibration-pilot` selects a strict context-balanced subset from an
+already validated primary batch. Each child master row records
+`parent_batch_id` and `parent_selection_rank`; the child manifest records the
+parent manifest SHA-256, parent master SHA-256, and SHA-256 of the sorted child
+locus IDs. A pilot cannot be validated without `--parent-manifest`. The
+validator proves set membership and equality of every fixed source field in
+addition to the ordinary blank-sheet, hash, and blinded-order checks.
+
 Required labels are defined in `ANNOTATION_CODEBOOK.md`. `merge-reviews`
 validates both sheets, calculates per-field Cohen's kappa, and creates a third-
 reviewer queue for every item. Exact dual agreement still requires confirmation.

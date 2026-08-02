@@ -9,7 +9,7 @@ import shutil
 from collections import Counter, defaultdict
 from datetime import date
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, Mapping
 
 
 ANNOTATION_FIELDS = (
@@ -89,6 +89,11 @@ ADJUDICATION_DECISIONS = {"approve", "reject", "needs_more_information"}
 CONTEXT_TARGETS = {
     "burn_context": 0.35,
     "wound_context": 0.45,
+    "compound_only": 0.20,
+}
+CALIBRATION_CONTEXT_TARGETS = {
+    "burn_context": 0.50,
+    "wound_context": 0.30,
     "compound_only": 0.20,
 }
 
@@ -222,11 +227,110 @@ def _diverse_order(records: list[dict[str, Any]], seed: str) -> list[dict[str, A
     return first_per_document + remaining
 
 
+def _strict_context_allocation(
+    pools: Mapping[tuple[str, str], list[dict[str, Any]]],
+    quotas: Mapping[str, int],
+    context_targets: Mapping[str, int],
+) -> dict[tuple[str, str], int]:
+    source = "source"
+    sink = "sink"
+    residual: defaultdict[str, dict[str, int]] = defaultdict(dict)
+
+    def add_edge(left: str, right: str, capacity: int) -> None:
+        residual[left][right] = capacity
+        residual[right].setdefault(left, 0)
+
+    for candidate_id, quota in sorted(quotas.items()):
+        candidate_node = f"candidate:{candidate_id}"
+        add_edge(source, candidate_node, quota)
+        for context in context_targets:
+            add_edge(
+                candidate_node,
+                f"context:{context}",
+                len(pools[(candidate_id, context)]),
+            )
+    for context, target in context_targets.items():
+        add_edge(f"context:{context}", sink, target)
+
+    flow = 0
+    target_flow = sum(quotas.values())
+    while flow < target_flow:
+        parent: dict[str, str | None] = {source: None}
+        queue = [source]
+        for node in queue:
+            for neighbor in sorted(residual[node]):
+                if residual[node][neighbor] <= 0 or neighbor in parent:
+                    continue
+                parent[neighbor] = node
+                queue.append(neighbor)
+                if neighbor == sink:
+                    break
+            if sink in parent:
+                break
+        if sink not in parent:
+            break
+        increment = target_flow - flow
+        node = sink
+        while parent[node] is not None:
+            previous = str(parent[node])
+            increment = min(increment, residual[previous][node])
+            node = previous
+        node = sink
+        while parent[node] is not None:
+            previous = str(parent[node])
+            residual[previous][node] -= increment
+            residual[node][previous] += increment
+            node = previous
+        flow += increment
+    if flow != target_flow:
+        raise AnnotationError(
+            "candidate quotas cannot satisfy the strict context distribution"
+        )
+    allocation: dict[tuple[str, str], int] = {}
+    for candidate_id in sorted(quotas):
+        candidate_node = f"candidate:{candidate_id}"
+        for context in context_targets:
+            context_node = f"context:{context}"
+            allocation[(candidate_id, context)] = residual[context_node].get(
+                candidate_node, 0
+            )
+    return allocation
+
+
+def _context_count_targets(
+    batch_size: int, context_targets: Mapping[str, float]
+) -> dict[str, int]:
+    burn = math.floor(batch_size * context_targets["burn_context"])
+    after_burn = batch_size - burn
+    residual_weight = (
+        context_targets["wound_context"] + context_targets["compound_only"]
+    )
+    wound = (
+        round(after_burn * context_targets["wound_context"] / residual_weight)
+        if residual_weight
+        else 0
+    )
+    return {
+        "burn_context": burn,
+        "wound_context": wound,
+        "compound_only": batch_size - burn - wound,
+    }
+
+
 def _select_stratified_records(
     grouped: dict[str, list[dict[str, Any]]],
     quotas: dict[str, int],
     seed: str,
+    context_targets: Mapping[str, float] = CONTEXT_TARGETS,
+    *,
+    strict_context_targets: bool = False,
 ) -> list[dict[str, Any]]:
+    if set(context_targets) != set(CONTEXT_TARGETS):
+        raise AnnotationError("context targets must define the three frozen contexts")
+    if any(float(value) < 0 for value in context_targets.values()) or not math.isclose(
+        sum(float(value) for value in context_targets.values()), 1.0
+    ):
+        raise AnnotationError("context targets must be non-negative and sum to 1")
     candidates = sorted(quotas)
     pools = {
         (candidate_id, context): _diverse_order(
@@ -238,7 +342,7 @@ def _select_stratified_records(
             f"{seed}:{candidate_id}:{context}",
         )
         for candidate_id in candidates
-        for context in CONTEXT_TARGETS
+        for context in context_targets
     }
     offsets = {key: 0 for key in pools}
     remaining = dict(quotas)
@@ -290,14 +394,44 @@ def _select_stratified_records(
         return taken
 
     batch_size = sum(quotas.values())
-    ideal_burn = math.floor(batch_size * CONTEXT_TARGETS["burn_context"])
+    if strict_context_targets:
+        target_counts = _context_count_targets(batch_size, context_targets)
+        allocation = _strict_context_allocation(pools, quotas, target_counts)
+        for context in ("burn_context", "wound_context", "compound_only"):
+            while any(
+                allocation[(candidate_id, context)] > 0
+                for candidate_id in candidates
+            ):
+                progressed = False
+                for candidate_id in candidates:
+                    key = (candidate_id, context)
+                    if allocation[key] <= 0:
+                        continue
+                    choice = peek(candidate_id, context)
+                    if choice is None:
+                        raise AnnotationError(
+                            f"strict allocation exhausted {candidate_id}/{context}"
+                        )
+                    consume(candidate_id, context, choice)
+                    allocation[key] -= 1
+                    progressed = True
+                if not progressed:
+                    raise AnnotationError("strict context allocation stalled")
+        if any(remaining.values()) or len(selected) != batch_size:
+            raise AnnotationError("strict context allocation did not satisfy quotas")
+        return selected
+
+    target_counts = _context_count_targets(batch_size, context_targets)
+    ideal_burn = target_counts["burn_context"]
     burn_selected = take("burn_context", ideal_burn)
     after_burn = batch_size - burn_selected
     residual_weight = (
-        CONTEXT_TARGETS["wound_context"] + CONTEXT_TARGETS["compound_only"]
+        context_targets["wound_context"] + context_targets["compound_only"]
     )
-    adaptive_wound = round(
-        after_burn * CONTEXT_TARGETS["wound_context"] / residual_weight
+    adaptive_wound = (
+        round(after_burn * context_targets["wound_context"] / residual_weight)
+        if residual_weight
+        else 0
     )
     wound_selected = take("wound_context", adaptive_wound)
     take("compound_only", batch_size - burn_selected - wound_selected)
@@ -349,14 +483,17 @@ def _assignment_id(batch_id: str, slot: str, locus_id: str) -> str:
     return f"assignment:{slot.lower()}:{digest}"
 
 
-def prepare_annotation_batch(
+def _emit_review_batch(
     *,
-    loci_path: Path,
-    coverage_summary_path: Path,
-    catalog_path: Path,
+    selected: list[dict[str, Any]],
+    catalog_by_id: Mapping[str, Mapping[str, Any]],
     output_dir: Path,
-    batch_size: int = 500,
-    seed: str = "rendongtang-dual-review-v1",
+    batch_id: str,
+    seed: str,
+    context_targets: Mapping[str, float],
+    inputs: Mapping[str, Any],
+    manifest_extra: Mapping[str, Any] | None = None,
+    strict_context_targets: bool = False,
 ) -> dict[str, Any]:
     filenames = (
         "review_master.jsonl",
@@ -367,52 +504,24 @@ def prepare_annotation_batch(
         "batch_manifest.json",
     )
     _require_new_output(output_dir, filenames)
-    catalog = _load_object(catalog_path)
-    summary = _load_object(coverage_summary_path)
-    catalog_sha256 = _sha256_json(catalog)
-    loci_sha256 = _sha256_file(loci_path)
-    if summary.get("catalog_sha256") != catalog_sha256:
-        raise AnnotationError("coverage summary catalog SHA-256 mismatch")
-    if summary.get("loci_sha256") != loci_sha256:
-        raise AnnotationError("coverage summary loci SHA-256 mismatch")
-    records = _read_loci(loci_path)
-    if summary.get("locus_count") != len(records):
-        raise AnnotationError("coverage summary locus count mismatch")
-    catalog_by_id = {
-        str(value["candidate_id"]): dict(value)
-        for value in catalog.get("candidates", [])
-    }
-    if len(catalog_by_id) != len(catalog.get("candidates", [])):
-        raise AnnotationError("catalog contains duplicate candidate_id values")
-    grouped: defaultdict[str, list[dict[str, Any]]] = defaultdict(list)
-    for record in records:
-        candidate_id = str(record.get("candidate_id", ""))
-        if candidate_id not in catalog_by_id:
-            raise AnnotationError(f"unknown locus candidate_id: {candidate_id}")
-        grouped[candidate_id].append(record)
-    missing = sorted(set(catalog_by_id) - set(grouped))
-    if missing:
-        raise AnnotationError(f"catalog candidates have no loci: {missing}")
-    quotas = _allocate_quotas(
-        {candidate_id: len(values) for candidate_id, values in grouped.items()},
-        batch_size,
-    )
-    selected = _select_stratified_records(dict(grouped), quotas, seed)
+    selected = list(selected)
     selected.sort(key=lambda value: _stable_key(seed, "master", value["locus_id"]))
-    batch_id = f"review:{_stable_key(seed, catalog_sha256, loci_sha256, batch_size)[:24]}"
 
     master_records = []
     for rank, record in enumerate(selected, start=1):
         candidate_id = str(record["candidate_id"])
+        source_record = {
+            key: value
+            for key, value in record.items()
+            if key not in {"batch_id", "selection_rank", "selection_status"}
+        }
         master_records.append(
             {
+                **source_record,
                 "batch_id": batch_id,
                 "selection_rank": rank,
                 "selection_status": "dual_review_pending",
-                "canonical_name": str(
-                    catalog_by_id[candidate_id]["canonical_name"]
-                ),
-                **record,
+                "canonical_name": str(catalog_by_id[candidate_id]["canonical_name"]),
             }
         )
     master_payload = "".join(
@@ -462,29 +571,27 @@ def prepare_annotation_batch(
     context_distribution = Counter(value["context_class"] for value in selected)
     candidate_distribution = Counter(value["candidate_id"] for value in selected)
     document_count = len({str(value["doc_id"]) for value in selected})
-    manifest = {
+    manifest: dict[str, Any] = {
         "schema_version": 1,
         "batch_id": batch_id,
         "seed": seed,
-        "batch_size": batch_size,
+        "batch_size": len(selected),
         "selection_policy": {
             "candidate_allocation": "balanced_round_robin_with_capacity_redistribution",
-            "context_targets": CONTEXT_TARGETS,
+            "context_targets": dict(context_targets),
             "context_allocation": (
-                "global_burn_first_then_adaptive_wound_compound_distribution"
+                "capacity_constrained_exact_distribution"
+                if strict_context_targets
+                else "global_burn_first_then_adaptive_wound_compound_distribution"
             ),
+            "strict_context_targets": strict_context_targets,
             "document_diversity": "first_unique_document_before_repeat_within_context",
         },
         "scientific_boundary": (
             "Selection and dual agreement do not approve scientific evidence. "
             "An explicit adjudication step is required before KG promotion."
         ),
-        "inputs": {
-            "catalog_sha256": catalog_sha256,
-            "coverage_summary_sha256": _sha256_file(coverage_summary_path),
-            "loci_sha256": loci_sha256,
-            "source_locus_count": len(records),
-        },
+        "inputs": dict(inputs),
         "distribution": {
             "candidate": dict(sorted(candidate_distribution.items())),
             "context": dict(sorted(context_distribution.items())),
@@ -492,6 +599,11 @@ def prepare_annotation_batch(
         },
         "files": {},
     }
+    if manifest_extra:
+        reserved = set(manifest) & set(manifest_extra)
+        if reserved:
+            raise AnnotationError(f"manifest extra overrides reserved keys: {sorted(reserved)}")
+        manifest.update(dict(manifest_extra))
     for name, path in (
         ("review_master.jsonl", master_path),
         ("reviewer_A.csv", reviewer_paths["A"]),
@@ -511,7 +623,158 @@ def prepare_annotation_batch(
     return manifest
 
 
-def validate_annotation_batch(manifest_path: Path) -> dict[str, Any]:
+def prepare_annotation_batch(
+    *,
+    loci_path: Path,
+    coverage_summary_path: Path,
+    catalog_path: Path,
+    output_dir: Path,
+    batch_size: int = 500,
+    seed: str = "rendongtang-dual-review-v1",
+) -> dict[str, Any]:
+    catalog = _load_object(catalog_path)
+    summary = _load_object(coverage_summary_path)
+    catalog_sha256 = _sha256_json(catalog)
+    loci_sha256 = _sha256_file(loci_path)
+    if summary.get("catalog_sha256") != catalog_sha256:
+        raise AnnotationError("coverage summary catalog SHA-256 mismatch")
+    if summary.get("loci_sha256") != loci_sha256:
+        raise AnnotationError("coverage summary loci SHA-256 mismatch")
+    records = _read_loci(loci_path)
+    if summary.get("locus_count") != len(records):
+        raise AnnotationError("coverage summary locus count mismatch")
+    catalog_by_id = {
+        str(value["candidate_id"]): dict(value)
+        for value in catalog.get("candidates", [])
+    }
+    if len(catalog_by_id) != len(catalog.get("candidates", [])):
+        raise AnnotationError("catalog contains duplicate candidate_id values")
+    grouped: defaultdict[str, list[dict[str, Any]]] = defaultdict(list)
+    for record in records:
+        candidate_id = str(record.get("candidate_id", ""))
+        if candidate_id not in catalog_by_id:
+            raise AnnotationError(f"unknown locus candidate_id: {candidate_id}")
+        grouped[candidate_id].append(record)
+    missing = sorted(set(catalog_by_id) - set(grouped))
+    if missing:
+        raise AnnotationError(f"catalog candidates have no loci: {missing}")
+    quotas = _allocate_quotas(
+        {candidate_id: len(values) for candidate_id, values in grouped.items()},
+        batch_size,
+    )
+    selected = _select_stratified_records(dict(grouped), quotas, seed)
+    batch_id = f"review:{_stable_key(seed, catalog_sha256, loci_sha256, batch_size)[:24]}"
+    return _emit_review_batch(
+        selected=selected,
+        catalog_by_id=catalog_by_id,
+        output_dir=output_dir,
+        batch_id=batch_id,
+        seed=seed,
+        context_targets=CONTEXT_TARGETS,
+        inputs={
+            "catalog_sha256": catalog_sha256,
+            "coverage_summary_sha256": _sha256_file(coverage_summary_path),
+            "loci_sha256": loci_sha256,
+            "source_locus_count": len(records),
+        },
+    )
+
+
+def prepare_calibration_pilot(
+    *,
+    parent_manifest_path: Path,
+    output_dir: Path,
+    batch_size: int = 50,
+    seed: str = "rendongtang-calibration-pilot-v1",
+) -> dict[str, Any]:
+    parent_validation = validate_annotation_batch(parent_manifest_path)
+    parent_manifest = _load_object(parent_manifest_path)
+    if parent_manifest.get("parent_batch"):
+        raise AnnotationError("calibration pilot parent must be a primary review batch")
+    parent_master_path = parent_manifest_path.parent / "review_master.jsonl"
+    parent_records = list(_read_loci_for_merge(parent_master_path).values())
+    grouped: defaultdict[str, list[dict[str, Any]]] = defaultdict(list)
+    catalog_by_id: dict[str, dict[str, str]] = {}
+    for record in parent_records:
+        candidate_id = str(record["candidate_id"])
+        grouped[candidate_id].append(record)
+        canonical_name = str(record.get("canonical_name", "")).strip()
+        if not canonical_name:
+            raise AnnotationError(f"parent canonical name is empty: {candidate_id}")
+        prior = catalog_by_id.setdefault(
+            candidate_id, {"canonical_name": canonical_name}
+        )
+        if prior["canonical_name"] != canonical_name:
+            raise AnnotationError(f"parent canonical name differs: {candidate_id}")
+    quotas = _allocate_quotas(
+        {candidate_id: len(values) for candidate_id, values in grouped.items()},
+        batch_size,
+    )
+    selected = _select_stratified_records(
+        dict(grouped),
+        quotas,
+        seed,
+        context_targets=CALIBRATION_CONTEXT_TARGETS,
+        strict_context_targets=True,
+    )
+    parent_batch_id = str(parent_manifest["batch_id"])
+    selected_with_lineage = []
+    for record in selected:
+        selected_with_lineage.append(
+            {
+                **record,
+                "parent_batch_id": parent_batch_id,
+                "parent_selection_rank": record["selection_rank"],
+            }
+        )
+    parent_manifest_sha256 = _sha256_file(parent_manifest_path)
+    parent_master_sha256 = _sha256_file(parent_master_path)
+    selected_locus_ids_sha256 = _sha256_json(
+        sorted(str(value["locus_id"]) for value in selected)
+    )
+    batch_id = (
+        "review-pilot:"
+        + _stable_key(
+            seed,
+            parent_batch_id,
+            parent_manifest_sha256,
+            parent_master_sha256,
+            batch_size,
+            CALIBRATION_CONTEXT_TARGETS,
+        )[:24]
+    )
+    return _emit_review_batch(
+        selected=selected_with_lineage,
+        catalog_by_id=catalog_by_id,
+        output_dir=output_dir,
+        batch_id=batch_id,
+        seed=seed,
+        context_targets=CALIBRATION_CONTEXT_TARGETS,
+        inputs={
+            "source_locus_count": len(parent_records),
+            "parent_batch_id": parent_batch_id,
+            "parent_manifest_sha256": parent_manifest_sha256,
+            "parent_review_master_sha256": parent_master_sha256,
+        },
+        manifest_extra={
+            "batch_type": "calibration_pilot",
+            "parent_batch": {
+                "batch_id": parent_batch_id,
+                "manifest_sha256": parent_manifest_sha256,
+                "review_master_sha256": parent_master_sha256,
+                "selected_locus_ids_sha256": selected_locus_ids_sha256,
+                "parent_batch_valid": bool(parent_validation["valid"]),
+            },
+        },
+        strict_context_targets=True,
+    )
+
+
+def validate_annotation_batch(
+    manifest_path: Path,
+    *,
+    parent_manifest_path: Path | None = None,
+) -> dict[str, Any]:
     manifest = _load_object(manifest_path)
     root = manifest_path.parent
     required_files = (
@@ -592,6 +855,43 @@ def validate_annotation_batch(manifest_path: Path) -> dict[str, Any]:
     }
     if actual_distribution != manifest.get("distribution"):
         raise AnnotationError("batch distribution differs from manifest")
+    parent_membership_verified = False
+    parent_info = manifest.get("parent_batch")
+    if parent_info:
+        if parent_manifest_path is None:
+            raise AnnotationError(
+                "calibration pilot validation requires parent_manifest_path"
+            )
+        if _sha256_file(parent_manifest_path) != parent_info.get("manifest_sha256"):
+            raise AnnotationError("parent batch manifest SHA-256 differs")
+        parent_manifest = _load_object(parent_manifest_path)
+        if parent_manifest.get("batch_id") != parent_info.get("batch_id"):
+            raise AnnotationError("parent batch_id differs")
+        parent_master_path = parent_manifest_path.parent / "review_master.jsonl"
+        if _sha256_file(parent_master_path) != parent_info.get("review_master_sha256"):
+            raise AnnotationError("parent review master SHA-256 differs")
+        parent_master = _read_loci_for_merge(parent_master_path)
+        for locus_id, child_record in master.items():
+            parent_record = parent_master.get(locus_id)
+            if parent_record is None:
+                raise AnnotationError(f"pilot locus is absent from parent: {locus_id}")
+            if child_record.get("parent_batch_id") != parent_manifest.get("batch_id"):
+                raise AnnotationError(f"pilot parent batch_id differs: {locus_id}")
+            if child_record.get("parent_selection_rank") != parent_record.get(
+                "selection_rank"
+            ):
+                raise AnnotationError(f"pilot parent selection rank differs: {locus_id}")
+            for field in FIXED_FIELDS:
+                if _csv_value(child_record.get(field)) != _csv_value(
+                    parent_record.get(field)
+                ):
+                    raise AnnotationError(
+                        f"pilot source field differs from parent: {locus_id}/{field}"
+                    )
+        selected_locus_ids_sha256 = _sha256_json(sorted(master))
+        if selected_locus_ids_sha256 != parent_info.get("selected_locus_ids_sha256"):
+            raise AnnotationError("pilot selected locus membership SHA-256 differs")
+        parent_membership_verified = True
     return {
         "valid": True,
         "batch_id": batch_id,
@@ -600,6 +900,7 @@ def validate_annotation_batch(manifest_path: Path) -> dict[str, Any]:
         "reviewer_orders_distinct": orders["A"] != orders["B"],
         "source_locus_count": manifest.get("inputs", {}).get("source_locus_count"),
         "files_verified": list(required_files),
+        "parent_membership_verified": parent_membership_verified,
     }
 
 

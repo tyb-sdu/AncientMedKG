@@ -70,6 +70,17 @@ python -m discovery_pipeline validate-review-batch \
   --manifest /private/rendongtang/review/batch-v1/batch_manifest.json \
   --output /private/rendongtang/review/batch-v1/validation_report.json
 
+python -m discovery_pipeline prepare-calibration-pilot \
+  --parent-manifest /private/rendongtang/review/batch-v1/batch_manifest.json \
+  --output /private/rendongtang/review/calibration-pilot-v3 \
+  --batch-size 50 \
+  --seed rendongtang-calibration-pilot-v3
+
+python -m discovery_pipeline validate-review-batch \
+  --manifest /private/rendongtang/review/calibration-pilot-v3/batch_manifest.json \
+  --parent-manifest /private/rendongtang/review/batch-v1/batch_manifest.json \
+  --output /private/rendongtang/review/calibration-pilot-v3/validation.json
+
 python -m discovery_pipeline merge-reviews \
   --manifest /private/rendongtang/review/batch-v1/batch_manifest.json \
   --reviewer-a /private/rendongtang/review/batch-v1/reviewer_A.csv \
@@ -95,6 +106,14 @@ to an identified third adjudicator, including exact agreements. Approval is
 refused unless the full text and source page were checked, relevance is
 evidentiary, and final confidence is at least 3/5. See
 `ANNOTATION_CODEBOOK.md` for the labels.
+
+The 50-record calibration pilot is a cryptographically verified subset of the
+formal 500-record batch. Its default strict allocation is 25 burn-context, 15
+wound-context, and 10 compound-only records, balanced across represented
+compounds. Validation requires the parent manifest and rejects changed source
+fields, changed membership, identical reviewer order, or pre-filled review
+fields. Review the pilot first, refine the codebook only through a versioned
+decision, then continue the remaining 450 records without changing locus IDs.
 
 The KG handoff deliberately creates only `Compound -[STUDIED_IN]-> Study`
 links. It does not invent targets, pathways, efficacy, safety signals, or burn
@@ -160,3 +179,6 @@ Rendongtang results and must never be cited as biological evidence.
 The public, snippet-free result of the first real intake run is stored at
 `reports/intake_baseline_v1.json`. Raw PubChem responses, page/chunk loci, local
 database paths, and copyrighted snippets remain outside the Git repository.
+The first parent-verified 50-record pilot is summarized without snippets at
+`reports/calibration_pilot_v3.json`; its reviewer sheets remain private and
+blank until two independent reviewers begin calibration.

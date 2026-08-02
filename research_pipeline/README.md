@@ -10,6 +10,7 @@
 - `evaluation/rendongtang_questions_v1.json`：12 道有答案题和 3 道证据边界题。
 - `query_planner.py`：繁简归一、受控术语规划、同名异方消歧和边界拒答。
 - `build_kg_bundle.py`：从只读古籍库生成 `knowledge_graph` 可消费的真实证据草案。
+- `build_ancient_candidate_kg.py`：扫描全部古籍，生成与正式图谱隔离的待复核候选层。
 
 ## 静态校验
 
@@ -61,6 +62,44 @@ python -m knowledge_graph export-neo4j \
 ```
 
 当前真实证据统一为 `pending`，需要关键页影像双人签署。不得用 `--release` 绕过审核；发布校验在签署前失败是预期行为。
+
+## 12 部古籍候选层
+
+候选层用于扩大内容覆盖，不替代上面的高质量忍冬汤样板图。它只读扫描
+SQLite，要求直接烧伤词通过上下文与排除语境检查；迁移页必须同时命中至少
+两个本体层。精确原文、候选清单和图文件必须存放在 Git 仓库外。
+
+```bash
+python -m research_pipeline.build_ancient_candidate_kg \
+  --database ancient_ocr/data/versions/vl_vnext_2026-07-31/ancient_rag.db \
+  --ontology research_pipeline/data/burn_ontology_v1.json \
+  --output-bundle /private/kg/ancient-candidate-v1/kg_evidence_bundle.json \
+  --output-manifest /private/kg/ancient-candidate-v1/candidate_pages.jsonl \
+  --graph-version ancient-candidate-2026-07-31-v1 \
+  --parent-version accepted-sample-2026-07-31
+
+python -m knowledge_graph build \
+  --input /private/kg/ancient-candidate-v1/kg_evidence_bundle.json \
+  --output /private/kg/ancient-candidate-v1/graph
+
+python -m knowledge_graph verify-sources \
+  --graph /private/kg/ancient-candidate-v1/graph \
+  --ancient-database ancient_ocr/data/versions/vl_vnext_2026-07-31/ancient_rag.db
+
+python -m knowledge_graph export-neo4j \
+  --graph /private/kg/ancient-candidate-v1/graph \
+  --output /private/kg/ancient-candidate-v1/neo4j \
+  --allow-unreleased
+```
+
+首个真实版本扫描 12 部、5,624 页，保留 212 个直接烧伤候选页和 102 个
+创面迁移候选页，形成 369 个实体、1,316 条可定位证据和 2,234 条断言。
+1,316 条引文全部回指原数据库成功，草案结构错误为 0。所有自动抽取内容均为
+`pending`；发布门只因未审批证据和关系而阻断。脱敏验收结果见
+`reports/ancient_candidate_kg_v1.json`。
+
+同页病证与治法只生成 E5 `HAS_TREATMENT_METHOD` 候选假说，不生成
+`TREATS`。候选层审核通过后也应按版本增量合并，不能覆盖已验收样板图。
 
 ## 科学边界
 

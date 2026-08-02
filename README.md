@@ -9,8 +9,8 @@ AncientMedKG is a provenance-first, local command-line RAG project for burn and 
 - `knowledge_graph/`: provenance-first five-layer graph schema, immutable builds,
   source verification, release gates, and Neo4j/JSON-LD export.
 - `research_pipeline/`: burn ontology, Rendongtang same-name formula
-  disambiguation, controlled-vocabulary query planning, and evidence-bundle
-  construction.
+  disambiguation, controlled-vocabulary query planning, accepted-sample bundle
+  construction, and a separate twelve-book pending candidate graph.
 - `discovery_pipeline/`: PubChem identity resolution, modern-corpus candidate
   scanning, blinded dual review, independent adjudication, reviewed KG handoff,
   C0-C5 compound scoring, and evidence-tiered mechanism analysis.
@@ -42,7 +42,9 @@ These commands operate locally and do not start a server:
 ```bash
 python -m knowledge_graph doctor --help
 python -m research_pipeline.validate_assets
+python -m research_pipeline.build_ancient_candidate_kg --help
 python -m discovery_pipeline --help
+python -m discovery_pipeline prepare-calibration-pilot --help
 python -m discovery_pipeline doctor --help
 ```
 

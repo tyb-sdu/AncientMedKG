@@ -13,6 +13,7 @@ from discovery_pipeline.annotation import (
     finalize_annotation_adjudication,
     merge_annotation_reviews,
     prepare_annotation_batch,
+    prepare_calibration_pilot,
     validate_annotation_batch,
 )
 
@@ -183,6 +184,55 @@ class AnnotationTests(unittest.TestCase):
                 b_order = [row["locus_id"] for row in csv.DictReader(handle)]
             self.assertCountEqual(a_order, b_order)
             self.assertNotEqual(a_order, b_order)
+
+    def test_calibration_pilot_is_parent_verified_and_stratified(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            parent = self._prepare(root, "parent")
+            pilot = root / "pilot"
+            manifest = prepare_calibration_pilot(
+                parent_manifest_path=parent / "batch_manifest.json",
+                output_dir=pilot,
+                batch_size=9,
+                seed="fixed-pilot-seed",
+            )
+            self.assertEqual(manifest["batch_type"], "calibration_pilot")
+            self.assertEqual(manifest["batch_size"], 9)
+            self.assertTrue(
+                manifest["selection_policy"]["strict_context_targets"]
+            )
+            self.assertEqual(
+                manifest["selection_policy"]["context_allocation"],
+                "capacity_constrained_exact_distribution",
+            )
+            self.assertEqual(
+                manifest["distribution"]["context"],
+                {"burn_context": 4, "compound_only": 2, "wound_context": 3},
+            )
+            validation = validate_annotation_batch(
+                pilot / "batch_manifest.json",
+                parent_manifest_path=parent / "batch_manifest.json",
+            )
+            self.assertTrue(validation["valid"])
+            self.assertTrue(validation["parent_membership_verified"])
+            parent_ids = {
+                json.loads(line)["locus_id"]
+                for line in (parent / "review_master.jsonl")
+                .read_text(encoding="utf-8")
+                .splitlines()
+            }
+            pilot_records = [
+                json.loads(line)
+                for line in (pilot / "review_master.jsonl")
+                .read_text(encoding="utf-8")
+                .splitlines()
+            ]
+            self.assertTrue({value["locus_id"] for value in pilot_records} < parent_ids)
+            self.assertTrue(
+                all(value["parent_batch_id"] == manifest["parent_batch"]["batch_id"] for value in pilot_records)
+            )
+            with self.assertRaisesRegex(AnnotationError, "requires parent_manifest_path"):
+                validate_annotation_batch(pilot / "batch_manifest.json")
 
     def test_merge_requires_adjudication_for_every_item(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-02",
+  "baseline_commit": "7fcf4c3007b8ca552f37a5e7cebe59db10f0a6cc",
+  "graph_version": "ancient-candidate-2026-07-31-v1",
+  "bundle_id": "ancient-candidate:3d122b096a6e1d244b5fcded",
+  "status": "candidate_pending_review",
+  "release_approved": false,
+  "inputs": {
+    "books": 12,
+    "pages": 5624,
+    "database_sha256": "e21ede4fad25ad17c38003981ee696b87a203cf007bfd7c52e633a0c2c6c7b9c",
+    "database_unchanged": true,
+    "ontology_entries": 39,
+    "ontology_sha256": "5c0ed17353d5b3c2f8c038590e2719c01f55d818b6117258929a1d222a90b9ff"
+  },
+  "selection": {
+    "direct_burn_candidate_pages": 212,
+    "ulcer_transfer_candidate_pages": 102,
+    "selected_pages": 314,
+    "not_selected_pages": 5310,
+    "candidate_manifest_sha256": "3459f51d0e9e579568f374b96e01f25784d105c84dbd608ed4be0a5ef0c3e89e",
+    "direct_rule": "valid direct term plus initial direct score threshold",
+    "transfer_rule": "at least two ontology layers plus initial transfer score threshold",
+    "therapy_rule": "same-page hypothesis only; never promoted to TREATS"
+  },
+  "graph": {
+    "sources": 12,
+    "entities": 369,
+    "evidence": 1316,
+    "assertions": 2234,
+    "accepted_term_occurrences": 1358,
+    "bundle_sha256": "32521519c31ebc81079bb1be8bce3da9714f8f460e0f185a8e857b20996bfe26",
+    "build_content_fingerprint": "f2f1afe2771b3137a8e6b4254489945a59e62c50173bab83d9aaed501fa212f9"
+  },
+  "validation": {
+    "draft_valid": true,
+    "draft_error_count": 0,
+    "source_verification_valid": true,
+    "source_verified_exact": 1316,
+    "release_validation_valid": false,
+    "release_block_codes": {
+      "evidence_not_approved": 1316,
+      "edge_not_approved": 2234
+    },
+    "release_block_is_expected": true,
+    "release_block_contains_only_pending_review": true
+  },
+  "neo4j_export": {
+    "entity_nodes": 369,
+    "source_nodes": 12,
+    "evidence_nodes": 1316,
+    "assertion_nodes": 2234,
+    "direct_relationships": 2234,
+    "provenance_relationships": 12732,
+    "content_fingerprint": "b4a412822a7df7c20963cb9c84a35239c1bffc787de9b278d00d05a113908f6b"
+  },
+  "selected_pages_by_book": {
+    "01_普济方_卷二百七十七_汤火疮": 66,
+    "02_疡医大全_卷三十七_汤泼火伤门": 23,
+    "03_证治准绳_卷八十_汤火疮": 3,
+    "04_备急千金要方_卷七十七至八十_火疮": 8,
+    "05_外台秘要方_卷二十九至三十_汤火灼疮": 10,
+    "06_医宗金鉴_可检索版_汤火伤": 81,
+    "07_太平圣惠方_文本检索副本_含卷九十一": 90,
+    "08_本草纲目_卷十二_甘草": 3,
+    "09_本草纲目_卷十八_忍冬": 5,
+    "医学心悟_公开扫描版": 2,
+    "古今医统大全_SSID_卷78-79": 6,
+    "外科正宗_公开扫描版": 17
+  },
+  "scientific_boundaries": [
+    "Every automatically extracted evidence record and assertion remains pending.",
+    "Candidate co-occurrence is not efficacy, causality, dose conversion, or clinical guidance.",
+    "The private page manifest, quotes, graph files, and Neo4j package are not published to GitHub.",
+    "The accepted 2-source Rendongtang sample graph remains separate from this broad candidate layer."
+  ]
+}

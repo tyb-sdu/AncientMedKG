@@ -10,6 +10,7 @@ from .annotation import (
     finalize_annotation_adjudication,
     merge_annotation_reviews,
     prepare_annotation_batch,
+    prepare_calibration_pilot,
     validate_annotation_batch,
 )
 from .compound_scoring import ScoringInputError, score_catalog
@@ -107,9 +108,23 @@ def _prepare_review(args: argparse.Namespace) -> int:
 
 
 def _validate_review_batch(args: argparse.Namespace) -> int:
-    result = validate_annotation_batch(args.manifest)
+    result = validate_annotation_batch(
+        args.manifest,
+        parent_manifest_path=args.parent_manifest,
+    )
     if args.output:
         _write(args.output, result)
+    print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+    return 0
+
+
+def _prepare_calibration_pilot(args: argparse.Namespace) -> int:
+    result = prepare_calibration_pilot(
+        parent_manifest_path=args.parent_manifest,
+        output_dir=args.output,
+        batch_size=args.batch_size,
+        seed=args.seed,
+    )
     print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
     return 0
 
@@ -231,11 +246,24 @@ def build_parser() -> argparse.ArgumentParser:
     )
     prepare_parser.set_defaults(handler=_prepare_review)
 
+    pilot_parser = subparsers.add_parser(
+        "prepare-calibration-pilot",
+        help="Select a blinded, parent-verified calibration subset from a review batch.",
+    )
+    pilot_parser.add_argument("--parent-manifest", type=Path, required=True)
+    pilot_parser.add_argument("--output", type=Path, required=True)
+    pilot_parser.add_argument("--batch-size", type=int, default=50)
+    pilot_parser.add_argument(
+        "--seed", default="rendongtang-calibration-pilot-v1"
+    )
+    pilot_parser.set_defaults(handler=_prepare_calibration_pilot)
+
     validate_review_parser = subparsers.add_parser(
         "validate-review-batch",
         help="Rehash and independently validate a new blinded review batch.",
     )
     validate_review_parser.add_argument("--manifest", type=Path, required=True)
+    validate_review_parser.add_argument("--parent-manifest", type=Path)
     validate_review_parser.add_argument("--output", type=Path)
     validate_review_parser.set_defaults(handler=_validate_review_batch)
 
