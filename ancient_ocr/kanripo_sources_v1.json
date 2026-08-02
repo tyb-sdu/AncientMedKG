@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "source_collection": "Kanripo",
+  "source_home": "https://www.kanripo.org/",
+  "selection_policy": "New titles closely aligned with burns, scalds, sores, trauma, emergency treatment, or external medicine; a preferred page-anchored transcription edition is required.",
+  "books": [
+    {
+      "repo": "KR3e0035",
+      "title": "衞濟寶書",
+      "preferred_edition": "WYG",
+      "expected_commit": "6cb75a1318bae590354df36cceb19d74fcbf05c8",
+      "project_fit": ["外科", "瘡瘍", "方治"]
+    },
+    {
+      "repo": "KR3e0042",
+      "title": "集驗背疽方",
+      "preferred_edition": "WYG",
+      "expected_commit": "e67b2c8d22ed741a98e565e911d4a9aabcd44ac0",
+      "project_fit": ["外科", "背疽", "瘡瘍"]
+    },
+    {
+      "repo": "KR3e0046",
+      "title": "急救仙方",
+      "preferred_edition": "WYG",
+      "expected_commit": "bee72a30f7fe805b08390bcbb18be01350a14a4d",
+      "project_fit": ["急救", "外傷", "瘡瘍"]
+    },
+    {
+      "repo": "KR3e0059",
+      "title": "世醫得效方",
+      "preferred_edition": "WYG",
+      "expected_commit": "8dd1174fe95b9050021cb44e3172f25d8f680a28",
+      "project_fit": ["湯火傷", "瘡瘍", "外科"]
+    },
+    {
+      "repo": "KR3e0064",
+      "title": "外科精義",
+      "preferred_edition": "WYG",
+      "expected_commit": "b551d77d36b851cc4ebf7df25549b06efaf42277",
+      "project_fit": ["外科", "瘡腫", "創傷"]
+    },
+    {
+      "repo": "KR3e0070",
+      "title": "薛氏醫案",
+      "preferred_edition": "WYG",
+      "expected_commit": "051f31b57f1d75235813ede19ab715293d124598",
+      "project_fit": ["湯火瘡", "熱油火燒", "外科"]
+    },
+    {
+      "repo": "KR3e0073",
+      "title": "外科理例",
+      "preferred_edition": "WYG",
+      "expected_commit": "b056eee005d420152ff3d09a8f03f4b82129c84e",
+      "project_fit": ["外科", "瘡瘍", "辨證"]
+    },
+    {
+      "repo": "KR3e0076",
+      "title": "赤水元珠",
+      "preferred_edition": "WYG",
+      "expected_commit": "b7a69bf760c3d00072e5b35f07d1f5c8c0c9d7e7",
+      "project_fit": ["湯泡傷", "忍冬酒", "外科"]
+    },
+    {
+      "repo": "KR3e0086",
+      "title": "景岳全書",
+      "preferred_edition": "WYG",
+      "expected_commit": "16e9b585de51c9395c610262d86d9eb71cc0b7fb",
+      "project_fit": ["湯火傷", "外科", "本草"]
+    },
+    {
+      "repo": "KR5g0115",
+      "title": "葛仙翁肘後備急方",
+      "preferred_edition": "HFL",
+      "expected_commit": "28771aaec8fab5cacb321a5881390e861007bd33",
+      "project_fit": ["救急", "湯火灼傷", "外傷"]
+    }
+  ]
+}
