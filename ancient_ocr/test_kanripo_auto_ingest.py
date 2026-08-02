@@ -9,6 +9,7 @@ from kanripo_auto_ingest import (
     build_auto70_copy,
     doctor,
     parse_source_file,
+    relevance_audit,
     text_quality_confidence,
 )
 
@@ -135,3 +136,7 @@ def test_build_keeps_base_immutable_and_marks_auto_acceptance(tmp_path: Path) ->
     check = doctor(output, sources)
     assert check["healthy"] is True
     assert check["auto_accepted_rows"] == 2
+    relevance = relevance_audit(output)
+    assert relevance["healthy"] is True
+    assert relevance["books_with_direct_burn_evidence"] == 1
+    assert relevance["books"][0]["direct_burn"]["samples"][0]["page_anchor"]

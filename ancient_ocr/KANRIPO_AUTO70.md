@@ -28,3 +28,12 @@ python ancient_ocr/kanripo_auto_ingest.py doctor `
 ```
 
 `doctor` 同时检查 SQLite、FTS/JSONL 行数、接受阈值、状态字段以及十个来源仓库的 commit 和快照指纹。
+
+逐书输出烧伤、外科和目录筛选词的命中页锚证据：
+
+```powershell
+python ancient_ocr/kanripo_auto_ingest.py relevance-audit `
+  --output-dir ancient_ocr/data/versions/kanripo_auto70_2026-08-02
+```
+
+该报告证明书目与项目的文本相关性和逐页可定位性，不把术语命中解释成临床疗效或同方证据。

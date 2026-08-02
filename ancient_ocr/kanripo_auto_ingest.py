@@ -22,6 +22,34 @@ CJK_RE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]")
 PUNCTUATION = set("，。！？；：、（）《》〈〉【】〔〕［］“”‘’…—·,.!?;:()[]{}<>")
 PAGE_ANCHOR_RE = re.compile(r"<pb:([^>]+)>\s*¶?")
 ORG_LINE_RE = re.compile(r"(?m)^#\+[^\n]*\n?")
+DIRECT_BURN_TERMS = (
+    "湯火",
+    "汤火",
+    "火燒",
+    "火烧",
+    "灼傷",
+    "灼伤",
+    "熱油",
+    "热油",
+    "湯泡",
+    "汤泡",
+    "火瘡",
+    "火疮",
+)
+EXTERNAL_MEDICINE_TERMS = (
+    "外科",
+    "瘡",
+    "疮",
+    "瘍",
+    "疡",
+    "疽",
+    "創",
+    "创",
+    "傷",
+    "伤",
+    "腫",
+    "肿",
+)
 
 
 @dataclass(frozen=True)
@@ -478,6 +506,110 @@ def doctor(output_dir: Path, sources_root: Path | None = None) -> dict[str, Any]
     return result
 
 
+def _term_evidence(
+    connection: sqlite3.Connection,
+    book_id: str,
+    terms: Iterable[str],
+    *,
+    sample_limit: int = 5,
+) -> dict[str, Any]:
+    rows = connection.execute(
+        """
+        SELECT page_id, physical_page, pdf_page_label, text
+        FROM pages WHERE book_id = ? ORDER BY physical_page
+        """,
+        (book_id,),
+    ).fetchall()
+    matched_terms: set[str] = set()
+    matching_pages = 0
+    samples: list[dict[str, Any]] = []
+    for row in rows:
+        text = str(row["text"] or "")
+        page_terms = [term for term in terms if term and term in text]
+        if not page_terms:
+            continue
+        matching_pages += 1
+        matched_terms.update(page_terms)
+        if len(samples) >= sample_limit:
+            continue
+        first = page_terms[0]
+        start = max(text.find(first) - 45, 0)
+        samples.append(
+            {
+                "page_id": row["page_id"],
+                "physical_page": row["physical_page"],
+                "page_anchor": row["pdf_page_label"],
+                "matched_terms": page_terms,
+                "snippet": text[start : start + 140].replace("\n", ""),
+            }
+        )
+    return {
+        "matched_terms": sorted(matched_terms),
+        "matching_pages": matching_pages,
+        "samples": samples,
+    }
+
+
+def relevance_audit(output_dir: Path) -> dict[str, Any]:
+    output_dir = output_dir.resolve()
+    database = output_dir / "ancient_rag.db"
+    manifest_path = output_dir / "kanripo_source_manifest.json"
+    if not database.is_file() or not manifest_path.is_file():
+        raise FileNotFoundError("database or Kanripo source manifest is missing")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    books: list[dict[str, Any]] = []
+    with sqlite3.connect(database) as connection:
+        connection.row_factory = sqlite3.Row
+        for item in manifest:
+            catalog_fit = _term_evidence(
+                connection, item["book_id"], item.get("project_fit", [])
+            )
+            direct_burn = _term_evidence(
+                connection, item["book_id"], DIRECT_BURN_TERMS
+            )
+            external_medicine = _term_evidence(
+                connection, item["book_id"], EXTERNAL_MEDICINE_TERMS
+            )
+            books.append(
+                {
+                    "repo": item["repo"],
+                    "title": item["title"],
+                    "book_id": item["book_id"],
+                    "source_commit": item["source_commit"],
+                    "project_fit_terms": item.get("project_fit", []),
+                    "catalog_fit": catalog_fit,
+                    "direct_burn": direct_burn,
+                    "external_medicine": external_medicine,
+                    "has_alignment_evidence": bool(
+                        catalog_fit["matching_pages"]
+                        or direct_burn["matching_pages"]
+                        or external_medicine["matching_pages"]
+                    ),
+                }
+            )
+    report = {
+        "schema_version": 1,
+        "new_book_count": len(books),
+        "books_with_alignment_evidence": sum(
+            item["has_alignment_evidence"] for item in books
+        ),
+        "books_with_direct_burn_evidence": sum(
+            item["direct_burn"]["matching_pages"] > 0 for item in books
+        ),
+        "books_with_external_medicine_evidence": sum(
+            item["external_medicine"]["matching_pages"] > 0 for item in books
+        ),
+        "healthy": bool(books) and all(item["has_alignment_evidence"] for item in books),
+        "books": books,
+        "scope_note": (
+            "Term hits demonstrate project alignment and page-level traceability; "
+            "they do not establish clinical efficacy or formula equivalence."
+        ),
+    }
+    atomic_json(output_dir / "relevance_report.json", report)
+    return report
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -491,6 +623,8 @@ def parse_args() -> argparse.Namespace:
     check = subparsers.add_parser("doctor")
     check.add_argument("--output-dir", type=Path, required=True)
     check.add_argument("--sources-root", type=Path)
+    relevance = subparsers.add_parser("relevance-audit")
+    relevance.add_argument("--output-dir", type=Path, required=True)
     return parser.parse_args()
 
 
@@ -505,8 +639,10 @@ def main() -> int:
             confidence_threshold=args.confidence_threshold,
             force=args.force,
         )
-    else:
+    elif args.command == "doctor":
         result = doctor(args.output_dir, args.sources_root)
+    else:
+        result = relevance_audit(args.output_dir)
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if result.get("healthy", True) else 1
 
