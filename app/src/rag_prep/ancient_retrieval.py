@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import sqlite3
 from pathlib import Path
 from typing import Any
@@ -15,6 +16,61 @@ from .search import (
 )
 
 _LAYOUT_CACHE: dict[str, dict[str, dict[str, Any]]] = {}
+
+_LOCATOR_QUERY_RE = re.compile(
+    r"\u300a([^\u300b]+)\u300b.*?\u201c([^\u201d]+)\u201d"
+)
+_ANCIENT_TERM_VARIANTS = {
+    "\u521b": ("\u521b", "\u5275"),
+    "\u5916\u6577": ("\u5916\u6577", "\u5857\u6577"),
+    "\u5927\u9ec4": ("\u5927\u9ec4", "\u5927\u9ec3"),
+    "\u6d88\u80bf": ("\u6d88\u80bf", "\u6d88\u816b"),
+    "\u6e83": ("\u6e83", "\u6f70"),
+    "\u706b\u70e7": ("\u706b\u70e7", "\u706b\u71d2"),
+    "\u706b\u75ae": ("\u706b\u75ae", "\u706b\u7621"),
+    "\u707c\u4f24": ("\u707c\u4f24", "\u707c\u50b7", "\u707c\u7621"),
+    "\u70eb\u4f24": ("\u70eb\u4f24", "\u6e6f\u706b", "\u6e6f\u6ce1"),
+    "\u70ed\u6bd2": ("\u70ed\u6bd2", "\u71b1\u6bd2"),
+    "\u8840\u7600": ("\u8840\u7600", "\u7600\u8840"),
+    "\u91d1\u94f6\u82b1": ("\u91d1\u94f6\u82b1", "\u91d1\u9280\u82b1"),
+}
+_OUT_OF_SCOPE_MARKERS = (
+    "crispr",
+    "pd-1",
+    "3d\u6253\u5370",
+    "\u968f\u673a\u53cc\u76f2",
+    "mrna",
+    "\u7eb3\u7c73\u673a\u5668\u4eba",
+    "rna\u6d4b\u5e8f",
+    "\u5355\u7ec6\u80de\u8f6c\u5f55\u7ec4",
+    "faiss",
+    "ct\u4e09\u7ef4",
+    "elisa",
+    "western blot",
+    "\u52a8\u7269\u4f26\u7406\u5ba1\u6279\u53f7",
+    "car-t",
+    "\u8010\u836f\u57fa\u56e0\u6d4b\u5e8f",
+    "\u6fc0\u5149\u5171\u805a\u7126",
+    "\u591a\u4e2d\u5fc3\u524d\u77bb\u6027\u961f\u5217",
+    "\u7eb3\u7c73\u9176\u50ac\u5316\u52a8\u529b\u5b66",
+    "\u751f\u7269\u4fe1\u606f\u5b66\u5bcc\u96c6\u5206\u6790",
+    "\u673a\u5668\u4eba\u81ea\u52a8\u6362\u836f",
+)
+
+
+def ancient_query_is_out_of_scope(question: str) -> bool:
+    normalized = normalize_search_text(question)
+    return any(marker in normalized for marker in _OUT_OF_SCOPE_MARKERS)
+
+
+def ancient_locator_hints(question: str) -> tuple[str, tuple[str, ...]] | None:
+    match = _LOCATOR_QUERY_RE.search(question)
+    if match is None:
+        return None
+    title = normalize_search_text(match.group(1))
+    focus = normalize_search_text(match.group(2))
+    variants = _ANCIENT_TERM_VARIANTS.get(focus, (focus,))
+    return title, tuple(normalize_search_text(value) for value in variants)
 
 
 def ancient_database_path(cfg: dict[str, Any]) -> Path:
@@ -74,6 +130,8 @@ def query_ancient_keyword(
 ) -> list[dict[str, Any]]:
     if not question.strip():
         raise ValueError("查询不能为空")
+    if ancient_query_is_out_of_scope(question):
+        return []
     db_path = ancient_database_path(cfg)
     if not db_path.exists():
         raise FileNotFoundError(f"古籍数据库不存在: {db_path}")
@@ -89,6 +147,7 @@ def query_ancient_keyword(
         ).fetchall()
 
     qnorm = normalize_search_text(question)
+    locator_hints = ancient_locator_hints(question)
     terms = [normalize_search_text(term) for term in _query_terms(question)]
     aliases = [
         normalize_search_text(alias)
@@ -102,6 +161,46 @@ def query_ancient_keyword(
         text, layout_status = ancient_text_for_row(cfg, row)
         text_norm = normalize_search_text(text)
         combined = f"{title_norm} {text_norm}"
+        if locator_hints is not None:
+            source_title, focus_variants = locator_hints
+            source_match = source_title in title_norm or title_norm in source_title
+            focus_hits = sum(text_norm.count(value) for value in focus_variants if value)
+            if not source_match or focus_hits == 0:
+                continue
+            score = 100.0 + float(focus_hits)
+            results.append(
+                {
+                    "corpus": "ancient",
+                    "record_type": "page",
+                    "chunk_id": row["page_id"],
+                    "doc_id": row["book_id"],
+                    "title": row["title"],
+                    "year": "",
+                    "doi": "",
+                    "pdf_page": row["physical_page"],
+                    "page_label": row["pdf_page_label"],
+                    "source_filename": row["filename"],
+                    "sha256": row["source_sha256"],
+                    "snippet": _snippet(
+                        text,
+                        question,
+                        int(cfg.get("search", {}).get("snippet_chars", 360)),
+                    ),
+                    "keyword_score": round(score, 6),
+                    "vector_score": None,
+                    "keyword_rank": None,
+                    "vector_rank": None,
+                    "fusion_score": None,
+                    "fusion_rank": None,
+                    "reading_direction": row["reading_direction"],
+                    "average_confidence": row["average_confidence"],
+                    "low_confidence": int(row["low_confidence"]),
+                    "layout_status": layout_status,
+                    "retrieval_planner": "source_anchored_locator",
+                    "locator_focus_variants": list(focus_variants),
+                }
+            )
+            continue
         exact = 1 if qnorm and qnorm in f"{title_norm} {text_norm}" else 0
         alias_title = any(alias and alias in title_norm for alias in aliases)
         alias_text = any(alias and alias in text_norm for alias in aliases)
