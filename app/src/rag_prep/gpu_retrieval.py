@@ -38,7 +38,7 @@ def _require_dependencies() -> tuple[Any, Any]:
         from FlagEmbedding import BGEM3FlagModel, FlagReranker
     except ImportError as exc:
         raise RuntimeError(
-            "BGE GPU 检索需要服务器环境中的 FlagEmbedding、PyTorch 与 FAISS"
+            "BGE GPU 检索需要 FlagEmbedding、PyTorch 与 FAISS"
         ) from exc
     return faiss, (BGEM3FlagModel, FlagReranker)
 

@@ -2,6 +2,7 @@
   "schema_version": 1,
   "source_collection": "Kanripo",
   "source_home": "https://www.kanripo.org/",
+  "repository_base": "https://github.com/kanripo",
   "selection_policy": "New titles closely aligned with burns, scalds, sores, trauma, emergency treatment, or external medicine; a preferred page-anchored transcription edition is required.",
   "books": [
     {

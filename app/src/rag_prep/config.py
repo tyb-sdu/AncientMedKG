@@ -29,8 +29,19 @@ def load_config(config_path: str | Path) -> dict[str, Any]:
             paths[key] = str((project_root / p).resolve())
         else:
             paths[key] = str(p)
-    if os.environ.get("RAG_MODERN_PDF_DIR"):
-        paths["modern_pdf_dir"] = os.environ["RAG_MODERN_PDF_DIR"]
+
+    # Any configured path can be overridden without editing the tracked YAML.
+    # Example: paths.modern_pdf_dir -> RAG_MODERN_PDF_DIR.
+    for key in list(paths):
+        env_name = f"RAG_{key.upper()}"
+        if value := os.environ.get(env_name):
+            paths[key] = str(Path(value).expanduser().resolve())
+
+    qwen = cfg.setdefault("qwen", {})
+    for key in ("embedding_device", "reranker_device"):
+        env_name = f"RAG_QWEN_{key.upper()}"
+        if value := os.environ.get(env_name):
+            qwen[key] = value
     return cfg
 
 

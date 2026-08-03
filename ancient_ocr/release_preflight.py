@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 from pathlib import Path, PurePosixPath
 from typing import Any
@@ -42,8 +43,12 @@ FORBIDDEN_NAMES = {".env"}
 FORBIDDEN_PREFIXES = (
     ".conda/",
     ".conda-ancient-ocr/",
+    ".venv/",
+    ".venv-ocr/",
+    "venv/",
     "corpus/",
     "models/",
+    "runtime/",
     "app/data/",
     "app/logs/",
     "app/models/",
@@ -57,6 +62,34 @@ FORBIDDEN_PREFIXES = (
     "ancient_ocr/test_data/",
     "ancient_ocr/test_output/",
     "setup/",
+    "research_pipeline/output/",
+    "discovery_pipeline/output/",
+    "knowledge_graph/output/",
+)
+TEXT_SUFFIXES = {
+    ".json",
+    ".md",
+    ".py",
+    ".sh",
+    ".toml",
+    ".txt",
+    ".yaml",
+    ".yml",
+}
+NONPORTABLE_TEXT_PATTERNS = (
+    (
+        "absolute Windows user path",
+        re.compile(r"(?i)\b[A-Z]:[/\\]Users[/\\][^/\\\s]+"),
+    ),
+    (
+        "absolute data-volume user path",
+        re.compile(r"(?i)(?<![\w.])/data\d*/[^/\s]+/"),
+    ),
+    (
+        "SSH connection command",
+        re.compile(r"(?im)^\s*(?:ssh|scp|sftp)\b[^\n]*(?:@|\s-p\s+\d+)"),
+    ),
+    ("IP address with port", re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}:\d{2,5}\b")),
 )
 
 
@@ -99,6 +132,14 @@ def preflight(repository: Path) -> dict[str, Any]:
         for path in files
         if (reason := forbidden_reason(path)) is not None
     ]
+    for relative in files:
+        path = repository / relative
+        if path.suffix.lower() not in TEXT_SUFFIXES or not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for reason, pattern in NONPORTABLE_TEXT_PATTERNS:
+            if pattern.search(text):
+                violations.append({"path": relative, "reason": reason})
     return {
         "repository": str(repository.resolve()),
         "tracked_files": len(files),

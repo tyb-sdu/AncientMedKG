@@ -34,7 +34,7 @@ def _dependencies() -> tuple[Any, Any, Any]:
         from sentence_transformers import CrossEncoder, SentenceTransformer
     except ImportError as exc:
         raise RuntimeError(
-            "Qwen3 检索需要服务器环境中的 PyTorch、sentence-transformers 与 FAISS"
+            "Qwen3 检索需要 PyTorch、sentence-transformers 与 FAISS"
         ) from exc
     return faiss, torch, (SentenceTransformer, CrossEncoder)
 

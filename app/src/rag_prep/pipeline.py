@@ -251,7 +251,7 @@ def run_inventory(
             len(all_rows),
             len(pdfs),
             failed,
-            extra=f"本轮写入={built}",
+            extra=f"写入={built}",
         )
     )
     return {

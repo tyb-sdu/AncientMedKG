@@ -1,6 +1,7 @@
 # Copyrighted source material and derived research data
 /corpus/
 /models/
+/runtime/
 /app/data/
 /app/models/
 /app/state/
@@ -12,10 +13,18 @@
 /ancient_ocr/test_data/
 /ancient_ocr/test_output/
 /setup/
+/research_pipeline/output/
+/discovery_pipeline/output/
+/discovery_pipeline/cache/
+/discovery_pipeline/private_data/
+/knowledge_graph/output/
 
 # Local environments, runtime artifacts, and caches
 /.conda/
 /.conda-ancient-ocr/
+/.venv/
+/.venv-ocr/
+/venv/
 /app/logs/
 /ancient_ocr/logs/
 app/config.vl_vnext_*.yaml

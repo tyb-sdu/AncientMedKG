@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "models": [
+    {
+      "profile": "qwen",
+      "model_id": "Qwen/Qwen3-Embedding-8B",
+      "revision": "1d8ad4ca9b3dd8059ad90a75d4983776a23d44af",
+      "relative_path": "Qwen/Qwen3-Embedding-8B"
+    },
+    {
+      "profile": "qwen",
+      "model_id": "Qwen/Qwen3-Reranker-8B",
+      "revision": "77d193c791ed757ca307ee72715aa132723da912",
+      "relative_path": "Qwen/Qwen3-Reranker-8B"
+    },
+    {
+      "profile": "bge",
+      "model_id": "BAAI/bge-m3",
+      "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+      "relative_path": "BAAI/bge-m3"
+    },
+    {
+      "profile": "bge",
+      "model_id": "BAAI/bge-reranker-v2-m3",
+      "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+      "relative_path": "BAAI/bge-reranker-v2-m3"
+    }
+  ]
+}

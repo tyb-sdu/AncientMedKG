@@ -1,59 +1,59 @@
-# 现代文献 RAG 预处理配置（本地终端，无网页服务）
-project_name: "中药烧伤项目-现代文献RAG预处理"
-project_root: "."
+# 中药烧伤古今文献 RAG 配置。所有路径均相对于仓库根目录。
+project_name: "中药烧伤古今文献RAG"
+project_root: ".."
 
 paths:
-  modern_pdf_dir: "../corpus/modern_pdf"
-  mapping_csv: "C:/Users/tyb/Desktop/中药项目/现代文献重命名对照表.csv"
-  data_dir: "data"
-  logs_dir: "logs"
-  state_dir: "state"
-  ancient_data_dir: "../ancient_ocr/data"
-  ancient_database: "../ancient_ocr/data/ancient_rag.db"
-  ancient_books_jsonl: "../ancient_ocr/data/books.jsonl"
-  ancient_pages_jsonl: "../ancient_ocr/data/pages.jsonl"
-  ancient_layout_sidecar: "../ancient_ocr/data/pages_layout_v2.jsonl"
-  ancient_qwen_vector_dir: "../ancient_ocr/data/vector_qwen3_8b_pages"
-  ancient_qwen_faiss_index: "../ancient_ocr/data/vector_qwen3_8b_pages/faiss.index"
-  ancient_qwen_vector_manifest: "../ancient_ocr/data/vector_qwen3_8b_pages/manifest.json"
-  ancient_qwen_vector_map: "../ancient_ocr/data/vector_qwen3_8b_pages/page_ids.jsonl"
-  ancient_qwen_embeddings_checkpoint: "../ancient_ocr/data/vector_qwen3_8b_pages/embeddings.npy"
-  ancient_qwen_embedding_progress: "../ancient_ocr/data/vector_qwen3_8b_pages/progress.json"
-  documents_csv: "data/documents.csv"
-  documents_jsonl: "data/documents.jsonl"
-  pages_jsonl: "data/pages.jsonl"
-  chunks_jsonl: "data/chunks.jsonl"
-  quality_issues_csv: "data/quality_issues.csv"
-  database: "data/rag.db"
-  vector_dir: "data/vector"
-  faiss_index: "data/vector/faiss.index"
-  vector_manifest: "data/vector/manifest.json"
-  vector_map: "data/vector/chunk_ids.jsonl"
-  embeddings_checkpoint: "data/vector/embeddings.npy"
-  embedding_progress: "data/vector/progress.json"
+  modern_pdf_dir: "corpus/modern_pdf"
+  mapping_csv: "corpus/modern_metadata.csv"
+  data_dir: "runtime/modern"
+  logs_dir: "runtime/logs"
+  state_dir: "runtime/state"
+  ancient_data_dir: "runtime/ancient"
+  ancient_database: "runtime/ancient/ancient_rag.db"
+  ancient_books_jsonl: "runtime/ancient/books.jsonl"
+  ancient_pages_jsonl: "runtime/ancient/pages.jsonl"
+  ancient_layout_sidecar: "runtime/ancient/pages_layout_v2.jsonl"
+  ancient_qwen_vector_dir: "runtime/ancient/vector_qwen3_8b_pages"
+  ancient_qwen_faiss_index: "runtime/ancient/vector_qwen3_8b_pages/faiss.index"
+  ancient_qwen_vector_manifest: "runtime/ancient/vector_qwen3_8b_pages/manifest.json"
+  ancient_qwen_vector_map: "runtime/ancient/vector_qwen3_8b_pages/page_ids.jsonl"
+  ancient_qwen_embeddings_checkpoint: "runtime/ancient/vector_qwen3_8b_pages/embeddings.npy"
+  ancient_qwen_embedding_progress: "runtime/ancient/vector_qwen3_8b_pages/progress.json"
+  documents_csv: "runtime/modern/documents.csv"
+  documents_jsonl: "runtime/modern/documents.jsonl"
+  pages_jsonl: "runtime/modern/pages.jsonl"
+  chunks_jsonl: "runtime/modern/chunks.jsonl"
+  quality_issues_csv: "runtime/modern/quality_issues.csv"
+  database: "runtime/modern/rag.db"
+  vector_dir: "runtime/modern/vector_e5"
+  faiss_index: "runtime/modern/vector_e5/faiss.index"
+  vector_manifest: "runtime/modern/vector_e5/manifest.json"
+  vector_map: "runtime/modern/vector_e5/chunk_ids.jsonl"
+  embeddings_checkpoint: "runtime/modern/vector_e5/embeddings.npy"
+  embedding_progress: "runtime/modern/vector_e5/progress.json"
   embedding_model_dir: "models/multilingual-e5-small-onnx"
-  bge_vector_dir: "data/vector_bge_m3"
-  bge_faiss_index: "data/vector_bge_m3/faiss.index"
-  bge_vector_manifest: "data/vector_bge_m3/manifest.json"
-  bge_vector_map: "data/vector_bge_m3/chunk_ids.jsonl"
-  bge_embeddings_checkpoint: "data/vector_bge_m3/embeddings.npy"
-  bge_embedding_progress: "data/vector_bge_m3/progress.json"
+  bge_vector_dir: "runtime/modern/vector_bge_m3"
+  bge_faiss_index: "runtime/modern/vector_bge_m3/faiss.index"
+  bge_vector_manifest: "runtime/modern/vector_bge_m3/manifest.json"
+  bge_vector_map: "runtime/modern/vector_bge_m3/chunk_ids.jsonl"
+  bge_embeddings_checkpoint: "runtime/modern/vector_bge_m3/embeddings.npy"
+  bge_embedding_progress: "runtime/modern/vector_bge_m3/progress.json"
   bge_embedding_model_dir: "models/BAAI/bge-m3"
   bge_reranker_model_dir: "models/BAAI/bge-reranker-v2-m3"
-  qwen_vector_dir: "data/vector_qwen3_8b"
-  qwen_faiss_index: "data/vector_qwen3_8b/faiss.index"
-  qwen_vector_manifest: "data/vector_qwen3_8b/manifest.json"
-  qwen_vector_map: "data/vector_qwen3_8b/chunk_ids.jsonl"
-  qwen_embeddings_checkpoint: "data/vector_qwen3_8b/embeddings.npy"
-  qwen_embedding_progress: "data/vector_qwen3_8b/progress.json"
+  qwen_vector_dir: "runtime/modern/vector_qwen3_8b"
+  qwen_faiss_index: "runtime/modern/vector_qwen3_8b/faiss.index"
+  qwen_vector_manifest: "runtime/modern/vector_qwen3_8b/manifest.json"
+  qwen_vector_map: "runtime/modern/vector_qwen3_8b/chunk_ids.jsonl"
+  qwen_embeddings_checkpoint: "runtime/modern/vector_qwen3_8b/embeddings.npy"
+  qwen_embedding_progress: "runtime/modern/vector_qwen3_8b/progress.json"
   qwen_embedding_model_dir: "models/Qwen/Qwen3-Embedding-8B"
   qwen_reranker_model_dir: "models/Qwen/Qwen3-Reranker-8B"
-  retrieval_eval: "data/retrieval_eval.json"
-  doi_audit: "data/doi_audit.json"
-  source_checksums_before: "data/source_checksums_before.jsonl"
-  source_checksums_after: "data/source_checksums_after.jsonl"
-  run_manifest: "data/run_manifest.json"
-  pipeline_log: "logs/pipeline.log"
+  retrieval_eval: "runtime/modern/retrieval_eval.json"
+  doi_audit: "runtime/modern/doi_audit.json"
+  source_checksums_before: "runtime/modern/source_checksums_before.jsonl"
+  source_checksums_after: "runtime/modern/source_checksums_after.jsonl"
+  run_manifest: "runtime/modern/run_manifest.json"
+  pipeline_log: "runtime/logs/pipeline.log"
 
 extraction:
   preferred_engine: "pymupdf"  # pymupdf | pypdf | pdfplumber
@@ -149,7 +149,7 @@ embedding:
   passage_prefix: "passage: "
   query_prefix: "query: "
 
-# 仅在配备 CUDA 的服务器上启用；索引位于独立旁路目录，不覆盖 E5 或 rag.db。
+# 可选 BGE 对照通道；索引位于独立目录，不覆盖 E5 或 rag.db。
 bge:
   embedding_model_id: "BAAI/bge-m3"
   reranker_model_id: "BAAI/bge-reranker-v2-m3"
@@ -166,7 +166,7 @@ bge:
   reranker_candidates: 100
   rrf_vector_weight: 1.0
 
-# 双 RTX 4090 服务器的最高质量主通道：8B 原精度模型分置两张 GPU。
+# Qwen 主通道。默认分置两张 CUDA GPU；可按客户硬件修改设备编号。
 qwen:
   embedding_model_id: "Qwen/Qwen3-Embedding-8B"
   reranker_model_id: "Qwen/Qwen3-Reranker-8B"
@@ -183,3 +183,8 @@ qwen:
   rrf_vector_weight: 1.0
   lexical_recall_guard: true
   query_prompt: "Instruct: Retrieve evidence from Chinese and English biomedical literature about burns, scalds, wound healing, Lonicera or honeysuckle, Glycyrrhiza or licorice, active compounds, mechanisms, safety, and clinical effects.\nQuery: "
+
+release:
+  # doctor --deep 必须通过的向量通道。可选值：e5、qwen。
+  required_vector_backends:
+    - qwen

@@ -81,9 +81,17 @@ def source_any_page(
     return row
 
 
-def doctor_any_corpus(modern_checks: dict[str, Any], cfg: dict[str, Any], *, deep: bool) -> dict[str, Any]:
+def doctor_any_corpus(
+    modern_checks: dict[str, Any], cfg: dict[str, Any], *, deep: bool
+) -> dict[str, Any]:
     if deep and "ancient_database" in cfg.get("paths", {}):
         modern_checks["ancient_corpus"] = ancient_doctor(cfg)
         if "ancient_qwen_vector_dir" in cfg.get("paths", {}):
             modern_checks["ancient_qwen_vector"] = ancient_qwen_doctor(cfg)
+        ancient_checks = [modern_checks["ancient_corpus"]]
+        if "ancient_qwen_vector" in modern_checks:
+            ancient_checks.append(modern_checks["ancient_qwen_vector"])
+        modern_checks["healthy"] = bool(modern_checks.get("healthy")) and all(
+            check.get("healthy") is True for check in ancient_checks
+        )
     return modern_checks

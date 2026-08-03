@@ -757,9 +757,10 @@ def doctor(cfg: dict[str, Any], logger, *, deep: bool = False) -> dict[str, Any]
 
     expected = checks["json_counts"]
     actual = checks["database_counts"]
+    expected_document_count = expected.get("documents", 0)
     base_healthy = all(
         [
-            checks["pdf_count"] == 584,
+            checks["pdf_count"] == expected_document_count,
             expected == {k: actual[k] for k in ("documents", "pages", "chunks")},
             actual["chunks"] == actual["fts_rows"],
             not checks["duplicate_doc_ids"],
@@ -779,7 +780,19 @@ def doctor(cfg: dict[str, Any], logger, *, deep: bool = False) -> dict[str, Any]
     if deep:
         from .vector import vector_doctor
 
-        checks["vector"] = vector_doctor(cfg)
+        required_backends = {
+            str(item).lower()
+            for item in cfg.get("release", {}).get(
+                "required_vector_backends", ["qwen"]
+            )
+        }
+        unknown_backends = required_backends - {"e5", "qwen"}
+        if unknown_backends:
+            checks["required_vector_backend_error"] = sorted(unknown_backends)
+        checks["required_vector_backends"] = sorted(required_backends)
+        e5_present = Path(paths["vector_manifest"]).is_file()
+        if "e5" in required_backends or e5_present:
+            checks["vector"] = vector_doctor(cfg)
         qwen_keys = {
             "qwen_vector_dir",
             "qwen_faiss_index",
@@ -788,7 +801,8 @@ def doctor(cfg: dict[str, Any], logger, *, deep: bool = False) -> dict[str, Any]
             "qwen_embedding_model_dir",
             "qwen_reranker_model_dir",
         }
-        if qwen_keys <= set(paths):
+        qwen_present = Path(paths.get("qwen_vector_manifest", "")).is_file()
+        if qwen_keys <= set(paths) and ("qwen" in required_backends or qwen_present):
             from .qwen_retrieval import qwen_doctor
 
             checks["qwen_vector"] = qwen_doctor(cfg)
@@ -797,22 +811,27 @@ def doctor(cfg: dict[str, Any], logger, *, deep: bool = False) -> dict[str, Any]
         )
         if freeze_path.is_file():
             frozen = json.loads(freeze_path.read_text(encoding="utf-8"))
-            frozen_db = frozen.get("artifacts", {}).get("data/rag.db", {}).get("sha256")
+            frozen_db = frozen.get("artifacts", {}).get("database", {}).get("sha256")
             checks["frozen_rag_db_sha256_matches"] = (
                 bool(frozen_db) and frozen_db == sha256_file(paths["database"])
             )
         else:
             checks["frozen_rag_db_sha256_matches"] = False
-    checks["healthy"] = base_healthy and (
-        not deep
-        or (
-            checks.get("vector", {}).get("healthy") is True
+    deep_healthy = True
+    if deep:
+        required_backends = set(checks.get("required_vector_backends", []))
+        deep_healthy = (
+            "required_vector_backend_error" not in checks
             and (
-                "qwen_vector" not in checks
-                or checks["qwen_vector"].get("healthy") is True
+                "e5" not in required_backends
+                or checks.get("vector", {}).get("healthy") is True
+            )
+            and (
+                "qwen" not in required_backends
+                or checks.get("qwen_vector", {}).get("healthy") is True
             )
             and checks.get("frozen_rag_db_sha256_matches") is True
         )
-    )
+    checks["healthy"] = base_healthy and deep_healthy
     logger.info("doctor: %s", json.dumps(checks, ensure_ascii=False))
     return checks

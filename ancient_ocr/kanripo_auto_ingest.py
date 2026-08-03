@@ -16,7 +16,7 @@ from typing import Any, Iterable
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_CATALOG = SCRIPT_DIR / "kanripo_sources_v1.json"
-POLICY_ID = "auto_include_gt_0_7_user_authorized_2026-08-02"
+POLICY_ID = "auto_include_gt_0_7"
 CONFIDENCE_MODEL = "kanripo_text_quality_v1"
 CJK_RE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]")
 PUNCTUATION = set("，。！？；：、（）《》〈〉【】〔〕［］“”‘’…—·,.!?;:()[]{}<>")
@@ -95,7 +95,7 @@ def atomic_jsonl(path: Path, rows: Iterable[dict[str, Any]]) -> None:
 
 
 def load_catalog(path: Path) -> dict[str, Any]:
-    catalog = json.loads(path.read_text(encoding="utf-8"))
+    catalog = json.loads(path.read_text(encoding="utf-8-sig"))
     books = catalog.get("books")
     if not isinstance(books, list) or not books:
         raise ValueError("catalog must contain a non-empty books list")
@@ -114,6 +114,73 @@ def git_commit(repo_dir: Path) -> str:
         encoding="utf-8",
     )
     return result.stdout.strip()
+
+
+def _run_git(*args: str, cwd: Path | None = None) -> str:
+    command = ["git"]
+    if cwd is not None:
+        command.extend(("-C", str(cwd)))
+    command.extend(args)
+    result = subprocess.run(
+        command,
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+    return result.stdout.strip()
+
+
+def fetch_sources(catalog_path: Path, sources_root: Path) -> dict[str, Any]:
+    """Clone each public source and detach it at the catalogued commit."""
+    catalog = load_catalog(catalog_path.resolve())
+    sources_root = sources_root.resolve()
+    sources_root.mkdir(parents=True, exist_ok=True)
+    repository_base = str(
+        catalog.get("repository_base") or "https://github.com/kanripo"
+    ).rstrip("/")
+    sources: list[dict[str, str]] = []
+    for book in catalog["books"]:
+        repo = str(book["repo"])
+        expected = str(book["expected_commit"])
+        target = sources_root / repo
+        source_url = str(
+            book.get("repository_url") or f"{repository_base}/{repo}.git"
+        )
+        if target.exists():
+            if not (target / ".git").is_dir():
+                raise FileExistsError(
+                    f"source target is not a Git repository: {target}"
+                )
+            if _run_git("status", "--porcelain", cwd=target):
+                raise RuntimeError(f"source repository has local changes: {target}")
+            if git_commit(target) != expected:
+                _run_git("fetch", "origin", expected, cwd=target)
+                _run_git("checkout", "--detach", expected, cwd=target)
+        else:
+            _run_git("clone", "--no-checkout", source_url, str(target))
+            _run_git("checkout", "--detach", expected, cwd=target)
+        actual = git_commit(target)
+        if actual != expected:
+            raise RuntimeError(
+                f"source commit mismatch for {repo}: expected {expected}, got {actual}"
+            )
+        sources.append(
+            {
+                "repo": repo,
+                "title": str(book["title"]),
+                "source_url": source_url,
+                "commit": actual,
+            }
+        )
+    report = {
+        "schema_version": 1,
+        "healthy": len(sources) == len(catalog["books"]),
+        "source_count": len(sources),
+        "sources": sources,
+    }
+    atomic_json(sources_root / "source_fetch_manifest.json", report)
+    return report
 
 
 def snapshot_sha256(repo_dir: Path) -> str:
@@ -615,6 +682,9 @@ def relevance_audit(output_dir: Path) -> dict[str, Any]:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
+    fetch = subparsers.add_parser("fetch")
+    fetch.add_argument("--sources-root", type=Path, required=True)
+    fetch.add_argument("--catalog", type=Path, default=DEFAULT_CATALOG)
     build = subparsers.add_parser("build")
     build.add_argument("--base-database", type=Path, required=True)
     build.add_argument("--sources-root", type=Path, required=True)
@@ -632,7 +702,9 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    if args.command == "build":
+    if args.command == "fetch":
+        result = fetch_sources(args.catalog, args.sources_root)
+    elif args.command == "build":
         result = build_auto70_copy(
             base_database=args.base_database,
             sources_root=args.sources_root,

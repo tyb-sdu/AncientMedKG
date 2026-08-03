@@ -1,0 +1,8 @@
+PyMuPDF==1.28.0
+numpy==2.3.5
+paddleocr==3.7.0
+paddlepaddle-gpu==3.2.0
+paddlex==3.7.2
+opencv-contrib-python==4.10.0.84
+Pillow==12.1.0
+PyYAML==6.0.2

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""现代文献本地预处理与 SQLite FTS5 关键词检索入口。"""
+"""古今文献本地预处理与混合检索入口。"""
 
 from __future__ import annotations
 
@@ -11,6 +11,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "src"))
+DEFAULT_CONFIG = (
+    Path.cwd() / "app" / "config.yaml"
+    if (Path.cwd() / "app" / "config.yaml").is_file()
+    else ROOT / "config.yaml"
+)
 
 from rag_prep.config import ensure_dirs, load_config  # noqa: E402
 from rag_prep.logging_utils import setup_logging  # noqa: E402
@@ -36,11 +41,11 @@ from rag_prep.pipeline import (  # noqa: E402
     run_validate,
 )
 FUTURE_HELP = """
-现代文献本地混合检索：
-  python rag_cli.py embed
-  python rag_cli.py query --retrieval hybrid "绿原酸促进创面修复的机制"
-  python rag_cli.py source --doc-id DOC_ID --page 15
-  python rag_cli.py doctor
+古今文献本地检索：
+  python app/rag_cli.py query --mode modern --retrieval qwen-reranked-hybrid "绿原酸促进创面修复的机制"
+  python app/rag_cli.py query --mode ancient --retrieval qwen-reranked-hybrid "忍冬 汤火伤"
+  python app/rag_cli.py source --mode auto --doc-id DOC_ID --page 15
+  python app/rag_cli.py doctor --deep
 """
 
 
@@ -53,8 +58,8 @@ def _add_common_args(
     flag_default = argparse.SUPPRESS if suppress_defaults else False
     target.add_argument(
         "--config",
-        default=argparse.SUPPRESS if suppress_defaults else str(ROOT / "config.yaml"),
-        help="配置文件路径（默认 ./config.yaml）",
+        default=argparse.SUPPRESS if suppress_defaults else str(DEFAULT_CONFIG),
+        help="配置文件路径（默认 app/config.yaml）",
     )
     target.add_argument(
         "--resume",
@@ -76,7 +81,7 @@ def _add_common_args(
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
-        description="中药烧伤项目 - 现代文献 RAG 预处理（本地终端）",
+        description="中药烧伤项目 - 古今文献 RAG（本地终端）",
         epilog=FUTURE_HELP,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -93,8 +98,8 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("validate", parents=[common], help="质量检测与源完整性核对")
     sub.add_parser("index", parents=[common], help="创建 SQLite FTS5 本地索引")
     sub.add_parser("embed", parents=[common], help="建立本地 ONNX E5 + FAISS 向量索引")
-    sub.add_parser("embed-bge", parents=[common], help="建立服务器 GPU BGE-M3 + FAISS 向量旁路索引")
-    sub.add_parser("embed-qwen", parents=[common], help="建立服务器 Qwen3-Embedding-8B + FAISS 高质量索引")
+    sub.add_parser("embed-bge", parents=[common], help="建立 GPU BGE-M3 + FAISS 向量对照索引")
+    sub.add_parser("embed-qwen", parents=[common], help="建立 Qwen3-Embedding-8B + FAISS 主索引")
     sub.add_parser("embed-ancient-qwen", parents=[common], help="建立古籍页级 Qwen3-Embedding-8B + FAISS 向量索引")
     sub.add_parser("status", parents=[common], help="查看流水线状态")
 
@@ -131,9 +136,6 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     cfg = load_config(args.config)
-    # 确保相对工程根
-    cfg["project_root"] = str(ROOT)
-    cfg["_project_root"] = str(ROOT)
     ensure_dirs(cfg)
     logger = setup_logging(cfg["paths"]["pipeline_log"], verbose=args.verbose)
 
