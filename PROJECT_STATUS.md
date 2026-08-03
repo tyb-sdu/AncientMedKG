@@ -1,113 +1,66 @@
-# 中药烧伤 RAG 与知识图谱项目状态
+# Project status
 
-更新时间：2026-08-03
+Updated: 2026-08-03
 
-## 当前结论
+## Release state
 
-本地终端平台的六项最终交付已完成：22 部古籍冻结版、古籍 KG v2、
-240 题扩展评测、忍冬汤同名异方消歧、现代文献结构化证据、机制链与合并总图均已
-通过自动验收。按用户授权，低于 0.7 的记录丢弃，其余机器批准并记录
-`human_reviewed=false`。这是工程与证据门批准，不是临床有效性或湿实验确认。
+The six-deliverable release is complete. The active policy automatically
+discards confidence scores below `0.7` and approves the remaining source-
+verified records with `human_reviewed=false`.
 
-## 已完成的工程里程碑
+| Component | Accepted result |
+| --- | --- |
+| Modern RAG | 584 documents / 9,870 pages / 10,983 chunks |
+| Ancient RAG | 22 books / 26,949 pages / 26,949 FTS rows |
+| Ancient index | 26,949 Qwen page vectors; zero missing/orphan rows; all fingerprints match |
+| Ancient KG | 21 sources / 613 entities / 1,744 evidence / 3,200 assertions |
+| Modern KG | 138 sources / 194 entities / 606 evidence / 1,488 assertions |
+| Combined KG | 159 sources / 807 entities / 2,350 evidence / 4,688 assertions |
+| Mechanism chains | 97 compound-target-pathway-phenotype candidates |
+| Automatic treatment claims | 0 `TREATS` assertions |
+| Optimized public test suite | 130 passed |
 
-| 模块 | 状态 | 验收结果 |
-| --- | --- | --- |
-| 现代文献库 | 完成 | 584 篇、9,870 页、10,983 chunks；原 PDF 不改写 |
-| 现代混合检索 | 完成 | FTS5 + FAISS + RRF，题名/年份/DOI/PDF页码/doc_id/chunk_id 可返回 |
-| 古籍 vNext | 完成 | 22 部、26,949 页；新增 21,325 页自动纳入，28 页低于门丢弃 |
-| 古籍来源与索引指纹 | 完成 | SQLite/FTS/JSONL 同为 26,949；Qwen 索引零缺失、零孤儿、四类指纹匹配 |
-| 古籍 52 题回归 | 完成 | keyword Recall@10 0.8913；hybrid 0.9565；三通道页码与拒答均 1.0 |
-| 五层 KG 工具 | 完成 | 古籍-病证-治法-方剂-药物及现代扩展；稳定 ID、版本、证据与发布门 |
-| Neo4j/JSON-LD 导出 | 完成 | 实体、断言、证据和来源均可独立导入与追溯 |
-| 忍冬汤专项资产 | 完成 | 39 条烧伤本体、2 个同名异方、15 个专项问题 |
-| 忍冬汤 KG 草案 | 完成草案 | 2 来源、17 实体、4 证据、32 断言；3 个古籍页 exact 核验 |
-| 22 部古籍批准 KG | 完成 | 613 实体、1,744 证据、3,200 断言；来源核验 1,744/1,744 |
-| 活性成分计算入口 | 完成 | 13 个候选身份、现代语料扫描、C0-C5、评分、敏感性与机制分析 |
-| 发现基线 | 完成 intake | PubChem 13/13；2,238 条页/chunk 候选；doctor `valid=true`、问题 0 |
-| 500 条证据审阅入口 | 批次完成 | 13 成分均衡抽样；109 烧伤、223 创面、168 背景；覆盖 151 篇文献；独立验收通过 |
-| 50 条校准子批次 | 批次完成 | 父批次成员核验通过；25 烧伤、15 创面、10 背景；47 篇文献；A/B 空白双盲表 |
-| 公开代码回归 | 通过 | 本里程碑全仓 148 passed；发布预检 `valid=true`/`violations=[]` |
+All 2,350 released evidence records resolve to exact read-only SQLite source
+rows. Neo4j and JSON-LD exports have independent SHA-256 manifests. The combined
+content fingerprint is
+`6840888ccf92c761b0392f497ed8eabb54c2c158cee4e853d498c2f665f8771e`.
 
-## 2026-08-03 六项最终交付
+## Retrieval
 
-- 古籍批准图：21 来源、613 实体、1,744 证据、3,200 关系。
-- 现代批准图：138 来源、194 实体、606 证据、1,488 关系、97 条候选机制链。
-- 合并总图：159 来源、807 实体、2,350 证据、4,688 关系；自动 `TREATS` 为 0。
-- 聚合总闸：`valid=true`、`issues=[]`，内容指纹为 `6840888c...8771e`。
+| Benchmark | Channel | Recall@5 | Recall@10 | MRR@10 | Page locatable | No-answer |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| Independent 52 | keyword | 0.8696 | 0.8913 | 0.6728 | 1.0 | 1.0 |
+| Independent 52 | qwen-vector | 0.5652 | 0.5870 | 0.4746 | 1.0 | 1.0 |
+| Independent 52 | reranked hybrid | 0.9130 | 0.9565 | 0.8200 | 1.0 | 1.0 |
+| Source locator 240 | routed channels | 0.9955 | 0.9955 | 0.9795 | 1.0 | 1.0 |
 
-具体指标、忍冬汤两个方剂实例、绿原酸机制链示例和复现命令见
-`FINAL_SIX_DELIVERABLES.md`。
+The 240-question result measures explicit source-title routing and term
+normalization and is not presented as raw-vector performance. One known locator
+failure remains: the `烫伤` target on physical page 47 of `疡医大全`.
 
-下方 2026-07-31 及更早的候选层、空白审阅表和 `pending` 草案为历史记录，
-已被本次自动批准版的数据口径取代，不再是发布前置条件。
+## Formula and mechanism examples
 
-## 检索评测解释
+`FormulaConcept` and `FormulaVariant` prevent same-name formulas from collapsing.
+The two Rendongtang records in `医学心悟` point to distinct physical pages,
+compositions, evidence records, and composition fingerprints.
 
-古籍通用 52 题基线：
+One modern chlorogenic-acid chain resolves DOI `10.2147/IJN.S594688`, physical
+page 20, and its immutable chunk to NFKB1, NFE2L2, VEGFA, and NLRP3 signals,
+Nrf2/HO-1 and NLRP3 pathways, and wound-healing/inflammation/oxidative-stress/
+angiogenesis/antibacterial outcomes. Its confidence is `0.9325`. The graph marks
+this as a source-supported mechanism candidate, not direct binding or clinical
+proof.
 
-| 方法 | Recall@5 | Recall@10 | MRR@10 | 页码定位率 |
-| --- | ---: | ---: | ---: | ---: |
-| keyword | 0.8696 | 0.8913 | 0.6837 | 1.0 |
-| qwen-vector | 0.6304 | 0.6739 | 0.5280 | 1.0 |
-| qwen-reranked-hybrid | 0.7609 | 0.7826 | 0.7089 | 1.0 |
+## Quality boundary
 
-忍冬汤 15 题的受控词表规划层在三通道上 Recall@5/10、MRR@10、页码定位和
-3 题拒答均为 1.0。该结果验证的是同名异方消歧和查询规划规则；题集中的目标
-页标签只用于评测，不能替代通用检索的独立基线。原始专项基线仍单独保留，未被
-规划层结果覆盖。
+This is a strong research engineering release, not a clinical knowledge base.
+Automatic confidence does not replace chemical structure confirmation,
+pharmacokinetics, toxicology, wet-lab validation, randomized trials, or
+regulatory assessment. No treatment recommendation should be generated from the
+graph alone.
 
-## 忍冬汤证据边界
+## Public repository boundary
 
-- 《医学心悟》第 138 页记录内外痈肿二味忍冬汤：金银花四两、甘草三钱。
-- 第 227 页存在组成不同的同名忍冬汤，必须作为独立方剂实例。
-- 第 137、138、227 页的数据库正文、页 ID、物理页和 SHA-256 已精确核验。
-- 忍冬汤到烧伤表型目前只能是 E5 `MECHANISM_TRANSFER` 假说。
-- KG 草案全部保持 `pending`；发布验证按预期只因
-  `evidence_not_approved` 和 `edge_not_approved` 被阻断。
-
-## 活性成分 intake
-
-候选池包含金银花与甘草的 13 个母体、代谢物和备选成分。绿原酸匹配 PubChem
-CID 1794427，甘草酸匹配 CID 14982；所有身份仍标记为需要人工确认结构、盐型、
-立体化学和来源。现代语料扫描生成 2,238 个候选定位，其中绿原酸 111 篇、
-甘草酸 102 篇；这些只是全文复核入口，不是 C3 疗效证据。
-
-公开脱敏摘要位于
-`discovery_pipeline/reports/intake_baseline_v1.json`。原始响应、文献片段和
-数据库位于服务器仓库外，不上传 GitHub。
-
-首批 500 条双盲审阅任务已经版本化生成。A、B 两份表覆盖相同定位但顺序独立，
-固定来源字段和 5 个文件 SHA-256 已由 `validate-review-batch` 复验。批次当前仍是
-空白待审状态，科学证据批准数为 0；只有完成两位独立审阅人和第三位仲裁者的
-全文、页码与研究类型核验后，记录才可进入 KG 现代文献覆盖层。
-
-为降低一次性审核 500 条造成的口径漂移，已从同一父批次生成 50 条严格校准
-子集，13 个化合物各 3 至 4 条，语境固定为 25/15/10，覆盖 47 篇文献。子集
-`locus_id`、固定来源字段和父批次 SHA-256 已复验。应先由两位审阅人独立完成
-这 50 条并统一规则，再继续其余记录；校准表当前仍为空白，批准证据数为 0。
-
-古籍内容层已从 2 来源样板扩展为独立的 12 来源候选图。它扫描全部 5,624 页，
-保留 212 个直接烧伤候选页与 102 个创面迁移候选页。1,316 条精确引文全部可
-回指 SQLite 原页；草案结构错误为 0，发布门只因证据和关系尚未审批而阻断。
-候选层不覆盖样板图，同页治法关系仅为 E5 假说，不生成未经证实的 `TREATS`。
-
-## 交付后可选科研增强
-
-1. 扩充更多古籍与现代文献，继续按同一 0.7 自动门生成新版本。
-2. 引入有来源的烧伤疾病基因、实验靶点、STRING PPI 和通路集合。
-3. 完成标准品定量、暴露、安全性、细胞/动物实验和必要的临床验证。
-4. 人工复核、双人标注与专家评议可作为额外增强，不再阻塞当前版本交付。
-
-在这些工作完成前，不得给出最终活性成分排名、确定机制、现代剂量换算或临床
-治疗建议。
-
-## GitHub 里程碑
-
-- `6e64d35`：版本化古籍 OCR vNext。
-- `8a5f6f3`：证据优先的五层 KG 工具。
-- `16dd53c`：KG 聚合 doctor。
-- `05b5363`：烧伤本体、忍冬汤专项规划与真实证据草案。
-
-公开仓库只含代码、测试、公开说明和脱敏汇总，不含 PDF、OCR 正文、数据库、
-索引、模型、日志、密钥或原始文献片段。
+Git contains code, tests, schemas, examples, and aggregate reports. Private
+PDFs, OCR text, databases, FAISS indexes, model weights, raw snippets, logs,
+source paths, and credentials are excluded and enforced by release preflight.

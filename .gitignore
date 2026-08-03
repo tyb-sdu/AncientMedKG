@@ -21,6 +21,7 @@
 app/config.vl_vnext_*.yaml
 **/__pycache__/
 **/.pytest_cache/
+/.pytest_tmp*/
 *.db
 *.pdf
 *.sqlite

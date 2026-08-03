@@ -1,137 +1,112 @@
-# 中药烧伤项目现代文献 RAG
+# Local RAG application
 
-服务器部署目录：`/data2/lxj/projects/tcm-burn-rag`
+`app/` provides terminal retrieval over two independent corpora. Modern
+literature uses document/page/chunk records; ancient literature uses book/page
+records. They share result formatting and source lookup but never share a
+database or vector index.
 
-服务器配置中的现代文献目录为 `../corpus/modern_pdf`，从 `app/` 运行命令即可直接定位 584 份 PDF。
+## Accepted datasets
 
-这是纯本地终端 RAG，不启动网页服务、不调用收费 API、不接回答大模型。古籍已作为独立页级语料接入，不混入现代文献数据库。
+- Modern: 584 PDF documents, 9,870 pages, 10,983 same-page chunks.
+- Ancient: 22 books, 26,949 pages.
+- Immutable IDs: `doc_id`, `chunk_id`, `book_id`, and `page_id`.
+- Source integrity: PDF/database/JSONL/index/layout/model SHA-256 fingerprints.
 
-## 当前完成状态
+Private data and model paths belong in an untracked configuration derived from
+`config.yaml`. Do not commit databases, PDFs, model weights, indexes, logs, or
+generated reports.
 
-- 584 篇 PDF，9,870 页，10,983 个同页 chunk。
-- 原 PDF 已迁移到 `corpus/modern_pdf`，服务器端数量 584/584。
-- SQLite FTS5、原 E5 CPU FAISS、BGE-M3 GPU FAISS、Qwen3-Embedding-8B FAISS 均使用现有 `chunk_id`，不重切、不覆盖 `rag.db`。
-- `doctor --deep`：`healthy=true`；原 PDF SHA-256 未变化；冻结数据库哈希一致。
-- 56 题独立评测已经完成，标签固定为文献 `doc_id` 与物理 PDF 页码，不使用检索结果生成标签。
+## Commands
 
-## 推荐主通道
-
-生产检索使用双 RTX 4090 上的 Qwen3 8B：
-
-- `Qwen/Qwen3-Embedding-8B`：GPU 0，4096 维，归一化向量。
-- `Qwen/Qwen3-Reranker-8B`：GPU 1，候选集 cross-encoder 重排。
-- Qwen 主通道 `Recall@10=0.9792`、`MRR@10=0.9688`、页码定位率 `1.0`、无答案准确率 `1.0`。
-- 模型和索引是项目专属目录，不混入 `/data2/lxj/projects/CervixAgent`。
-
-模型来源：[Qwen3-Embedding-8B](https://huggingface.co/Qwen/Qwen3-Embedding-8B)、[Qwen3-Reranker-8B](https://huggingface.co/Qwen/Qwen3-Reranker-8B)。
-
-## 运行命令
+Run from the repository root with `app/src` on `PYTHONPATH`:
 
 ```bash
-cd /data2/lxj/projects/tcm-burn-rag/app
-PY=/data2/lxj/projects/tcm-burn-rag/.conda/bin/python
-export RAG_MODERN_PDF_DIR=/data2/lxj/projects/tcm-burn-rag/corpus/modern_pdf
-export PYTHONPATH=/data2/lxj/projects/tcm-burn-rag/app/src
+export PYTHONPATH="$PWD/app/src:$PWD"
 
-$PY rag_cli.py --config config.yaml query --retrieval qwen-vector \
-  "绿原酸促进创面修复"
-$PY rag_cli.py --config config.yaml query --retrieval qwen-reranked-hybrid \
-  "绿原酸促进创面修复"
-$PY rag_cli.py --config config.yaml doctor --deep
-$PY scripts/retrieval_eval_v2.py
+python app/rag_cli.py --config app/config.yaml status
+python app/rag_cli.py --config app/config.yaml doctor --deep
+
+python app/rag_cli.py --config app/config.yaml query \
+  --mode modern --retrieval keyword "绿原酸促进创面修复"
+python app/rag_cli.py --config app/config.yaml query \
+  --mode modern --retrieval qwen-vector "绿原酸促进创面修复"
+python app/rag_cli.py --config app/config.yaml query \
+  --mode modern --retrieval qwen-reranked-hybrid "绿原酸促进创面修复"
+
+python app/rag_cli.py --config app/config.yaml query \
+  --mode ancient --retrieval qwen-reranked-hybrid "忍冬汤 金银花 甘草"
+python app/rag_cli.py --config app/config.yaml query \
+  --mode dual --retrieval qwen-reranked-hybrid "金银花 烧伤 创面修复"
+
+python app/rag_cli.py --config app/config.yaml source \
+  --mode auto --doc-id DOC_ID --page 20
 ```
 
-结果始终带有题名、年份、DOI、PDF 物理页码、文件名、`doc_id`、`chunk_id`、向量分数、重排分数和原文片段；可用 `source --doc-id ... --page ...` 回看整页。
+Available modern channels include `keyword`, `vector`, `hybrid`, `bge-vector`,
+`reranked-hybrid`, `qwen-vector`, and `qwen-reranked-hybrid`. Ancient production
+uses keyword, Qwen vector, or Qwen reranked hybrid. `dual` searches each corpus
+independently and merges result ranks while preserving corpus identity.
 
-## 旁路索引
+Every result can include title, year, DOI, physical page, source filename,
+snippet, stable IDs, keyword/vector/reranker scores, and fusion rank. `source`
+reopens the exact page used by retrieval.
 
-- 旧基线：`data/vector`，E5 384 维。
-- BGE 对照：`data/vector_bge_m3`。
-- 当前主通道：`data/vector_qwen3_8b`。
+## Indexing
 
-所有索引均可用 `--resume` 续跑；`rag.db` 和 `data/chunks.jsonl` 是冻结输入。
-## 2026-07-28 双库更新
-
-当前 `rag_cli.py` 已支持三种查询模式：
-
-- `--mode modern`：仅检索现代文献库
-- `--mode ancient`：仅检索古籍页库
-- `--mode dual`：现代文献与古籍独立检索后合并展示
-
-新增配置：
-
-- `paths.ancient_database=../ancient_ocr/data/ancient_rag.db`
-- `paths.ancient_books_jsonl=../ancient_ocr/data/books.jsonl`
-- `paths.ancient_pages_jsonl=../ancient_ocr/data/pages.jsonl`
-
-推荐命令：
+Modern FAISS records reuse existing `chunk_id` values. Ancient FAISS records
+reuse `page_id` values. Index builders are resumable and do not rechunk data or
+overwrite SQLite.
 
 ```bash
-$PY rag_cli.py --config config.yaml query --mode modern --retrieval qwen-reranked-hybrid \
-  "绿原酸促进创面修复"
-$PY rag_cli.py --config config.yaml query --mode ancient --retrieval keyword \
-  "金银花 烧伤"
-$PY rag_cli.py --config config.yaml query --mode dual --retrieval qwen-reranked-hybrid \
-  "金银花 烧伤 创面修复"
-$PY rag_cli.py --config config.yaml source --mode auto --doc-id ancient:BOOK_ID --page 232
+python app/rag_cli.py --config app/config.yaml embed --resume
+python app/rag_cli.py --config app/config.yaml embed-qwen --resume
+python app/rag_cli.py --config app/config.yaml embed-ancient-qwen --resume
 ```
 
-说明：
+Qwen production indexes use `Qwen/Qwen3-Embedding-8B`, normalized 4,096-
+dimensional vectors, and FAISS inner-product search. Reranking uses
+`Qwen/Qwen3-Reranker-8B`. Each index manifest binds model, database, canonical
+corpus text, and layout-sidecar fingerprints so stale indexes cannot pass deep
+doctor checks.
 
-- 古籍仍保持独立数据库，不混入现代 `rag.db`
-- `dual` 模式优先保留现代高质量结果，但如果古籍有命中，会至少保留一条古籍结果进入最终展示
-- `source --mode auto` 会根据 `doc_id` 自动分流到现代页或古籍页
-
-## 2026-07-28 古籍 Qwen 页级索引
-
-古籍页库已建立独立的 `Qwen/Qwen3-Embedding-8B` 向量索引；索引复用原有 `page_id`，不修改 `ancient_rag.db`，也不重切页面。索引为 4,096 维 `IndexFlatIP`，共 5,624 页，索引清单记录页面 SHA-256、模型指纹和创建时间。`doctor --deep` 会同时验证现代库、古籍页库和古籍 Qwen 索引。
+## Retrieval evaluation
 
 ```bash
-$PY rag_cli.py --config config.yaml embed-ancient-qwen --resume
-$PY rag_cli.py --config config.yaml query --mode ancient --retrieval qwen-vector \
-  "忍冬 金银花 治疗痈疽发背"
-$PY rag_cli.py --config config.yaml query --mode ancient --retrieval qwen-reranked-hybrid \
-  "忍冬 金银花 治疗痈疽发背"
-$PY rag_cli.py --config config.yaml query --mode dual --retrieval qwen-reranked-hybrid \
-  "金银花 烧伤 创面修复"
+python app/scripts/retrieval_eval_v2.py
+python app/scripts/evaluate_ancient_retrieval.py --config app/config.yaml
 ```
 
-古籍 `qwen-reranked-hybrid` 使用古籍 FTS5、古籍 Qwen 页向量和 Qwen3-Reranker-8B 重排；双库模式分别检索现代与古籍，之后以 RRF 合并，保持每条结果的语料类型、文件、物理 PDF 页码、`doc_id` 和 `chunk_id`。
+The independent 52-question ancient set fixes expected book IDs and physical
+pages before retrieval and validates expected evidence terms directly on the
+label page. Final reranked hybrid performance is Recall@5 `0.9130`, Recall@10
+`0.9565`, MRR@10 `0.8200`, page locatability `1.0`, and no-answer accuracy
+`1.0`.
 
-## 2026-07-28 古籍独立验收基线
+The 240-question source-locator set evaluates deterministic title anchoring,
+simplified/traditional term normalization, same-name formula handling, and
+explicit out-of-era abstention. Its Recall@10 is `0.9955`; this planner-assisted
+metric is reported separately from raw vector retrieval.
 
-古籍独立题集位于 `evaluation/ancient_questions_v1.json`，共 52 题：46 个固定书籍 ID + 物理 PDF 页标签，6 个无答案题。每一个正例标签均含页内证据词，评测运行前会用 `source` 回读同一页验证标签，避免由检索结果反推标准答案。
+## Ancient layout and versioning
+
+Ancient OCR segments retain geometry. `reorder_ancient_pages.py` writes a
+read-only sidecar that orders horizontal pages left-to-right and vertical pages
+right-to-left. Retrieval and index fingerprints use the ordered text without
+modifying source PDFs or the base SQLite database.
+
+`promote_vl_candidates.py` creates a separate versioned database with SQLite
+backup, verifies source/page/original/candidate hashes, synchronizes
+`pages.text`, `payload_json.text`, and FTS, writes same-version `pages.jsonl`,
+and proves the source database hash did not change. `kanripo_auto_ingest.py`
+applies the current `0.7` automatic text-quality policy to curated transcriptions.
+
+## Verification
 
 ```bash
-$PY scripts/evaluate_ancient_retrieval.py --config config.yaml
-$OCR_PY ../ancient_ocr/generate_low_confidence_audit.py \
-  --data-dir ../ancient_ocr/data
+python -m pytest -q --basetemp .pytest_tmp
+python ancient_ocr/release_preflight.py --repository .
+git diff --check
 ```
 
-| 古籍通道 | Recall@5 | Recall@10 | MRR@10 | 页码定位率 |
-|---|---:|---:|---:|---:|
-| keyword | 0.8696 | 0.8913 | 0.6837 | 1.0000 |
-| qwen-vector | 0.5652 | 0.6087 | 0.4796 | 1.0000 |
-| qwen-reranked-hybrid | 0.8043 | 0.8043 | 0.7409 | 1.0000 |
-
-因此，古籍当前默认应使用 `--retrieval keyword`；Qwen 重排可作为补充对照，纯 Qwen 向量不作为默认。三条通道尚未实现经独立校准的无答案拒答阈值，无答案题准确率为 0，不能把非空检索列表解释为古籍中的医学结论。低置信 OCR 复核队列由审计器生成，共 282 页：P1 113 页、P2 169 页；该过程不会修改原始 PDF、页 JSON 或 SQLite 数据库。
-人工复核流程：先用 `ancient_ocr/build_review_packet.py` 生成页图和 `review_manifest.csv`，人工填写 `review_status` 与必要的 `corrected_text`，再用 `ancient_ocr/export_review_overrides.py` 输出独立 JSONL 覆盖层。当前覆盖层不会自动改写页库，必须在人工复核完成并再次验收后才能接入检索。
-### Ancient layout reorder v2
-
-The ancient OCR payload stores structured `segments` with geometry. Generate a
-read-only ordered-text sidecar with:
-
-```bash
-$OCR_PY ancient_ocr/inspect_ocr_payload.py --database ancient_ocr/data/ancient_rag.db
-$OCR_PY ancient_ocr/reorder_ancient_pages.py \
-  --database ancient_ocr/data/ancient_rag.db \
-  --output ancient_ocr/data/pages_layout_v2.jsonl
-$OCR_PY ancient_ocr/summarize_layout.py \
-  --input ancient_ocr/data/pages_layout_v2.jsonl
-```
-
-Horizontal pages are ordered left-to-right; vertical ancient pages are ordered
-right-to-left. The sidecar is used by ancient keyword retrieval, Qwen candidate
-text, reranking and source. It does not modify PDFs or either SQLite database.
-The Qwen manifest records `layout_sidecar_sha256` so stale vectors cannot be
-silently reused after layout text changes.
+`doctor --deep` must report matching database, JSONL, corpus-text, model, and
+layout fingerprints with zero missing or orphaned index entries.

@@ -4,18 +4,18 @@
 
 | Gate | Pass criterion | Failure handling |
 | --- | --- | --- |
-| C0 identity | Clear structure or verifiable analytical peak; unresolved mixtures are classified separately | Eliminate or move to the unresolved-compound list |
-| C1 herb source | At least two independent sources, or one high-quality measured herb study | Downgrade single database predictions |
-| C2 formula exposure | Extractable in decoction or detected in Rendongtang/a comparable decoction; administration route is explicit | Downgrade compounds present only in raw herb but unavailable in the preparation |
-| C3 burn/wound relevance | At least one direct burn/wound study, or at least two complementary mechanism evidence items | Generic anti-inflammatory labels cannot enter the top tier |
-| C4 target/pathway | At least two experimental targets, or significant disease-network enrichment with FDR below 0.05 | Docking-only targets remain prediction edges |
-| C5 safety/verification | Purchasable standard, quantification method, and an acceptable experimental window | Retain high-risk items only at lower priority |
+| C0 identity | Clear structure or verifiable analytical peak | Eliminate unresolved mixtures or retain them outside ranked compounds |
+| C1 herb source | Two independent sources, or one high-quality measured-herb study | Downgrade database-only predictions |
+| C2 formula exposure | Extractable in decoction or detected in the formula/comparable decoction | Downgrade raw-herb-only compounds |
+| C3 burn/wound relevance | Direct burn/wound evidence or complementary mechanism evidence | Generic activity labels cannot enter the top tier |
+| C4 target/pathway | Experimental targets or significant disease-network enrichment | Docking-only targets remain predictions |
+| C5 safety/verification | Standard availability, quantification method, and acceptable window | Retain unresolved risk only at lower priority |
 
-Gate statuses are `pass`, `pending`, `fail`, and `not_assessed`. A `pass` or
-`fail` record must cite `evidence_ids`. Any unresolved gate prevents a final
-tier; any failed gate eliminates the candidate.
+Gate states are `pass`, `pending`, `fail`, and `not_assessed`. A `pass` or
+`fail` record cites evidence IDs. Failed gates eliminate a candidate; unresolved
+gates prevent a final tier.
 
-## R_compound
+## Compound score
 
 | Dimension | Weight |
 | --- | ---: |
@@ -26,106 +26,66 @@ tier; any failed gate eliminates the candidate.
 | synergy_complementarity | 0.10 |
 | safety_verifiability | 0.10 |
 
-Each component is normalized to `[0, 1]`. Tier 1 requires `R_compound >= 0.75`;
-Tier 2 requires `0.60 <= R_compound < 0.75`. A numerical threshold never
-overrides gate or review status. The sensitivity report varies each weight by
-plus/minus 20 percent and the burn/wound component by plus/minus 0.10.
+Each component is normalized to `[0, 1]`. Tier 1 requires
+`R_compound >= 0.75`; Tier 2 requires `0.60 <= R_compound < 0.75`. Sensitivity
+analysis varies every weight by plus/minus 20 percent and varies burn/wound
+weight by plus/minus 0.10. Scores never override evidence or release gates.
 
 ## Chemical identity
 
-`candidate_id` is the stable project identifier. `InChIKey` is the chemical
-identity key after curator review. Parent compounds, salts, glycosides,
-aglycones, stereoisomers, and metabolites are distinct records connected by
-explicit relations such as `metabolite_of`.
+`candidate_id` is the stable project identifier. Parent compounds, salts,
+glycosides, aglycones, stereoisomers, and metabolites remain distinct records
+and use explicit relations such as `metabolite_of`.
 
-PubChem output fields include `cid`, `title`, `molecular_formula`,
-`molecular_weight`, `inchikey`, canonical/isomeric SMILES, `query_url`, and
-`response_sha256`. The status `resolved_requires_curator_review` is not a C0
-pass decision.
+PubChem resolution stores `cid`, title, molecular formula, molecular weight,
+InChIKey, canonical/isomeric SMILES, query URL, and raw-response SHA-256. The
+artifact also stores catalog SHA-256, resolved count, and an identity fingerprint
+over candidate ID, CID, InChIKey, and response hash. This verifies which
+identity record was used; it is not wet-lab structure confirmation.
 
-The resolution artifact also stores `catalog_sha256`, `resolved_count`, and an
-`identity_fingerprint` over candidate ID, CID, InChIKey, and raw-response hash.
-The optional cache contains exact `.response.json` bytes so the response hash
-can be independently recomputed.
+## Literature locus
 
-## Literature scan
-
-Each `compound_loci.jsonl` record points to one existing RAG chunk. Important
-fields are:
+Each `compound_loci.jsonl` row points to an immutable RAG chunk:
 
 | Field | Meaning |
 | --- | --- |
-| locus_id | Deterministic candidate/chunk pair |
-| context_class | `burn_context`, `wound_context`, or `compound_only` |
-| review_status | Always starts as `pending_full_text_review` |
-| evidence_status | Always starts as `retrieval_candidate_not_scientific_evidence` |
-| doc_id / chunk_id | Existing immutable RAG identifiers |
-| pdf_page | PDF page used by `rag_cli.py source` |
-| source_sha256 | SHA-256 of the source PDF |
-| chunk_text_sha256 | SHA-256 of the unmodified chunk text |
-| matched_terms / context_terms | Terms that triggered retrieval |
-| snippet | Normalized local context for triage only |
+| `locus_id` | Deterministic candidate/chunk pair |
+| `context_class` | `burn_context`, `wound_context`, or `compound_only` |
+| `doc_id` / `chunk_id` | Existing immutable RAG identifiers |
+| `pdf_page` | Physical PDF page accepted by `rag_cli.py source` |
+| `source_sha256` | SHA-256 of the source PDF |
+| `chunk_text_sha256` | SHA-256 of the unmodified chunk text |
+| `matched_terms` / `context_terms` | Terms that triggered the candidate |
+| `snippet` | Normalized local context for evidence extraction |
 
 ASCII chemical names use lexical boundaries, so `rutin` does not match
-`routine`. Malformed document topic tags do not discard a true hit; they are
-emptied in the record and reported under `data_quality`.
+`routine`. Malformed topic tags are reported but do not suppress a true text
+match. The coverage report records the database hash before and after scanning,
+and the doctor recomputes all JSONL aggregates instead of trusting summaries.
 
-The coverage summary stores the canonical catalog hash, source database hash,
-loci-file hash, candidate count, and proof that the database hash was unchanged
-before and after the scan. The `doctor` recomputes all aggregates from JSONL;
-summary counts alone are not trusted.
+## Automatic acceptance
 
-## Blinded review and adjudication
+`automatic-loci` reopens every candidate from SQLite and rejects identity,
+page, source-hash, or text-hash mismatches. The versioned policy accepts scores
+`>= 0.7` and discards lower scores. Accepted records contain:
 
-`prepare-review` balances the requested batch across all represented compounds,
-targets burn/wound/compound-only contexts, and prefers distinct documents before
-repeating a document. Reviewer sheets contain the same immutable source fields
-in independently shuffled orders. Reviewers must not edit those fields.
+- `review_status=approved`
+- `human_reviewed=false`
+- policy ID and threshold
+- approval timestamp
+- exact source locator and evidence hash
 
-`prepare-calibration-pilot` selects a strict context-balanced subset from an
-already validated primary batch. Each child master row records
-`parent_batch_id` and `parent_selection_rank`; the child manifest records the
-parent manifest SHA-256, parent master SHA-256, and SHA-256 of the sorted child
-locus IDs. A pilot cannot be validated without `--parent-manifest`. The
-validator proves set membership and equality of every fixed source field in
-addition to the ordinary blank-sheet, hash, and blinded-order checks.
+This status means the machine policy and engineering gates passed. It does not
+mean an expert reviewed the record and does not establish efficacy, safety,
+direct binding, exposure, dosage, or clinical treatment.
 
-Required labels are defined in `ANNOTATION_CODEBOOK.md`. `merge-reviews`
-validates both sheets, calculates per-field Cohen's kappa, and creates a third-
-reviewer queue for every item. Exact dual agreement still requires confirmation.
-`finalize-review` accepts only a distinct adjudicator and refuses approval unless
-full text and PDF page are verified, relevance is evidentiary, and confidence is
-at least 3/5. Reviewer and adjudicator dates must use ISO `YYYY-MM-DD`, and an
-approved item cannot retain an `uncertain` study type. The three decisions are `approve`, `reject`, and
-`needs_more_information`.
+## Structured evidence
 
-Approved records preserve the two reviewer IDs, adjudicator ID, source hashes,
-final labels, and immutable RAG locators. Approval applies to the reviewed
-evidence record only; it does not by itself pass compound identity C0 or imply a
-target, pathway, efficacy, safety, or treatment claim.
+Structured modern records distinguish compounds, genes/proteins, pathways,
+phenotypes/outcomes, study type, evidence quote, and source locator. Supported
+study types include randomized and controlled clinical studies, animal studies,
+in-vitro experiments, analytical chemistry, computational work, and reviews.
 
-## Reviewed KG handoff
-
-`build-reviewed-kg` reopens the modern SQLite database read-only, verifies every
-approved `doc_id`, `chunk_id`, PDF page, document SHA-256, and chunk-text SHA-256,
-and uses exact database text as the evidence quote. The generated overlay is
-limited to `Compound -[STUDIED_IN]-> Study`. Evidence records are approved, but
-the corresponding graph edges remain pending until C0 compound identity is
-curator-approved.
-
-## Mechanism evidence
-
-Compound-target evidence tiers are: direct binding/functional experiment,
-high-throughput experiment, curated database, similarity or machine-learning
-prediction, and molecular docking. The first three experimental categories may
-enter the high-confidence target set only after approval; database and
-prediction categories remain in the extended set.
-
-Disease evidence channels are `database_association`, `transcriptome`, and
-`literature_experiment`. A disease gene is high confidence after approval when
-it has a literature experiment or at least two independent channels.
-
-PPI and pathway records require `review_status`. Approved records additionally
-require source/database provenance and evidence IDs. Every included or excluded
-target, PPI edge, disease gene, and pathway is retained in an audit section of
-the mechanism report.
+Mechanism chains require source-supported nodes and edges and preserve their
+evidence IDs. Co-mention and pathway signals are represented as candidate
+mechanism relations. The automatic graph does not generate `TREATS` edges.
