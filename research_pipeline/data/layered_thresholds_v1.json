@@ -1,0 +1,246 @@
+{
+  "schema_version": "1.0",
+  "policy_id": "layered-threshold-policy-v1",
+  "version": "1.0.0",
+  "decision_mode": "fully_automatic",
+  "human_reviewed": false,
+  "policy_note": "Thresholds are stage-specific. A score passing one gate never substitutes for source integrity or downstream structural constraints.",
+  "gates": [
+    {
+      "gate_id": "ancient_ocr_page_quality",
+      "track": "ancient",
+      "layer": "Q1_source_quality",
+      "score_name": "average_ocr_confidence",
+      "operator": ">=",
+      "threshold": 0.82,
+      "hard_requirements": {
+        "minimum_visible_characters": 20,
+        "minimum_cjk_ratio": 0.45
+      },
+      "pass_action": "eligible_for_candidate_scoring",
+      "fail_action": "retain_in_rag_but_block_from_automatic_kg"
+    },
+    {
+      "gate_id": "kanripo_page_quality",
+      "track": "ancient",
+      "layer": "Q1_source_quality",
+      "score_name": "heuristic_text_quality",
+      "operator": ">",
+      "threshold": 0.7,
+      "hard_requirements": {
+        "page_anchor_required": true,
+        "source_commit_required": true,
+        "snapshot_sha256_required": true
+      },
+      "pass_action": "include_in_versioned_page_database",
+      "fail_action": "discard_page_anchor"
+    },
+    {
+      "gate_id": "ancient_direct_semantic",
+      "track": "ancient",
+      "layer": "Q2_domain_relevance",
+      "score_name": "direct_channel_score",
+      "operator": ">=",
+      "threshold": 0.8,
+      "hard_requirements": {
+        "direct_term_required": true,
+        "exclusion_context_absent": true
+      },
+      "pass_action": "admit_direct_candidate",
+      "fail_action": "evaluate_transfer_channel"
+    },
+    {
+      "gate_id": "ancient_transfer_semantic",
+      "track": "ancient",
+      "layer": "Q2_domain_relevance",
+      "score_name": "transfer_channel_score",
+      "operator": ">=",
+      "threshold": 0.7,
+      "hard_requirements": {
+        "minimum_semantic_layers": 2,
+        "exclusion_context_absent": true
+      },
+      "pass_action": "admit_transfer_candidate",
+      "fail_action": "do_not_create_graph_candidate"
+    },
+    {
+      "gate_id": "ancient_candidate_release",
+      "track": "ancient",
+      "layer": "Q3_evidence_release",
+      "score_name": "candidate_confidence",
+      "operator": ">=",
+      "threshold": 0.7,
+      "hard_requirements": {
+        "stable_page_id_required": true,
+        "source_sha256_required": true,
+        "text_sha256_required": true,
+        "low_confidence_ocr_forbidden": true
+      },
+      "pass_action": "approve_evidence_automatically",
+      "fail_action": "discard_evidence"
+    },
+    {
+      "gate_id": "modern_locus_release",
+      "track": "modern",
+      "layer": "Q2_domain_relevance",
+      "score_name": "candidate_confidence",
+      "operator": ">=",
+      "threshold": 0.7,
+      "hard_requirements": {
+        "exact_compound_term_required": true,
+        "burn_or_wound_context_required": true,
+        "doc_chunk_page_match_required": true,
+        "source_and_chunk_sha256_required": true
+      },
+      "pass_action": "admit_structuring_candidate",
+      "fail_action": "discard_locus"
+    },
+    {
+      "gate_id": "modern_structured_release",
+      "track": "modern",
+      "layer": "Q3_evidence_release",
+      "score_name": "semantic_confidence",
+      "operator": ">=",
+      "threshold": 0.7,
+      "hard_requirements": {
+        "study_type_required": true,
+        "outcome_or_safety_required": true,
+        "source_locator_reverified": true
+      },
+      "pass_action": "approve_structured_evidence_automatically",
+      "fail_action": "discard_structured_evidence"
+    },
+    {
+      "gate_id": "compound_priority_tier_1",
+      "track": "modern",
+      "layer": "Q4_mechanism_priority",
+      "score_name": "R_compound",
+      "operator": ">=",
+      "threshold": 0.75,
+      "hard_requirements": {
+        "evidence_ids_required_for_scored_components": true
+      },
+      "pass_action": "primary_compound_tier",
+      "fail_action": "evaluate_tier_2"
+    },
+    {
+      "gate_id": "compound_priority_tier_2",
+      "track": "modern",
+      "layer": "Q4_mechanism_priority",
+      "score_name": "R_compound",
+      "operator": ">=",
+      "threshold": 0.6,
+      "hard_requirements": {
+        "upper_bound_exclusive": 0.75,
+        "evidence_ids_required_for_scored_components": true
+      },
+      "pass_action": "secondary_compound_tier",
+      "fail_action": "exclude_from_priority_set"
+    },
+    {
+      "gate_id": "ppi_primary_mechanism",
+      "track": "modern",
+      "layer": "Q4_mechanism_priority",
+      "score_name": "ppi_score",
+      "operator": ">=",
+      "threshold": 0.7,
+      "hard_requirements": {
+        "approved_status_required": true,
+        "database_required": true,
+        "evidence_ids_required": true
+      },
+      "pass_action": "use_in_primary_mechanism",
+      "fail_action": "retain_only_in_audit"
+    },
+    {
+      "gate_id": "pathway_enrichment",
+      "track": "modern",
+      "layer": "Q4_mechanism_priority",
+      "score_name": "benjamini_hochberg_fdr",
+      "operator": "<",
+      "threshold": 0.05,
+      "hard_requirements": {
+        "background_gene_set_required": true,
+        "overlap_gene_required": true,
+        "source_required": true
+      },
+      "pass_action": "mark_significant_pathway",
+      "fail_action": "retain_as_nonsignificant_result"
+    },
+    {
+      "gate_id": "final_release_integrity",
+      "track": "both",
+      "layer": "Q5_release_integrity",
+      "score_name": "not_applicable",
+      "operator": "hard_gate",
+      "threshold": null,
+      "hard_requirements": {
+        "source_locator_exact": true,
+        "stable_ids_unique": true,
+        "database_fts_count_match": true,
+        "automatic_treats_relation_forbidden": true,
+        "complete_mechanism_chain_required_for_chain_output": true
+      },
+      "pass_action": "release_graph_and_exports",
+      "fail_action": "block_release"
+    }
+  ],
+  "observed_baseline": {
+    "ancient": {
+      "corpus": {
+        "books": 22,
+        "pages": 26949,
+        "kanripo_candidate_page_anchors": 21353,
+        "kanripo_admitted_pages": 21325,
+        "kanripo_discarded_page_anchors": 28
+      },
+      "domain_candidates": {
+        "candidate_pages": 537
+      },
+      "candidate_graph": {
+        "entities": 617,
+        "evidence": 1766,
+        "relations": 3339
+      },
+      "released_graph": {
+        "sources": 21,
+        "entities": 613,
+        "evidence": 1744,
+        "relations": 3200,
+        "source_verified_evidence": 1744,
+        "automatic_treats_relations": 0
+      },
+      "discarded_at_release": {
+        "entities": 4,
+        "evidence": 22,
+        "relations": 139
+      }
+    },
+    "modern": {
+      "corpus": {
+        "documents": 584,
+        "chunks": 10983,
+        "compound_identities_resolved": 13,
+        "compound_identities_total": 13
+      },
+      "domain_candidates": {
+        "candidate_loci": 2238,
+        "structuring_candidates": 677
+      },
+      "structured_release": {
+        "approved": 606,
+        "discarded": 71
+      },
+      "released_graph": {
+        "sources": 138,
+        "entities": 194,
+        "evidence": 606,
+        "relations": 1488,
+        "source_verified_evidence": 606
+      },
+      "mechanism_output": {
+        "complete_compound_target_pathway_phenotype_chains": 97
+      }
+    }
+  }
+}

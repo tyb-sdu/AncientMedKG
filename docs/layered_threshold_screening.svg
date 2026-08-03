@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="518.740157pt" height="342.992126pt" viewBox="0 0 518.740157 342.992126" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <title>Layered threshold screening for the AncientMedRAG evidence pipeline</title>
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title>Layered threshold screening for the AncientMedRAG evidence pipeline</dc:title>
+    <dc:description>Stage-specific screening gates for ancient and modern evidence.</dc:description>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>AncientMedRAG</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 342.992126
+L 518.740157 342.992126
+L 518.740157 0
+L 0 0
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 13.969672 184.366547
+L 512.551587 184.366547
+L 512.551587 83.044307
+L 13.969672 83.044307
+z
+" clip-path="url(#p96d39aaa70)" style="fill: #fafaf9"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 13.969672 311.22869
+L 512.551587 311.22869
+L 512.551587 209.90645
+L 13.969672 209.90645
+z
+" clip-path="url(#p96d39aaa70)" style="fill: #fafaf9"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 88.056142 175.155434
+L 88.056142 169.293817
+" clip-path="url(#p96d39aaa70)" style="fill: none; stroke: #8a4740; stroke-width: 0.75; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 271.269978 175.155434
+L 271.269978 169.293817
+" clip-path="url(#p96d39aaa70)" style="fill: none; stroke: #8a4740; stroke-width: 0.75; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_3">
+    <path d="M 179.66306 302.017577
+L 179.66306 296.15596
+" clip-path="url(#p96d39aaa70)" style="fill: none; stroke: #8a4740; stroke-width: 0.75; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_4">
+    <path d="M 271.269978 302.017577
+L 271.269978 296.15596
+" clip-path="url(#p96d39aaa70)" style="fill: none; stroke: #8a4740; stroke-width: 0.75; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_5">
+    <path d="M 13.969672 62.947334
+L 512.551587 62.947334
+" clip-path="url(#p96d39aaa70)" style="fill: none; stroke: #c9cdd1; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 49.01057 169.293817
+L 127.101713 169.293817
+L 127.101713 97.279663
+L 49.01057 97.279663
+z
+" clip-path="url(#p96d39aaa70)" style="fill: #f5ecea; stroke: #8d3a32; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 140.617488 169.293817
+L 218.708631 169.293817
+L 218.708631 97.279663
+L 140.617488 97.279663
+z
+" clip-path="url(#p96d39aaa70)" style="fill: #f5ecea; stroke: #8d3a32; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 232.224406 169.293817
+L 310.31555 169.293817
+L 310.31555 97.279663
+L 232.224406 97.279663
+z
+" clip-path="url(#p96d39aaa70)" style="fill: #f5ecea; stroke: #8d3a32; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 323.831324 169.293817
+L 401.922468 169.293817
+L 401.922468 97.279663
+L 323.831324 97.279663
+z
+" clip-path="url(#p96d39aaa70)" style="fill: #f5ecea; stroke: #8d3a32; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 415.438243 169.293817
+L 493.529386 169.293817
+L 493.529386 97.279663
+L 415.438243 97.279663
+z
+" clip-path="url(#p96d39aaa70)" style="fill: #f5ecea; stroke: #8d3a32; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 49.01057 296.15596
+L 127.101713 296.15596
+L 127.101713 224.141806
+L 49.01057 224.141806
+z
+" clip-path="url(#p96d39aaa70)" style="fill: #eaf1f4; stroke: #315a72; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 140.617488 296.15596
+L 218.708631 296.15596
+L 218.708631 224.141806
+L 140.617488 224.141806
+z
+" clip-path="url(#p96d39aaa70)" style="fill: #eaf1f4; stroke: #315a72; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 232.224406 296.15596
+L 310.31555 296.15596
+L 310.31555 224.141806
+L 232.224406 224.141806
+z
+" clip-path="url(#p96d39aaa70)" style="fill: #eaf1f4; stroke: #315a72; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 323.831324 296.15596
+L 401.922468 296.15596
+L 401.922468 224.141806
+L 323.831324 224.141806
+z
+" clip-path="url(#p96d39aaa70)" style="fill: #eaf1f4; stroke: #315a72; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 415.438243 296.15596
+L 493.529386 296.15596
+L 493.529386 224.141806
+L 415.438243 224.141806
+z
+" clip-path="url(#p96d39aaa70)" style="fill: #eaf1f4; stroke: #315a72; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_6">
+    <path d="M 59.022255 320.858489
+L 68.032772 320.858489
+" clip-path="url(#p96d39aaa70)" style="fill: none; stroke: #8d3a32; stroke-width: 2; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_7">
+    <path d="M 147.625668 320.858489
+L 156.636184 320.858489
+" clip-path="url(#p96d39aaa70)" style="fill: none; stroke: #202124; stroke-width: 2; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_8">
+    <path d="M 236.22908 320.858489
+L 245.239597 320.858489
+" clip-path="url(#p96d39aaa70)" style="fill: none; stroke: #315a72; stroke-width: 2; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_9">
+    <path d="M 324.832493 320.858489
+L 333.843009 320.858489
+" clip-path="url(#p96d39aaa70)" style="fill: none; stroke: #8a4740; stroke-width: 2; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_10">
+    <path d="M 413.435906 320.858489
+L 422.446422 320.858489
+" clip-path="url(#p96d39aaa70)" style="fill: none; stroke: #5f6368; stroke-width: 2; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 11.2px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="13.969672" y="35.893257" transform="rotate(-0 13.969672 35.893257)">分层阈值筛选：从来源质量到可溯源发布</text>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 6.8px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #5f6368" x="13.969672" y="47.03005" transform="rotate(-0 13.969672 47.03005)">数值阈值与硬约束逐层叠加；上一层通过不替代下一层验证</text>
+   </g>
+   <g id="text_3">
+    <text style="font-weight: 700; font-size: 6.2px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="49.01057" y="57.219184" transform="rotate(-0 49.01057 57.219184)">Q1</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 6.2px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #5f6368" x="63.026929" y="57.219184" transform="rotate(-0 63.026929 57.219184)">来源质量</text>
+   </g>
+   <g id="text_5">
+    <text style="font-weight: 700; font-size: 6.2px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="140.617488" y="57.219184" transform="rotate(-0 140.617488 57.219184)">Q2</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 6.2px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #5f6368" x="154.633847" y="57.219184" transform="rotate(-0 154.633847 57.219184)">领域相关性</text>
+   </g>
+   <g id="text_7">
+    <text style="font-weight: 700; font-size: 6.2px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="232.224406" y="57.219184" transform="rotate(-0 232.224406 57.219184)">Q3</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 6.2px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #5f6368" x="246.240765" y="57.219184" transform="rotate(-0 246.240765 57.219184)">证据准入</text>
+   </g>
+   <g id="text_9">
+    <text style="font-weight: 700; font-size: 6.2px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="323.831324" y="57.219184" transform="rotate(-0 323.831324 57.219184)">Q4</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 6.2px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #5f6368" x="337.847683" y="57.219184" transform="rotate(-0 337.847683 57.219184)">机制优先级</text>
+   </g>
+   <g id="text_11">
+    <text style="font-weight: 700; font-size: 6.2px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="415.438243" y="57.219184" transform="rotate(-0 415.438243 57.219184)">Q5</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 6.2px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #5f6368" x="429.454602" y="57.219184" transform="rotate(-0 429.454602 57.219184)">发布完整性</text>
+   </g>
+   <g id="text_13">
+    <text style="font-weight: 700; font-size: 9px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="17.974346" y="105.311412" transform="rotate(-0 17.974346 105.311412)">a</text>
+   </g>
+   <g id="text_14">
+    <text style="font-weight: 700; font-size: 7.2px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #8d3a32" x="17.974346" y="114.758398" transform="rotate(-0 17.974346 114.758398)">古籍证据</text>
+   </g>
+   <g id="text_15">
+    <text style="font-weight: 700; font-size: 9px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="17.974346" y="232.173555" transform="rotate(-0 17.974346 232.173555)">b</text>
+   </g>
+   <g id="text_16">
+    <text style="font-weight: 700; font-size: 7.2px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #315a72" x="17.974346" y="241.62054" transform="rotate(-0 17.974346 241.62054)">现代证据</text>
+   </g>
+   <g id="text_17">
+    <text style="font-weight: 700; font-size: 7.1px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #8d3a32" x="52.014076" y="106.723408" transform="rotate(-0 52.014076 106.723408)">OCR／定本页</text>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(52.014076 113.799148)">OCR ≥ 0.82</text>
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(52.014076 121.142135)">字数 ≥ 20；汉字比 ≥ 0.45</text>
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(52.014076 128.485123)">定本文本质量 &gt; 0.70</text>
+   </g>
+   <g id="text_19">
+    <text style="font-weight: 700; font-size: 6.7px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="52.014076" y="164.278743" transform="rotate(-0 52.014076 164.278743)">22 部 · 26,949 页</text>
+   </g>
+   <g id="patch_14">
+    <path d="M 129.604635 133.28674
+Q 133.859601 133.28674 137.108336 133.28674
+" clip-path="url(#p96d39aaa70)" style="fill: none; stroke: #8d3a32; stroke-width: 0.9; stroke-linecap: round"/>
+    <path d="M 133.908336 131.68674
+L 137.108336 133.28674
+L 133.908336 134.88674
+z
+" clip-path="url(#p96d39aaa70)" style="fill: #8d3a32; stroke: #8d3a32; stroke-width: 0.9; stroke-linecap: round"/>
+   </g>
+   <g id="text_20">
+    <text style="font-weight: 700; font-size: 7.1px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #8d3a32" x="143.620994" y="106.723408" transform="rotate(-0 143.620994 106.723408)">语义候选</text>
+   </g>
+   <g id="text_21">
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(143.620994 113.799148)">直接通道 ≥ 0.80</text>
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(143.620994 121.142135)">或迁移通道 ≥ 0.70</text>
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(143.620994 128.485123)">且覆盖 ≥ 2 个语义层</text>
+   </g>
+   <g id="text_22">
+    <text style="font-weight: 700; font-size: 6.7px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="143.620994" y="164.278743" transform="rotate(-0 143.620994 164.278743)">537 个候选页</text>
+   </g>
+   <g id="patch_15">
+    <path d="M 221.211553 133.28674
+Q 225.466519 133.28674 228.715254 133.28674
+" clip-path="url(#p96d39aaa70)" style="fill: none; stroke: #8d3a32; stroke-width: 0.9; stroke-linecap: round"/>
+    <path d="M 225.515254 131.68674
+L 228.715254 133.28674
+L 225.515254 134.88674
+z
+" clip-path="url(#p96d39aaa70)" style="fill: #8d3a32; stroke: #8d3a32; stroke-width: 0.9; stroke-linecap: round"/>
+   </g>
+   <g id="text_23">
+    <text style="font-weight: 700; font-size: 7.1px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #8d3a32" x="235.227912" y="106.723408" transform="rotate(-0 235.227912 106.723408)">证据与关系</text>
+   </g>
+   <g id="text_24">
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(235.227912 113.799148)">候选置信度 ≥ 0.70</text>
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(235.227912 121.142135)">页 ID + 双哈希齐全</text>
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(235.227912 128.485123)">低置信 OCR 禁止发布</text>
+   </g>
+   <g id="text_25">
+    <text style="font-weight: 700; font-size: 6.7px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="235.227912" y="164.278743" transform="rotate(-0 235.227912 164.278743)">1,766 证据 · 3,339 关系</text>
+   </g>
+   <g id="patch_16">
+    <path d="M 312.818471 133.28674
+Q 317.073437 133.28674 320.322173 133.28674
+" clip-path="url(#p96d39aaa70)" style="fill: none; stroke: #8d3a32; stroke-width: 0.9; stroke-linecap: round"/>
+    <path d="M 317.122173 131.68674
+L 320.322173 133.28674
+L 317.122173 134.88674
+z
+" clip-path="url(#p96d39aaa70)" style="fill: #8d3a32; stroke: #8d3a32; stroke-width: 0.9; stroke-linecap: round"/>
+   </g>
+   <g id="text_26">
+    <text style="font-weight: 700; font-size: 7.1px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #8d3a32" x="326.83483" y="106.723408" transform="rotate(-0 326.83483 106.723408)">图谱准入</text>
+   </g>
+   <g id="text_27">
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(326.83483 113.799148)">证据与关系分别过门</text>
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(326.83483 121.142135)">排除语境优先</text>
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(326.83483 128.485123)">不满足结构约束即剔除</text>
+   </g>
+   <g id="text_28">
+    <text style="font-weight: 700; font-size: 6.7px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="326.83483" y="164.278743" transform="rotate(-0 326.83483 164.278743)">1,744 证据 · 3,200 关系</text>
+   </g>
+   <g id="patch_17">
+    <path d="M 404.425389 133.28674
+Q 408.680355 133.28674 411.929091 133.28674
+" clip-path="url(#p96d39aaa70)" style="fill: none; stroke: #8d3a32; stroke-width: 0.9; stroke-linecap: round"/>
+    <path d="M 408.729091 131.68674
+L 411.929091 133.28674
+L 408.729091 134.88674
+z
+" clip-path="url(#p96d39aaa70)" style="fill: #8d3a32; stroke: #8d3a32; stroke-width: 0.9; stroke-linecap: round"/>
+   </g>
+   <g id="text_29">
+    <text style="font-weight: 700; font-size: 7.1px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #8d3a32" x="418.441748" y="106.723408" transform="rotate(-0 418.441748 106.723408)">来源发布</text>
+   </g>
+   <g id="text_30">
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(418.441748 113.799148)">逐条原页精确回读</text>
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(418.441748 121.142135)">稳定 ID 唯一</text>
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(418.441748 128.485123)">FTS 一致；TREATS = 0</text>
+   </g>
+   <g id="text_31">
+    <text style="font-weight: 700; font-size: 6.7px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="418.441748" y="164.278743" transform="rotate(-0 418.441748 164.278743)">1,744/1,744 来源通过</text>
+   </g>
+   <g id="text_32">
+    <text style="font-weight: 700; font-size: 7.1px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #315a72" x="52.014076" y="233.585551" transform="rotate(-0 52.014076 233.585551)">文献与成分</text>
+   </g>
+   <g id="text_33">
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(52.014076 240.66129)">PDF／chunk 哈希一致</text>
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(52.014076 248.004278)">成分身份 13/13</text>
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(52.014076 255.347265)">物理页定位必须存在</text>
+   </g>
+   <g id="text_34">
+    <text style="font-weight: 700; font-size: 6.7px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="52.014076" y="291.140886" transform="rotate(-0 52.014076 291.140886)">584 篇 · 10,983 chunks</text>
+   </g>
+   <g id="patch_18">
+    <path d="M 129.604635 260.148883
+Q 133.859601 260.148883 137.108336 260.148883
+" clip-path="url(#p96d39aaa70)" style="fill: none; stroke: #315a72; stroke-width: 0.9; stroke-linecap: round"/>
+    <path d="M 133.908336 258.548883
+L 137.108336 260.148883
+L 133.908336 261.748883
+z
+" clip-path="url(#p96d39aaa70)" style="fill: #315a72; stroke: #315a72; stroke-width: 0.9; stroke-linecap: round"/>
+   </g>
+   <g id="text_35">
+    <text style="font-weight: 700; font-size: 7.1px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #315a72" x="143.620994" y="233.585551" transform="rotate(-0 143.620994 233.585551)">语境定位</text>
+   </g>
+   <g id="text_36">
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(143.620994 240.66129)">精确成分词 + 烧伤／创面</text>
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(143.620994 248.004278)">定位置信度 ≥ 0.70</text>
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(143.620994 255.633203)">doc／chunk／page 一致</text>
+   </g>
+   <g id="text_37">
+    <text style="font-weight: 700; font-size: 6.7px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="143.620994" y="291.140886" transform="rotate(-0 143.620994 291.140886)">2,238 个候选定位</text>
+   </g>
+   <g id="patch_19">
+    <path d="M 221.211553 260.148883
+Q 225.466519 260.148883 228.715254 260.148883
+" clip-path="url(#p96d39aaa70)" style="fill: none; stroke: #315a72; stroke-width: 0.9; stroke-linecap: round"/>
+    <path d="M 225.515254 258.548883
+L 228.715254 260.148883
+L 225.515254 261.748883
+z
+" clip-path="url(#p96d39aaa70)" style="fill: #315a72; stroke: #315a72; stroke-width: 0.9; stroke-linecap: round"/>
+   </g>
+   <g id="text_38">
+    <text style="font-weight: 700; font-size: 7.1px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #315a72" x="235.227912" y="233.585551" transform="rotate(-0 235.227912 233.585551)">结构化证据</text>
+   </g>
+   <g id="text_39">
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(235.227912 240.66129)">语义置信度 ≥ 0.70</text>
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(235.227912 248.004278)">研究类型明确</text>
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(235.227912 255.347265)">结局或安全字段至少一项</text>
+   </g>
+   <g id="text_40">
+    <text style="font-weight: 700; font-size: 6.7px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="235.227912" y="291.140886" transform="rotate(-0 235.227912 291.140886)">606 批准 · 71 丢弃</text>
+   </g>
+   <g id="patch_20">
+    <path d="M 312.818471 260.148883
+Q 317.073437 260.148883 320.322173 260.148883
+" clip-path="url(#p96d39aaa70)" style="fill: none; stroke: #315a72; stroke-width: 0.9; stroke-linecap: round"/>
+    <path d="M 317.122173 258.548883
+L 320.322173 260.148883
+L 317.122173 261.748883
+z
+" clip-path="url(#p96d39aaa70)" style="fill: #315a72; stroke: #315a72; stroke-width: 0.9; stroke-linecap: round"/>
+   </g>
+   <g id="text_41">
+    <text style="font-weight: 700; font-size: 7.1px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #315a72" x="326.83483" y="233.585551" transform="rotate(-0 326.83483 233.585551)">机制优先级</text>
+   </g>
+   <g id="text_42">
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(326.83483 240.66129)">成分 Tier 1 ≥ 0.75</text>
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(326.83483 248.004278)">Tier 2：0.60–0.75</text>
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(326.83483 255.347265)">PPI ≥ 0.70；通路 FDR &lt; 0.05</text>
+   </g>
+   <g id="text_43">
+    <text style="font-weight: 700; font-size: 6.7px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="326.83483" y="291.140886" transform="rotate(-0 326.83483 291.140886)">194 实体 · 1,488 关系</text>
+   </g>
+   <g id="patch_21">
+    <path d="M 404.425389 260.148883
+Q 408.680355 260.148883 411.929091 260.148883
+" clip-path="url(#p96d39aaa70)" style="fill: none; stroke: #315a72; stroke-width: 0.9; stroke-linecap: round"/>
+    <path d="M 408.729091 258.548883
+L 411.929091 260.148883
+L 408.729091 261.748883
+z
+" clip-path="url(#p96d39aaa70)" style="fill: #315a72; stroke: #315a72; stroke-width: 0.9; stroke-linecap: round"/>
+   </g>
+   <g id="text_44">
+    <text style="font-weight: 700; font-size: 7.1px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #315a72" x="418.441748" y="233.585551" transform="rotate(-0 418.441748 233.585551)">链路发布</text>
+   </g>
+   <g id="text_45">
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(418.441748 240.66129)">成分—靶点—通路—表型</text>
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(418.441748 248.004278)">四级链路必须完整</text>
+    <text style="font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; fill: #202124" transform="translate(418.441748 255.347265)">证据 ID 与来源逐条可回读</text>
+   </g>
+   <g id="text_46">
+    <text style="font-weight: 700; font-size: 6.7px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="418.441748" y="291.140886" transform="rotate(-0 418.441748 291.140886)">97 条完整候选链</text>
+   </g>
+   <g id="text_47">
+    <text style="font-size: 5.9px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #8a4740" x="89.05731" y="181.546494" transform="rotate(-0 89.05731 181.546494)">定本页锚排除 28</text>
+   </g>
+   <g id="text_48">
+    <text style="font-size: 5.9px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #8a4740" x="272.271146" y="181.546494" transform="rotate(-0 272.271146 181.546494)">发布层剔除：22 证据／4 实体／139 关系</text>
+   </g>
+   <g id="text_49">
+    <text style="font-size: 5.9px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #8a4740" x="180.664228" y="308.408637" transform="rotate(-0 180.664228 308.408637)">未进入结构化 1,561 定位</text>
+   </g>
+   <g id="text_50">
+    <text style="font-size: 5.9px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #8a4740" x="272.271146" y="308.408637" transform="rotate(-0 272.271146 308.408637)">字段或语义门未通过 71 条</text>
+   </g>
+   <g id="text_51">
+    <text style="font-weight: 700; font-size: 6px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #5f6368" x="13.969672" y="322.510833" transform="rotate(-0 13.969672 322.510833)">阈值类型</text>
+   </g>
+   <g id="text_52">
+    <text style="font-size: 5.85px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="71.036277" y="322.469524" transform="rotate(-0 71.036277 322.469524)">来源质量 0.82／0.70</text>
+   </g>
+   <g id="text_53">
+    <text style="font-size: 5.85px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="159.63969" y="322.469524" transform="rotate(-0 159.63969 322.469524)">语义 0.80／0.70</text>
+   </g>
+   <g id="text_54">
+    <text style="font-size: 5.85px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="248.243102" y="322.469524" transform="rotate(-0 248.243102 322.469524)">优先级 0.75／0.60</text>
+   </g>
+   <g id="text_55">
+    <text style="font-size: 5.85px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="336.846515" y="322.469524" transform="rotate(-0 336.846515 322.469524)">统计 FDR 0.05</text>
+   </g>
+   <g id="text_56">
+    <text style="font-size: 5.85px; font-family: 'Microsoft YaHei', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #202124" x="425.449928" y="322.469524" transform="rotate(-0 425.449928 322.469524)">硬门：页码、ID、哈希、结构约束</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p96d39aaa70">
+   <rect x="12.968504" y="24.009449" width="500.584252" height="303.548031"/>
+  </clipPath>
+ </defs>
+</svg>

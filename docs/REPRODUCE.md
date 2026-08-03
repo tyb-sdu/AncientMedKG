@@ -215,13 +215,26 @@ python app/scripts/evaluate_ancient_retrieval.py \
 
 ## 11. 自动证据与知识图谱
 
-首先校验冻结的烧伤术语本体和《医学心悟》忍冬汤同名异方证据链：
+首先校验分层阈值策略、冻结的烧伤术语本体和《医学心悟》忍冬汤同名异方证据链：
 
 ```bash
+python -m research_pipeline.layered_thresholds \
+  --output runtime/reports/layered_thresholds.json
+
 python -m research_pipeline.validate_domain_assets
 ```
 
-该命令核对 39 条术语、123 个词形、自动批准阈值、三个来源页、两个组成指纹及 E1/E5 关系边界。校验失败时不要继续构建发布图谱。
+策略分为五个质量层：Q1 来源质量、Q2 领域相关性、Q3 证据准入、Q4 机制优先级和 Q5 发布完整性。数值门包括 OCR `0.82`、直接语义 `0.80`、成分 Tier 1 `0.75`、证据与 PPI `0.70`、成分 Tier 2 `0.60` 及通路 FDR `0.05`；页码、稳定 ID、哈希、字段完整性和关系类型作为硬门处理。`validate_domain_assets` 还会核对 39 条术语、123 个词形、三个来源页、两个组成指纹及 E1/E5 关系边界。任一门失败时不得继续构建发布图谱。
+
+分层筛选图由同一策略文件生成，图示值不需手工维护：
+
+```bash
+python -m research_pipeline.build_layered_screening_figure \
+  --output-svg runtime/reports/layered_threshold_screening.svg \
+  --output-pdf runtime/reports/layered_threshold_screening.pdf \
+  --output-png runtime/reports/layered_threshold_screening.png \
+  --output-tiff runtime/reports/layered_threshold_screening.tiff
+```
 
 古籍证据抽取、阈值处理、源核验和导出：
 
@@ -285,6 +298,8 @@ python -m research_pipeline.finalize_combined_release \
 
 ```bash
 python -m compileall -q app ancient_ocr knowledge_graph research_pipeline discovery_pipeline
+python -m research_pipeline.layered_thresholds
+python -m research_pipeline.validate_domain_assets
 python ancient_ocr/release_preflight.py --repository .
 git diff --check
 ```

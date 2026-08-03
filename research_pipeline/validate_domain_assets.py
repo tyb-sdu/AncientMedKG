@@ -7,6 +7,8 @@ from collections import Counter
 from pathlib import Path
 from typing import Any, Mapping
 
+from research_pipeline.layered_thresholds import load_policy, validate_policy
+
 
 REQUIRED_ONTOLOGY_LAYERS = {
     "direct_cause",
@@ -342,22 +344,61 @@ def validate_rendongtang_package(path: Path) -> dict[str, Any]:
     }
 
 
-def validate_domain_assets(ontology_path: Path, evidence_path: Path) -> dict[str, Any]:
+def validate_domain_assets(
+    ontology_path: Path,
+    evidence_path: Path,
+    threshold_policy_path: Path,
+) -> dict[str, Any]:
     ontology = validate_ontology(ontology_path)
     rendongtang = validate_rendongtang_package(evidence_path)
+    layered_thresholds = validate_policy(threshold_policy_path)
     issues = [
         *[f"ontology:{value}" for value in ontology["issues"]],
         *[f"rendongtang:{value}" for value in rendongtang["issues"]],
+        *[f"layered_thresholds:{value}" for value in layered_thresholds["issues"]],
     ]
     if (
         ontology["automatic_approval_threshold"]
         != rendongtang["automatic_approval_threshold"]
     ):
         issues.append("release_policy_threshold_mismatch")
+    if layered_thresholds["valid"]:
+        policy = load_policy(threshold_policy_path)
+        gates = {value["gate_id"]: value for value in policy["gates"]}
+        release_threshold = float(gates["ancient_candidate_release"]["threshold"])
+        if ontology["automatic_approval_threshold"] != release_threshold:
+            issues.append("ontology_layered_release_threshold_mismatch")
+        if rendongtang["automatic_approval_threshold"] != release_threshold:
+            issues.append("rendongtang_layered_release_threshold_mismatch")
+        ontology_value = _load_json(ontology_path)
+        retrieval_rules = ontology_value.get("retrieval_rules", {})
+        threshold_pairs = (
+            (
+                "direct_channel_threshold_initial",
+                "ancient_direct_semantic",
+            ),
+            (
+                "transfer_channel_threshold_initial",
+                "ancient_transfer_semantic",
+            ),
+        )
+        for ontology_key, gate_id in threshold_pairs:
+            if float(retrieval_rules.get(ontology_key, -1.0)) != float(
+                gates[gate_id]["threshold"]
+            ):
+                issues.append(f"ontology_layered_threshold_mismatch:{gate_id}")
+        transfer_layers = gates["ancient_transfer_semantic"][
+            "hard_requirements"
+        ]["minimum_semantic_layers"]
+        if int(retrieval_rules.get("transfer_minimum_evidence_classes", -1)) != int(
+            transfer_layers
+        ):
+            issues.append("ontology_layered_transfer_layers_mismatch")
     return {
         "valid": not issues,
         "ontology": ontology,
         "rendongtang": rendongtang,
+        "layered_thresholds": layered_thresholds,
         "issues": issues,
     }
 
@@ -377,12 +418,21 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=root / "data" / "rendongtang_evidence_v1.json",
     )
+    parser.add_argument(
+        "--threshold-policy",
+        type=Path,
+        default=root / "data" / "layered_thresholds_v1.json",
+    )
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
-    report = validate_domain_assets(args.ontology, args.rendongtang_evidence)
+    report = validate_domain_assets(
+        args.ontology,
+        args.rendongtang_evidence,
+        args.threshold_policy,
+    )
     print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
     return 0 if report["valid"] else 2
 
