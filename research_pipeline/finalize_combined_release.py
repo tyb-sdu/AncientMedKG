@@ -92,7 +92,8 @@ def finalize_combined_release(
         graph_dir = temporary / "graph"
         neo4j_dir = temporary / "neo4j"
         manifest = write_graph(graph, graph_dir, validation_report=validation)
-        neo4j = export_neo4j(graph, neo4j_dir)
+        frozen_graph = load_graph(graph_dir)
+        neo4j = export_neo4j(frozen_graph, neo4j_dir)
         doctor = release_doctor(
             graph_dir,
             neo4j_dir=neo4j_dir,
