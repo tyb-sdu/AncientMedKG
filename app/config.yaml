@@ -181,4 +181,5 @@ qwen:
   vector_candidates: 100
   reranker_candidates: 100
   rrf_vector_weight: 1.0
+  lexical_recall_guard: true
   query_prompt: "Instruct: Retrieve evidence from Chinese and English biomedical literature about burns, scalds, wound healing, Lonicera or honeysuckle, Glycyrrhiza or licorice, active compounds, mechanisms, safety, and clinical effects.\nQuery: "

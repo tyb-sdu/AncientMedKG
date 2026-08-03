@@ -11,6 +11,11 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
+from research_pipeline.formula_candidates import (
+    extract_formula_candidates,
+    load_formula_lexicon,
+)
+
 
 LAYER_ENTITY_TYPES = {
     "direct_cause": "Disease",
@@ -175,6 +180,30 @@ def _combined_score(matches: Iterable[Mapping[str, Any]]) -> float:
     return round(1.0 - residual, 6)
 
 
+def _candidate_confidence(
+    semantic_score: float,
+    average_ocr_confidence: Any,
+    low_confidence_ocr: bool,
+) -> tuple[float, float]:
+    if average_ocr_confidence is None:
+        text_quality_factor = 1.0
+    else:
+        try:
+            text_quality_factor = float(average_ocr_confidence)
+        except (TypeError, ValueError) as exc:
+            raise CandidateGraphError(
+                f"invalid average OCR confidence: {average_ocr_confidence!r}"
+            ) from exc
+        if not 0.0 <= text_quality_factor <= 1.0:
+            raise CandidateGraphError(
+                f"average OCR confidence outside 0-1: {text_quality_factor}"
+            )
+    confidence = semantic_score * text_quality_factor
+    if low_confidence_ocr:
+        confidence = min(confidence, 0.69)
+    return round(confidence, 6), round(text_quality_factor, 6)
+
+
 def _page_classification(
     accepted: list[dict[str, Any]],
     rules: Mapping[str, Any],
@@ -218,6 +247,7 @@ def build_ancient_candidate_bundle(
     output_manifest_path: Path,
     graph_version: str,
     parent_version: str = "",
+    formula_lexicon_path: Path | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     if output_bundle_path.exists() or output_manifest_path.exists():
         raise FileExistsError("refusing to overwrite candidate KG outputs")
@@ -227,6 +257,16 @@ def build_ancient_candidate_bundle(
     database_sha256_before = _sha256_file(database_path)
     ontology_sha256 = _sha256_file(ontology_path)
     entries = [dict(value) for value in ontology["entries"]]
+    if formula_lexicon_path is None:
+        formula_lexicon_path = (
+            Path(__file__).resolve().parent / "data" / "formula_herb_lexicon_v1.json"
+        )
+    formula_lexicon = load_formula_lexicon(formula_lexicon_path)
+    formula_lexicon_sha256 = _sha256_file(formula_lexicon_path)
+    formula_definitions = {
+        str(value["formula_id"]): dict(value)
+        for value in formula_lexicon["formulas"]
+    }
 
     sources: dict[str, dict[str, Any]] = {}
     entities: dict[str, dict[str, Any]] = {}
@@ -238,6 +278,8 @@ def build_ancient_candidate_bundle(
     book_classification_counts: defaultdict[str, Counter[str]] = defaultdict(Counter)
     accepted_term_counts: Counter[str] = Counter()
     rejected_reason_counts: Counter[str] = Counter()
+    formula_candidate_counts: Counter[str] = Counter()
+    formula_ingredient_counts: Counter[str] = Counter()
 
     def add_entity(key: str, value: dict[str, Any]) -> None:
         prior = entities.setdefault(key, value)
@@ -312,6 +354,34 @@ def build_ancient_candidate_bundle(
             )
             classification, direct_score, transfer_score = _page_classification(
                 accepted, rules
+            )
+            formula_candidates = extract_formula_candidates(text, formula_lexicon)
+            burn_semantic_confidence = (
+                direct_score
+                if classification == "direct_burn_candidate"
+                else transfer_score
+            )
+            if classification == "not_selected" and formula_candidates:
+                classification = "formula_reference_candidate"
+            formula_semantic_confidence = max(
+                (
+                    float(value["semantic_confidence"])
+                    for value in formula_candidates
+                ),
+                default=0.0,
+            )
+            semantic_confidence = max(
+                burn_semantic_confidence, formula_semantic_confidence
+            )
+            burn_candidate_confidence, _ = _candidate_confidence(
+                burn_semantic_confidence,
+                row["average_confidence"],
+                bool(row["low_confidence"]),
+            )
+            candidate_confidence, text_quality_factor = _candidate_confidence(
+                semantic_confidence,
+                row["average_confidence"],
+                bool(row["low_confidence"]),
             )
             classification_counts[classification] += 1
             book_id = str(row["book_id"])
@@ -446,10 +516,18 @@ def build_ancient_candidate_bundle(
                         "evidence_class": "direct_ancient",
                         "review": {
                             "status": "pending",
-                            "reason": "automatic_candidate_requires_page_image_review",
+                            "reason": "awaiting_automatic_confidence_threshold",
                         },
                         "attributes": {
                             "candidate_classification": classification,
+                            "candidate_confidence": burn_candidate_confidence,
+                            "semantic_confidence": burn_semantic_confidence,
+                            "text_quality_factor": text_quality_factor,
+                            "confidence_basis": (
+                                "direct_channel_score"
+                                if classification == "direct_burn_candidate"
+                                else "transfer_channel_score"
+                            ),
                             "matched_term_ids": [],
                             "matched_surfaces": [],
                             "average_ocr_confidence": row["average_confidence"],
@@ -469,6 +547,268 @@ def build_ancient_candidate_bundle(
                 term_evidence[term_key].add(evidence_key)
                 page_evidence.add(evidence_key)
                 accepted_term_counts[term_id] += 1
+
+            formula_ids_on_page: list[str] = []
+            formula_variant_keys: list[str] = []
+            for formula_candidate in formula_candidates:
+                formula_id = str(formula_candidate["formula_id"])
+                formula_definition = formula_definitions[formula_id]
+                formula_name = str(formula_candidate["canonical_name"])
+                formula_confidence, _ = _candidate_confidence(
+                    float(formula_candidate["semantic_confidence"]),
+                    row["average_confidence"],
+                    bool(row["low_confidence"]),
+                )
+                formula_concept_key = f"formula-concept:{formula_id}"
+                composition = [dict(value) for value in formula_candidate["composition"]]
+                variant_digest = _sha256_text(
+                    _canonical_json(
+                        {
+                            "formula_id": formula_id,
+                            "composition": composition,
+                            "page_id": page_id,
+                            "name_start": int(formula_candidate["name_start"]),
+                        }
+                    )
+                )[:20]
+                formula_variant_key = f"formula-variant:{variant_digest}"
+                formula_ids_on_page.append(formula_id)
+                formula_variant_keys.append(formula_variant_key)
+                formula_candidate_counts[formula_id] += 1
+
+                add_entity(
+                    formula_concept_key,
+                    {
+                        "key": formula_concept_key,
+                        "entity_type": "FormulaConcept",
+                        "canonical_name": formula_name,
+                        "aliases": sorted(
+                            {
+                                str(value)
+                                for value in formula_definition.get("aliases", [])
+                                if str(value) != formula_name
+                            }
+                        ),
+                        "identity": {"formula_lexicon_id": formula_id},
+                        "external_ids": {"formula_lexicon_id": formula_id},
+                        "attributes": {
+                            "automatic_candidate": True,
+                            "lexicon_id": formula_lexicon["lexicon_id"],
+                        },
+                    },
+                )
+                add_entity(
+                    formula_variant_key,
+                    {
+                        "key": formula_variant_key,
+                        "entity_type": "FormulaVariant",
+                        "canonical_name": formula_name,
+                        "aliases": [str(formula_candidate["name_surface"])],
+                        "identity": {
+                            "formula_lexicon_id": formula_id,
+                            "page_id": page_id,
+                            "name_start": int(formula_candidate["name_start"]),
+                        },
+                        "attributes": {
+                            "formula_name": str(formula_candidate["name_surface"]),
+                            "composition": composition,
+                            "source_locator": {
+                                "source_id": source_key,
+                                "book_id": book_id,
+                                "page_id": page_id,
+                                "physical_page": physical_page,
+                                "name_start": int(formula_candidate["name_start"]),
+                            },
+                            "composition_scope": formula_candidate[
+                                "composition_scope"
+                            ],
+                            "composition_complete": bool(
+                                formula_candidate["composition_complete"]
+                            ),
+                            "undosed_ingredients": list(
+                                formula_candidate["undosed_ingredients"]
+                            ),
+                            "preparation_markers": list(
+                                formula_candidate["preparation_markers"]
+                            ),
+                            "semantic_confidence": float(
+                                formula_candidate["semantic_confidence"]
+                            ),
+                            "automatic_candidate": True,
+                            "extraction_policy": formula_candidate[
+                                "extraction_policy"
+                            ],
+                        },
+                    },
+                )
+
+                quote = str(formula_candidate["quote"])
+                evidence_key = (
+                    f"evidence:{page_id}:formula:"
+                    + _sha256_text(
+                        _canonical_json(
+                            {
+                                "formula_id": formula_id,
+                                "name_start": int(formula_candidate["name_start"]),
+                                "quote": quote,
+                            }
+                        )
+                    )[:20]
+                )
+                evidence_record = evidence.get(evidence_key)
+                if evidence_record is None:
+                    evidence_record = {
+                        "key": evidence_key,
+                        "source": source_key,
+                        "locator": {
+                            "page_id": page_id,
+                            "book_id": book_id,
+                            "physical_page": physical_page,
+                            "pdf_page_label": row["pdf_page_label"],
+                            "page_text_sha256": page_text_sha256,
+                            "char_start": int(formula_candidate["window_start"]),
+                            "char_end": int(formula_candidate["window_end"]),
+                        },
+                        "quote": quote,
+                        "evidence_grade": "E1",
+                        "evidence_class": "direct_ancient",
+                        "review": {
+                            "status": "pending",
+                            "reason": "awaiting_automatic_confidence_threshold",
+                        },
+                        "attributes": {
+                            "candidate_classification": classification,
+                            "candidate_confidence": formula_confidence,
+                            "semantic_confidence": float(
+                                formula_candidate["semantic_confidence"]
+                            ),
+                            "text_quality_factor": text_quality_factor,
+                            "confidence_basis": "explicit_formula_name_and_dosed_ingredients",
+                            "formula_ids": [],
+                            "average_ocr_confidence": row["average_confidence"],
+                            "low_confidence_ocr": bool(row["low_confidence"]),
+                        },
+                    }
+                    evidence[evidence_key] = evidence_record
+                else:
+                    evidence_record["attributes"]["candidate_confidence"] = max(
+                        float(
+                            evidence_record["attributes"]["candidate_confidence"]
+                        ),
+                        formula_confidence,
+                    )
+                evidence_record["attributes"]["formula_ids"] = sorted(
+                    {
+                        *evidence_record["attributes"].get("formula_ids", []),
+                        formula_id,
+                    }
+                )
+                page_evidence.add(evidence_key)
+
+                relation_confidence = float(formula_candidate["semantic_confidence"])
+                add_assertion(
+                    formula_variant_key,
+                    "VARIANT_OF",
+                    formula_concept_key,
+                    [evidence_key],
+                    evidence_grade="E1",
+                    assertion_mode="explicit",
+                    confidence=relation_confidence,
+                    attributes={
+                        "automatic_candidate": True,
+                        "identity_basis": "composition_and_source_locator",
+                    },
+                )
+                for entity_key in (formula_concept_key, formula_variant_key):
+                    add_assertion(
+                        entity_key,
+                        "RECORDED_IN",
+                        passage_key,
+                        [evidence_key],
+                        evidence_grade="E1",
+                        assertion_mode="explicit",
+                        confidence=relation_confidence,
+                    )
+                    add_assertion(
+                        passage_key,
+                        "MENTIONS",
+                        entity_key,
+                        [evidence_key],
+                        evidence_grade="E1",
+                        assertion_mode="explicit",
+                        confidence=relation_confidence,
+                    )
+
+                mentions_by_name = {
+                    str(value["canonical_name"]): value
+                    for value in formula_candidate["ingredient_mentions"]
+                }
+                for herb_definition in formula_definition.get("ingredients", []):
+                    herb_name = str(herb_definition["canonical_name"])
+                    mention = mentions_by_name.get(herb_name)
+                    if mention is None:
+                        continue
+                    herb_id = str(herb_definition["herb_id"])
+                    herb_key = f"herb:{herb_id}"
+                    add_entity(
+                        herb_key,
+                        {
+                            "key": herb_key,
+                            "entity_type": "Herb",
+                            "canonical_name": herb_name,
+                            "aliases": sorted(
+                                {
+                                    str(value)
+                                    for value in herb_definition.get("aliases", [])
+                                    if str(value) != herb_name
+                                }
+                            ),
+                            "identity": {"herb_lexicon_id": herb_id},
+                            "external_ids": {"herb_lexicon_id": herb_id},
+                            "attributes": {
+                                "automatic_candidate": True,
+                                "lexicon_id": formula_lexicon["lexicon_id"],
+                            },
+                        },
+                    )
+                    formula_ingredient_counts[herb_id] += 1
+                    add_assertion(
+                        herb_key,
+                        "RECORDED_IN",
+                        passage_key,
+                        [evidence_key],
+                        evidence_grade="E1",
+                        assertion_mode="explicit",
+                        confidence=relation_confidence,
+                    )
+                    add_assertion(
+                        passage_key,
+                        "MENTIONS",
+                        herb_key,
+                        [evidence_key],
+                        evidence_grade="E1",
+                        assertion_mode="explicit",
+                        confidence=relation_confidence,
+                    )
+                for item in composition:
+                    herb_name = str(item["herb"])
+                    mention = mentions_by_name[herb_name]
+                    herb_key = f"herb:{str(mention['herb_id'])}"
+                    add_assertion(
+                        formula_variant_key,
+                        "HAS_INGREDIENT",
+                        herb_key,
+                        [evidence_key],
+                        evidence_grade="E1",
+                        assertion_mode="explicit",
+                        confidence=relation_confidence,
+                        attributes={
+                            "dose_value": item["dose_value"],
+                            "dose_unit": item["dose_unit"],
+                            "dose_text_original": item["dose_text_original"],
+                            "automatic_candidate": True,
+                        },
+                    )
 
             add_assertion(
                 edition_key,
@@ -542,11 +882,16 @@ def build_ancient_candidate_bundle(
                     "classification": classification,
                     "direct_score": direct_score,
                     "transfer_score": transfer_score,
+                    "candidate_confidence": candidate_confidence,
+                    "semantic_confidence": semantic_confidence,
+                    "text_quality_factor": text_quality_factor,
                     "matched_term_ids": sorted({str(value["term_id"]) for value in selected_matches}),
                     "matched_surfaces": sorted({str(value["surface"]) for value in selected_matches}),
+                    "formula_ids": sorted(set(formula_ids_on_page)),
+                    "formula_variant_keys": sorted(set(formula_variant_keys)),
                     "rejected_match_count": len(rejected),
                     "low_confidence_ocr": bool(row["low_confidence"]),
-                    "review_status": "pending_page_image_review",
+                    "review_status": "pending_automatic_confidence_threshold",
                 }
             )
         expected_page_count = sum(int(value["page_count"]) for value in books.values())
@@ -577,6 +922,7 @@ def build_ancient_candidate_bundle(
             {
                 "database_sha256": database_sha256_before,
                 "ontology_sha256": ontology_sha256,
+                "formula_lexicon_sha256": formula_lexicon_sha256,
                 "graph_version": graph_version,
                 "candidate_manifest_sha256": candidate_manifest_sha256,
             }
@@ -587,19 +933,25 @@ def build_ancient_candidate_bundle(
         "bundle_id": bundle_id,
         "graph_version": graph_version,
         "metadata": {
-            "description": "Twelve-book ancient burn candidate graph; not release evidence.",
+            "description": "Ancient burn and target-formula candidate graph.",
             "parent_version": parent_version or None,
-            "status": "candidate_pending_review",
+            "status": "candidate_pending_automatic_threshold",
             "release_approved": False,
             "database_sha256": database_sha256_before,
             "ontology_id": ontology["ontology_id"],
             "ontology_sha256": ontology_sha256,
+            "formula_lexicon_id": formula_lexicon["lexicon_id"],
+            "formula_lexicon_sha256": formula_lexicon_sha256,
             "candidate_manifest_sha256": candidate_manifest_sha256,
             "selection_policy": {
                 "direct": "valid direct term and calibrated initial score threshold",
                 "transfer": "at least two ontology layers and transfer score threshold",
                 "generic_decoction_exclusion": "ignored because no positive singleton 汤 term exists",
                 "therapy_relation": "same-page hypothesis only; never TREATS",
+                "formula": (
+                    "explicit target formula name plus at least two target herbs "
+                    "with exact source doses; no efficacy relation inferred"
+                ),
             },
         },
         "sources": [sources[key] for key in sorted(sources)],
@@ -622,6 +974,8 @@ def build_ancient_candidate_bundle(
         "database_sha256_after": database_sha256_after,
         "source_database_unchanged": True,
         "ontology_sha256": ontology_sha256,
+        "formula_lexicon_id": formula_lexicon["lexicon_id"],
+        "formula_lexicon_sha256": formula_lexicon_sha256,
         "scanned_books": len(books),
         "scanned_pages": page_count,
         "selected_pages": len(candidate_rows),
@@ -636,6 +990,10 @@ def build_ancient_candidate_bundle(
         },
         "accepted_term_occurrences": sum(accepted_term_counts.values()),
         "accepted_term_counts": dict(sorted(accepted_term_counts.items())),
+        "formula_candidates": sum(formula_candidate_counts.values()),
+        "formula_candidate_counts": dict(sorted(formula_candidate_counts.items())),
+        "formula_ingredient_mentions": sum(formula_ingredient_counts.values()),
+        "formula_ingredient_counts": dict(sorted(formula_ingredient_counts.items())),
         "rejected_reason_counts": dict(sorted(rejected_reason_counts.items())),
         "sources": len(bundle["sources"]),
         "entities": len(bundle["entities"]),
@@ -645,7 +1003,7 @@ def build_ancient_candidate_bundle(
         "candidate_manifest_sha256": candidate_manifest_sha256,
         "bundle": str(output_bundle_path),
         "bundle_sha256": _sha256_file(output_bundle_path),
-        "review_status": "pending",
+        "review_status": "pending_automatic_threshold",
         "release_approved": False,
     }
     return bundle, report
@@ -661,6 +1019,11 @@ def parse_args() -> argparse.Namespace:
         "--ontology",
         type=Path,
         default=root / "data" / "burn_ontology_v1.json",
+    )
+    parser.add_argument(
+        "--formula-lexicon",
+        type=Path,
+        default=root / "data" / "formula_herb_lexicon_v1.json",
     )
     parser.add_argument("--output-bundle", type=Path, required=True)
     parser.add_argument("--output-manifest", type=Path, required=True)
@@ -678,6 +1041,7 @@ def main() -> int:
         output_manifest_path=args.output_manifest,
         graph_version=args.graph_version,
         parent_version=args.parent_version,
+        formula_lexicon_path=args.formula_lexicon,
     )
     print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
     return 0

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "lexicon_id": "tcm-burn-target-formulas-v1",
+  "description": "High-precision target formula and herb lexicon for automatic ancient-text candidates.",
+  "formulas": [
+    {
+      "formula_id": "formula.rendongtang",
+      "canonical_name": "忍冬汤",
+      "aliases": [
+        "忍冬汤",
+        "忍冬湯"
+      ],
+      "window_before_chars": 80,
+      "window_after_chars": 240,
+      "minimum_dosed_ingredients": 2,
+      "preparation_markers": [
+        "水煎",
+        "煎服",
+        "顿服",
+        "頓服",
+        "酒煎",
+        "每日一剂",
+        "每日一劑"
+      ],
+      "ingredients": [
+        {
+          "herb_id": "herb.lonicerae_japonicae_flos",
+          "canonical_name": "金银花",
+          "aliases": [
+            "金银花",
+            "金銀花",
+            "忍冬花"
+          ]
+        },
+        {
+          "herb_id": "herb.glycyrrhizae_radix_et_rhizoma",
+          "canonical_name": "甘草",
+          "aliases": [
+            "甘草",
+            "生甘草",
+            "炙甘草"
+          ]
+        },
+        {
+          "herb_id": "herb.glycine_max_nigra_semen",
+          "canonical_name": "黑料豆",
+          "aliases": [
+            "黑料豆"
+          ]
+        },
+        {
+          "herb_id": "herb.smilacis_glabrae_rhizoma",
+          "canonical_name": "土茯苓",
+          "aliases": [
+            "土茯苓"
+          ]
+        }
+      ]
+    }
+  ]
+}

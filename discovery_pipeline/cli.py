@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 from typing import Any, Sequence
 
+from .automatic_loci import filter_loci_automatically
 from .annotation import (
     finalize_annotation_adjudication,
     merge_annotation_reviews,
@@ -118,6 +119,19 @@ def _validate_review_batch(args: argparse.Namespace) -> int:
     return 0
 
 
+def _automatic_loci(args: argparse.Namespace) -> int:
+    result = filter_loci_automatically(
+        loci_path=args.loci,
+        database_path=args.database,
+        output_dir=args.output,
+        threshold=args.threshold,
+        policy_id=args.policy_id,
+        approved_at=args.approved_at,
+    )
+    print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+    return 0
+
+
 def _prepare_calibration_pilot(args: argparse.Namespace) -> int:
     result = prepare_calibration_pilot(
         parent_manifest_path=args.parent_manifest,
@@ -197,6 +211,20 @@ def build_parser() -> argparse.ArgumentParser:
     )
     scan_parser.add_argument("--output", type=Path, required=True)
     scan_parser.set_defaults(handler=_scan)
+
+    automatic_loci_parser = subparsers.add_parser(
+        "automatic-loci",
+        help="Source-verify and threshold modern retrieval loci without a human gate.",
+    )
+    automatic_loci_parser.add_argument("--loci", type=Path, required=True)
+    automatic_loci_parser.add_argument("--database", type=Path, required=True)
+    automatic_loci_parser.add_argument("--output", type=Path, required=True)
+    automatic_loci_parser.add_argument("--threshold", type=float, default=0.7)
+    automatic_loci_parser.add_argument(
+        "--policy-id", default="automatic-modern-locus-threshold-v1"
+    )
+    automatic_loci_parser.add_argument("--approved-at", default="")
+    automatic_loci_parser.set_defaults(handler=_automatic_loci)
 
     score_parser = subparsers.add_parser(
         "score", help="Apply C0-C5 gates, R_compound, and sensitivity analysis."

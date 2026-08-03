@@ -371,6 +371,31 @@ def query_ancient_qwen_vector(
     return results[:top_k]
 
 
+def _apply_lexical_recall_guard(
+    cfg: dict[str, Any],
+    keyword: list[dict[str, Any]],
+    ranked: list[dict[str, Any]],
+    top_k: int,
+) -> list[dict[str, Any]]:
+    protected = _diversify_results(cfg, [dict(row) for row in keyword], top_k)
+    protected_ids = {row["chunk_id"] for row in protected}
+    by_id = {row["chunk_id"]: row for row in ranked}
+    selected = sorted(
+        (by_id[row["chunk_id"]] for row in protected if row["chunk_id"] in by_id),
+        key=lambda row: (
+            -float(row.get("reranker_score") or 0.0),
+            -float(row.get("fusion_score") or 0.0),
+            row["chunk_id"],
+        ),
+    )
+    selected.extend(row for row in ranked if row["chunk_id"] not in protected_ids)
+    selected = selected[:top_k]
+    for rank, row in enumerate(selected, start=1):
+        row["fusion_rank"] = rank
+        row["lexical_recall_guard"] = row["chunk_id"] in protected_ids
+    return selected
+
+
 def query_ancient_qwen_reranked_hybrid(
     cfg: dict[str, Any],
     question: str,
@@ -414,7 +439,14 @@ def query_ancient_qwen_reranked_hybrid(
             row["chunk_id"],
         ),
     )
-    return _diversify_results(cfg, ranked, top_k)
+    if not bool(qcfg.get("lexical_recall_guard", True)):
+        return _diversify_results(cfg, ranked, top_k)
+
+    # The ancient corpus contains many semantically similar formula and sore pages.
+    # Keep the diversified lexical top-k set in the final result, while allowing the
+    # reranker to reorder that set. This preserves exact-name/page recall and still
+    # uses vector candidates whenever the lexical channel returns fewer than top_k.
+    return _apply_lexical_recall_guard(cfg, keyword, ranked, top_k)
 
 
 def ancient_qwen_doctor(cfg: dict[str, Any]) -> dict[str, Any]:
