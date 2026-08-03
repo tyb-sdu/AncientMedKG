@@ -102,6 +102,7 @@ def test_modern_graph_builds_traceable_mechanism_chain(tmp_path: Path) -> None:
     assert {"STUDIED_IN", "REPORTS_OUTCOME", "TARGETS", "PARTICIPATES_IN"} <= predicates
     assert "TREATS" not in predicates
     assert all(edge.review_status == "approved" for edge in graph.edges)
+    assert {row.locator["locus_id"] for row in graph.evidence} == {"locus:1", "locus:2"}
     studies = [node for node in graph.nodes if node.entity_type == "Study"]
     assert len(studies) == 1
     assert "study_type" not in studies[0].attributes

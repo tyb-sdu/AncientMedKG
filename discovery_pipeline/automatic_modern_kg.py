@@ -204,6 +204,7 @@ def build_automatic_modern_bundle(
                     "doc_id": doc_id,
                     "chunk_id": str(row["chunk_id"]),
                     "pdf_page": int(row["pdf_page"]),
+                    "locus_id": str(record["locus_id"]),
                     "chunk_text_sha256": chunk_sha,
                 },
                 "quote": text,
