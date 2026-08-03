@@ -100,8 +100,27 @@ def finalize_combined_release(
             modern_database=modern_database,
         )
         if not doctor["valid"]:
+            diagnostics = {
+                "graph_validation": {
+                    "valid": doctor["graph_validation"].get("valid"),
+                    "issues": doctor["graph_validation"].get("issues", [])[:5],
+                },
+                "source_verification": {
+                    "valid": doctor["source_verification"].get("valid"),
+                    "status_counts": doctor["source_verification"].get("status_counts", {}),
+                    "failed_checks": [
+                        check
+                        for check in doctor["source_verification"].get("checks", [])
+                        if check.get("status") in {"failed", "unverified"}
+                    ][:5],
+                },
+                "neo4j_verification": {
+                    "valid": doctor["neo4j_verification"].get("valid"),
+                    "issues": doctor["neo4j_verification"].get("issues", [])[:5],
+                },
+            }
             raise CombinedReleaseError(
-                f"combined release doctor failed: {doctor.get('issues', [])[:5]}"
+                f"combined release doctor failed: {diagnostics}"
             )
         write_json(temporary / "release_doctor.json", doctor)
         node_types: dict[str, int] = {}
