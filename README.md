@@ -35,6 +35,12 @@ See `app/README.md`, `app/HANDOFF.md`, `app/RUN_REPORT.md`,
 `discovery_pipeline/README.md` for the implemented pipelines and verification
 record.
 
+The completed 2026-08-03 six-deliverable milestone, metrics, concrete source
+examples, graph counts, and final acceptance command are documented in
+[`FINAL_SIX_DELIVERABLES.md`](FINAL_SIX_DELIVERABLES.md). The tracked public
+acceptance summary is
+`research_pipeline/reports/final_six_acceptance_v1.json`.
+
 ## Research and graph commands
 
 These commands operate locally and do not start a server:

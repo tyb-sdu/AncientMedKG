@@ -109,3 +109,24 @@ For a private discovery intake, additionally run:
 
 Public release is allowed only when tests pass, preflight reports no violations,
 `git diff --check` is clean, and the staged file list contains no private data.
+
+## 2026-08-03 automatic six-deliverable milestone
+
+The user-authorized no-manual-review policy is now implemented as a versioned
+automatic evidence layer. The 22-book corpus contains 26,949 pages. The final
+ancient graph has 1,744 verified evidence records and 3,200 assertions; the
+modern graph has 606 verified evidence records, 1,488 assertions, and 97
+compound-target-pathway-phenotype candidate chains. Their combined release has
+159 sources, 807 entities, 2,350 evidence records, and 4,688 assertions, with
+zero automatically generated `TREATS` edges.
+
+The original 52-question benchmark reports keyword Recall@10 0.8913 and final
+reranked-hybrid Recall@10 0.9565. The separate 240-question source-locator
+benchmark reports Recall@10 0.9955 and no-answer accuracy 1.0 for all routed
+channels. The latter measures an explicit source-title and term-normalization
+planner and is not represented as raw vector performance.
+
+The aggregate final gate reports `valid=true` and `issues=[]`; server tests are
+148 passed and release preflight is clean. See `FINAL_SIX_DELIVERABLES.md` and
+`research_pipeline/reports/final_six_acceptance_v1.json`. Machine approval
+remains distinct from clinical proof or wet-lab validation.

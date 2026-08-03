@@ -219,3 +219,17 @@ signoff for the three ancient pages, 500-item dual annotation and calibration,
 full-text grading of compound loci, C0-C5 decisions, sourced target/pathway
 sets, and experimental validation. Do not convert pending records to approved
 or publish a final compound ranking without those inputs.
+
+## 2026-08-03 final six-deliverable handoff
+
+The accepted runtime now uses 22 ancient books and 26,949 pages. The original
+52-question benchmark finishes at keyword Recall@10 0.8913 and reranked-hybrid
+Recall@10 0.9565; all channels retain page locating 1.0 and calibrated
+out-of-era abstention 1.0. A separate 240-question source-locator benchmark is
+0.9955 Recall@10 and must be labeled planner-assisted rather than raw vector.
+
+The combined automatic graph contains 159 sources, 807 entities, 2,350 evidence
+records, and 4,688 assertions. Its release doctor and Neo4j fingerprint gate
+pass, and no automatic `TREATS` edge exists. The canonical public summary is
+`../FINAL_SIX_DELIVERABLES.md`; private databases, indexes, OCR text, PDFs,
+model weights, and detailed reports remain outside Git.

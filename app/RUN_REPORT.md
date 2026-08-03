@@ -220,3 +220,15 @@ CID 14982 与方案一致；现代 584 篇文献中生成 2,238 条带 `doc_id`�
 `discovery_pipeline doctor` 复算全部聚合和 6 类指纹后返回 `valid=true`、
 `issues=[]`、`computational_intake_complete=true`，并保守保持
 `scientific_release_ready=false`。候选共现不计为 C3 证据，尚未产生最终排名。
+
+## 2026-08-03 六项最终交付
+
+- 古籍语料：22 部、26,949 页，FTS/JSONL/Qwen 索引一致。
+- 原 52 题：keyword Recall@10 0.8913，hybrid Recall@10 0.9565，三通道页码与拒答为 1.0。
+- 240 题来源定位集：三个规划通道 Recall@10 0.9955、拒答 1.0；该数字是规划器指标，不是纯向量指标。
+- 古籍 KG：1,744 条已验证证据、3,200 关系；忍冬汤第 138/227 页生成两个独立 FormulaVariant。
+- 现代文献：606 条结构化证据、97 条成分-靶点-通路-表型候选链。
+- 总图：159 来源、807 实体、2,350 证据、4,688 关系；release doctor 和 Neo4j/JSON-LD 指纹通过。
+- 服务器全仓 148 passed；deep doctor `healthy=true`；preflight `valid=true`/`violations=[]`。
+
+完整命令、脱敏验收摘要和具体来源示例见 `../FINAL_SIX_DELIVERABLES.md`。

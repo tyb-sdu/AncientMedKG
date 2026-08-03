@@ -107,3 +107,17 @@ python -m knowledge_graph export-neo4j \
 - 古籍事实只支持原文病证、组成、原量和内服煎法，不直接支持烧伤疗效、外敷或现代克数。
 - 忍冬汤到烧伤表型只允许 `E4/E5 + MECHANISM_TRANSFER`，当前为未评分的 E5 假说。
 - 规划层 15 题通过不替代 500 条双人标注、专家审核、成分与机制分析或实验验证。
+
+## 2026-08-03 自动批准版
+
+用户后续明确取消人工审核前置条件：置信度低于 0.7 丢弃，其余机器批准。
+最终流程使用 `run_automatic_ancient_kg.py`、
+`validate_formula_disambiguation.py`、`structured_evidence.py`、
+`automatic_modern_kg.py`、`finalize_combined_release.py` 与
+`validate_final_six_release.py`。所有批准记录保留
+`human_reviewed=false`和精确来源定位。
+
+该自动版已形成 22 部古籍图、606 条现代结构化证据、97 条机制链和
+159 来源/2,350 证据/4,688 断言的合并总图。详见
+`../FINAL_SIX_DELIVERABLES.md`。机器批准不等于临床证明，仍不得将候选机制边
+表述为直接结合或治疗结论。
