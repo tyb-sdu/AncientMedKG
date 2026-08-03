@@ -98,7 +98,9 @@ def finalize_combined_release(
             ancient_database=ancient_database,
         )
         if not doctor["valid"]:
-            raise CombinedReleaseError("combined release doctor failed")
+            raise CombinedReleaseError(
+                f"combined release doctor failed: {doctor.get('issues', [])[:5]}"
+            )
         write_json(temporary / "release_doctor.json", doctor)
         node_types: dict[str, int] = {}
         for node in graph.nodes:
