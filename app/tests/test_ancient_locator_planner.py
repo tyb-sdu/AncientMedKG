@@ -43,7 +43,7 @@ def _database(path: Path) -> None:
                 "book:a",
                 138,
                 "138",
-                "忍冬湯 金銀花四兩 甘草三錢",
+                "忍冬湯 金銀花四兩 甘草三錢 一切癤瘡",
                 "vertical_rtl",
                 0.9,
                 0,
@@ -75,6 +75,8 @@ def test_source_anchored_locator_handles_simplified_traditional_terms(tmp_path: 
     assert ancient_locator_hints(question) is not None
     assert query_ancient_qwen_vector(cfg, question, 10) == results
     assert query_ancient_qwen_reranked_hybrid(cfg, question, 10) == results
+    sore_question = "请定位《医学心悟》中关于“疮”的原文页。"
+    assert query_ancient_keyword(cfg, sore_question, 10)[0]["pdf_page"] == 138
 
 
 def test_obviously_modern_question_abstains_before_retrieval(tmp_path: Path) -> None:

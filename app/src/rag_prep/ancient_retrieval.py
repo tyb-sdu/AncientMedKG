@@ -31,6 +31,8 @@ _ANCIENT_TERM_VARIANTS = {
     "\u707c\u4f24": ("\u707c\u4f24", "\u707c\u50b7", "\u707c\u7621"),
     "\u70eb\u4f24": ("\u70eb\u4f24", "\u6e6f\u706b", "\u6e6f\u6ce1"),
     "\u70ed\u6bd2": ("\u70ed\u6bd2", "\u71b1\u6bd2"),
+    "\u6c64\u706b": ("\u6c64\u706b", "\u6e6f\u706b"),
+    "\u75ae": ("\u75ae", "\u7621"),
     "\u8840\u7600": ("\u8840\u7600", "\u7600\u8840"),
     "\u91d1\u94f6\u82b1": ("\u91d1\u94f6\u82b1", "\u91d1\u9280\u82b1"),
 }
@@ -162,6 +164,9 @@ def query_ancient_keyword(
     for row in rows:
         title_norm = normalize_search_text(row["title"])
         text, layout_status = ancient_text_for_row(cfg, row)
+        if locator_hints is not None:
+            text = str(row["text"] or "")
+            layout_status = "database_locator"
         text_norm = normalize_search_text(text)
         combined = f"{title_norm} {text_norm}"
         if locator_hints is not None:
