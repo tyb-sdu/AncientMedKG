@@ -1,0 +1,374 @@
+{
+  "schema_version": 1,
+  "evidence_package_id": "rendongtang-yixuexinwu-v1",
+  "version": "1.1.0",
+  "created_at": "2026-07-31",
+  "updated_at": "2026-08-03",
+  "normalized_formula_name": "忍冬汤",
+  "purpose": "区分《医学心悟》中同名异方，并将古籍直接事实与烧伤机制迁移假说分层保存。",
+  "release_policy": {
+    "policy_id": "automatic-confidence-threshold-v1",
+    "candidate_confidence_threshold": 0.7,
+    "comparison": "greater_than_or_equal",
+    "below_threshold_action": "discard",
+    "at_or_above_threshold_action": "approve",
+    "human_reviewed": false
+  },
+  "work": {
+    "work_id": "work:yixuexinwu",
+    "edition_id": "edition:yixuexinwu-public-scan",
+    "title": "医学心悟_公开扫描版",
+    "book_id": "ancient:da1657c4376cd7e6ba9e",
+    "filename": "医学心悟_公开扫描版.pdf",
+    "source_sha256": "da1657c4376cd7e6ba9e71c0cc842be4ae18d51cc2dd8866732e00f391c7d55c",
+    "page_count": 235,
+    "source_status": "source_locus_verified"
+  },
+  "formula_concept": {
+    "formula_concept_id": "formula-concept:rendongtang",
+    "canonical_name": "忍冬汤",
+    "aliases": [
+      "忍冬汤",
+      "忍冬湯"
+    ]
+  },
+  "evidence_loci": [
+    {
+      "evidence_id": "evidence:yixuexinwu:p137-context",
+      "page_id": "ancient:da1657c4376cd7e6ba9e:p000137",
+      "physical_page": 137,
+      "text_sha256": "8a91a3b67142ca5797f5fc6704ecb3a48a051f08e8264c7d2d5a87c20be106b4",
+      "evidence_level": "E1",
+      "role": "第138页二味忍冬汤的前文主治语境",
+      "evidence_terms": [
+        "胃脘癰也忍冬湯主之",
+        "內癰"
+      ]
+    },
+    {
+      "evidence_id": "evidence:yixuexinwu:p138-formula",
+      "page_id": "ancient:da1657c4376cd7e6ba9e:p000138",
+      "physical_page": 138,
+      "text_sha256": "9bf0caaeac8c9aa3cddb71af0ea1a8b4938892fde19ac5c708dec6d21abd2184",
+      "evidence_level": "E1",
+      "role": "内外痈肿二味忍冬汤的组成、剂量与煎服法",
+      "evidence_terms": [
+        "忍冬湯",
+        "一切內外癰腫",
+        "金銀花四兩",
+        "甘草三錢",
+        "水煎頓服"
+      ]
+    },
+    {
+      "evidence_id": "evidence:yixuexinwu:p227-formula",
+      "page_id": "ancient:da1657c4376cd7e6ba9e:p000227",
+      "physical_page": 227,
+      "text_sha256": "87902282d6d98316800991513972a5e4e55bbf963255363d3cfc21c045a88724",
+      "evidence_level": "E1",
+      "role": "杨梅结毒同名忍冬汤的主治、组成与煎服法",
+      "evidence_terms": [
+        "楊梅結毒",
+        "忍冬湯",
+        "黑料豆二兩",
+        "土茯苓四兩",
+        "甘草二錢",
+        "金銀花",
+        "水煎每日一劑"
+      ]
+    }
+  ],
+  "formula_instances": [
+    {
+      "formula_instance_id": "formula-variant:rendongtang:yixuexinwu:p138",
+      "formula_concept_id": "formula-concept:rendongtang",
+      "normalized_name": "忍冬汤",
+      "name_original": "忍冬湯",
+      "physical_page": 138,
+      "candidate_confidence": 0.85,
+      "approval_status": "approved",
+      "human_reviewed": false,
+      "composition_fingerprint": "82d30e20ce2299cb863216f3b7728a65796558a1fab487a0591a5796d0fcb8bb",
+      "indication_original": "一切內外癰腫皆可立消但宜蚤服",
+      "indication_normalized": "一切内外痈肿，宜早服",
+      "preparation_original": "水煎頓服能飲者用酒煎服",
+      "administration_route": "原方内服",
+      "ingredients": [
+        {
+          "ingredient_id": "herb:lonicerae-japonicae-flos",
+          "normalized_name": "金银花",
+          "name_original": "金銀花",
+          "dose_original": "四兩"
+        },
+        {
+          "ingredient_id": "herb:glycyrrhizae-radix-et-rhizoma",
+          "normalized_name": "甘草",
+          "name_original": "甘草",
+          "dose_original": "三錢"
+        }
+      ],
+      "evidence_ids": [
+        "evidence:yixuexinwu:p137-context",
+        "evidence:yixuexinwu:p138-formula"
+      ],
+      "direct_burn_evidence": false,
+      "scientific_boundary": "原文支持内外痈肿、组成、剂量和煎服法，不支持直接治疗烧伤或现代外用剂量。"
+    },
+    {
+      "formula_instance_id": "formula-variant:rendongtang:yixuexinwu:p227",
+      "formula_concept_id": "formula-concept:rendongtang",
+      "normalized_name": "忍冬汤",
+      "name_original": "忍冬湯",
+      "physical_page": 227,
+      "candidate_confidence": 0.95,
+      "approval_status": "approved",
+      "human_reviewed": false,
+      "composition_fingerprint": "52070dc5bc21d3502440e049cac8fb3ccda1d9bf6c4c2e9abfa55d1293f3f838",
+      "indication_original": "楊梅結毒不可搽輕粉……宜服忍冬湯",
+      "indication_normalized": "杨梅结毒",
+      "preparation_original": "水煎每日一劑須盡飲",
+      "administration_route": "原方内服",
+      "ingredients": [
+        {
+          "ingredient_id": "herb:lonicerae-japonicae-flos",
+          "normalized_name": "金银花",
+          "name_original": "金銀花",
+          "dose_original": null,
+          "dose_status": "not_asserted_below_field_confidence_threshold"
+        },
+        {
+          "ingredient_id": "herb:glycyrrhizae-radix-et-rhizoma",
+          "normalized_name": "甘草",
+          "name_original": "甘草",
+          "dose_original": "二錢"
+        },
+        {
+          "ingredient_id": "herb:glycine-max-nigra-semen",
+          "normalized_name": "黑料豆",
+          "name_original": "黑料豆",
+          "dose_original": "二兩"
+        },
+        {
+          "ingredient_id": "herb:smilacis-glabrae-rhizoma",
+          "normalized_name": "土茯苓",
+          "name_original": "土茯苓",
+          "dose_original": "四兩"
+        }
+      ],
+      "evidence_ids": [
+        "evidence:yixuexinwu:p227-formula"
+      ],
+      "direct_burn_evidence": false,
+      "scientific_boundary": "这是治疗杨梅结毒的同名异方，不能与第138页内外痈肿二味方合并；未可靠识别的金银花剂量不进入发布断言。"
+    }
+  ],
+  "relations": [
+    {
+      "relation_id": "relation:rendong:p138:variant-of",
+      "source": "formula-variant:rendongtang:yixuexinwu:p138",
+      "relation_type": "VARIANT_OF",
+      "target": "formula-concept:rendongtang",
+      "evidence_level": "E1",
+      "evidence_ids": [
+        "evidence:yixuexinwu:p138-formula"
+      ],
+      "status": "approved"
+    },
+    {
+      "relation_id": "relation:rendong:p227:variant-of",
+      "source": "formula-variant:rendongtang:yixuexinwu:p227",
+      "relation_type": "VARIANT_OF",
+      "target": "formula-concept:rendongtang",
+      "evidence_level": "E1",
+      "evidence_ids": [
+        "evidence:yixuexinwu:p227-formula"
+      ],
+      "status": "approved"
+    },
+    {
+      "relation_id": "relation:rendong:p138:recorded-in",
+      "source": "formula-variant:rendongtang:yixuexinwu:p138",
+      "relation_type": "RECORDED_IN",
+      "target": "work:yixuexinwu",
+      "evidence_level": "E1",
+      "evidence_ids": [
+        "evidence:yixuexinwu:p138-formula"
+      ],
+      "status": "approved"
+    },
+    {
+      "relation_id": "relation:rendong:p227:recorded-in",
+      "source": "formula-variant:rendongtang:yixuexinwu:p227",
+      "relation_type": "RECORDED_IN",
+      "target": "work:yixuexinwu",
+      "evidence_level": "E1",
+      "evidence_ids": [
+        "evidence:yixuexinwu:p227-formula"
+      ],
+      "status": "approved"
+    },
+    {
+      "relation_id": "relation:rendong:p138:indication",
+      "source": "formula-variant:rendongtang:yixuexinwu:p138",
+      "relation_type": "HAS_INDICATION",
+      "target": "disease:neiwaiyongzhong",
+      "evidence_level": "E1",
+      "evidence_ids": [
+        "evidence:yixuexinwu:p137-context",
+        "evidence:yixuexinwu:p138-formula"
+      ],
+      "status": "approved"
+    },
+    {
+      "relation_id": "relation:rendong:p138:ingredient:lonicera",
+      "source": "formula-variant:rendongtang:yixuexinwu:p138",
+      "relation_type": "HAS_INGREDIENT",
+      "target": "herb:lonicerae-japonicae-flos",
+      "evidence_level": "E1",
+      "evidence_ids": [
+        "evidence:yixuexinwu:p138-formula"
+      ],
+      "status": "approved",
+      "attributes": {
+        "dose_original": "四兩"
+      }
+    },
+    {
+      "relation_id": "relation:rendong:p138:ingredient:glycyrrhiza",
+      "source": "formula-variant:rendongtang:yixuexinwu:p138",
+      "relation_type": "HAS_INGREDIENT",
+      "target": "herb:glycyrrhizae-radix-et-rhizoma",
+      "evidence_level": "E1",
+      "evidence_ids": [
+        "evidence:yixuexinwu:p138-formula"
+      ],
+      "status": "approved",
+      "attributes": {
+        "dose_original": "三錢"
+      }
+    },
+    {
+      "relation_id": "relation:rendong:p227:indication",
+      "source": "formula-variant:rendongtang:yixuexinwu:p227",
+      "relation_type": "HAS_INDICATION",
+      "target": "disease:yangmeijiedu",
+      "evidence_level": "E1",
+      "evidence_ids": [
+        "evidence:yixuexinwu:p227-formula"
+      ],
+      "status": "approved"
+    },
+    {
+      "relation_id": "relation:rendong:p227:ingredient:lonicera",
+      "source": "formula-variant:rendongtang:yixuexinwu:p227",
+      "relation_type": "HAS_INGREDIENT",
+      "target": "herb:lonicerae-japonicae-flos",
+      "evidence_level": "E1",
+      "evidence_ids": [
+        "evidence:yixuexinwu:p227-formula"
+      ],
+      "status": "approved",
+      "attributes": {
+        "dose_original": null,
+        "dose_status": "not_asserted_below_field_confidence_threshold"
+      }
+    },
+    {
+      "relation_id": "relation:rendong:p227:ingredient:glycyrrhiza",
+      "source": "formula-variant:rendongtang:yixuexinwu:p227",
+      "relation_type": "HAS_INGREDIENT",
+      "target": "herb:glycyrrhizae-radix-et-rhizoma",
+      "evidence_level": "E1",
+      "evidence_ids": [
+        "evidence:yixuexinwu:p227-formula"
+      ],
+      "status": "approved",
+      "attributes": {
+        "dose_original": "二錢"
+      }
+    },
+    {
+      "relation_id": "relation:rendong:p227:ingredient:glycine-max-nigra",
+      "source": "formula-variant:rendongtang:yixuexinwu:p227",
+      "relation_type": "HAS_INGREDIENT",
+      "target": "herb:glycine-max-nigra-semen",
+      "evidence_level": "E1",
+      "evidence_ids": [
+        "evidence:yixuexinwu:p227-formula"
+      ],
+      "status": "approved",
+      "attributes": {
+        "dose_original": "二兩"
+      }
+    },
+    {
+      "relation_id": "relation:rendong:p227:ingredient:smilax-glabra",
+      "source": "formula-variant:rendongtang:yixuexinwu:p227",
+      "relation_type": "HAS_INGREDIENT",
+      "target": "herb:smilacis-glabrae-rhizoma",
+      "evidence_level": "E1",
+      "evidence_ids": [
+        "evidence:yixuexinwu:p227-formula"
+      ],
+      "status": "approved",
+      "attributes": {
+        "dose_original": "四兩"
+      }
+    },
+    {
+      "relation_id": "relation:rendong:same-name-distinct",
+      "source": "formula-variant:rendongtang:yixuexinwu:p138",
+      "relation_type": "SAME_NAME_DISTINCT_FORMULA",
+      "target": "formula-variant:rendongtang:yixuexinwu:p227",
+      "evidence_level": "E1",
+      "evidence_ids": [
+        "evidence:yixuexinwu:p138-formula",
+        "evidence:yixuexinwu:p227-formula"
+      ],
+      "status": "approved"
+    },
+    {
+      "relation_id": "relation:burn:neiwaiyongzhong:transfer",
+      "source": "disease:modern-burn",
+      "relation_type": "MECHANISM_TRANSFER_HYPOTHESIS",
+      "target": "disease:neiwaiyongzhong",
+      "evidence_level": "E5",
+      "evidence_ids": [
+        "evidence:yixuexinwu:p137-context",
+        "evidence:yixuexinwu:p138-formula"
+      ],
+      "status": "hypothesis_unvalidated",
+      "direct_ancient_evidence": false,
+      "basis": [
+        "创面红肿热痛表型可能重叠",
+        "烧伤后炎症与感染风险可形成现代桥接",
+        "痈肿与热损伤不是同义词"
+      ]
+    },
+    {
+      "relation_id": "relation:burn:rendong-p138:transfer",
+      "source": "disease:modern-burn",
+      "relation_type": "MECHANISM_TRANSFER_HYPOTHESIS",
+      "target": "formula-variant:rendongtang:yixuexinwu:p138",
+      "evidence_level": "E5",
+      "evidence_ids": [
+        "evidence:yixuexinwu:p137-context",
+        "evidence:yixuexinwu:p138-formula"
+      ],
+      "status": "hypothesis_unvalidated",
+      "direct_ancient_evidence": false,
+      "basis": [
+        "经内外痈肿表型桥接",
+        "需与直接注明治汤火伤的方剂同框评分",
+        "不得升级为古籍直接烧伤证据"
+      ]
+    }
+  ],
+  "claim_boundary": {
+    "ancient_direct_burn_claim_allowed": false,
+    "clinical_recommendation_allowed": false,
+    "modern_dose_conversion_allowed": false,
+    "automatic_treats_relation_allowed": false,
+    "allowed_current_wording": "《医学心悟》忍冬汤是经内外痈肿表型与病机桥接得到的烧伤研究迁移候选，不是古籍直接记载的烧伤专方。"
+  }
+}

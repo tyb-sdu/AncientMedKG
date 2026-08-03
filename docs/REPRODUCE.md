@@ -215,6 +215,14 @@ python app/scripts/evaluate_ancient_retrieval.py \
 
 ## 11. 自动证据与知识图谱
 
+首先校验冻结的烧伤术语本体和《医学心悟》忍冬汤同名异方证据链：
+
+```bash
+python -m research_pipeline.validate_domain_assets
+```
+
+该命令核对 39 条术语、123 个词形、自动批准阈值、三个来源页、两个组成指纹及 E1/E5 关系边界。校验失败时不要继续构建发布图谱。
+
 古籍证据抽取、阈值处理、源核验和导出：
 
 ```bash

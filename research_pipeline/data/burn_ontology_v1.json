@@ -1,8 +1,9 @@
 {
   "schema_version": 1,
   "ontology_id": "ancient-burn-ontology-v1",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "created_at": "2026-07-31",
+  "updated_at": "2026-08-03",
   "scope": "古籍烧伤直接证据、创面表型迁移证据、治法及排除语境",
   "normalization_policy": {
     "display_text": "保留原字形，不改写古籍原文",
@@ -20,10 +21,19 @@
     "direct_channel_threshold_initial": 0.8,
     "transfer_channel_threshold_initial": 0.7,
     "transfer_minimum_evidence_classes": 2,
-    "threshold_status": "proposal_initial_value_requires_annotated_calibration",
+    "threshold_status": "frozen_automatic_rule_v1",
     "direct_channel": "至少一个直接病名或热源损伤词，并满足损伤/肌肤上下文",
     "transfer_channel": "病机、创面表型或疮疡词不得单独升级为直接烧伤证据",
     "exclusion_precedence": "排除语境在同一窗口内优先于单字火、汤、疮命中"
+  },
+  "release_policy": {
+    "policy_id": "automatic-confidence-threshold-v1",
+    "candidate_confidence_threshold": 0.7,
+    "comparison": "greater_than_or_equal",
+    "below_threshold_action": "discard",
+    "at_or_above_threshold_action": "approve",
+    "human_reviewed": false,
+    "scientific_meaning": "机器批准仅表示术语、上下文、来源和置信度规则通过，不表示实验或临床有效性得到证明。"
   },
   "entries": [
     {
