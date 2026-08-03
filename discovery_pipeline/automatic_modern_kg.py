@@ -284,7 +284,7 @@ def build_automatic_modern_bundle(
                         "entity_type": "Outcome",
                         "canonical_name": OUTCOME_NAMES[outcome],
                         "identity": {"outcome_id": outcome},
-                        "attributes": {"direction": fields.get("direction", "unspecified")},
+                        "attributes": {"outcome_id": outcome},
                     },
                 )
                 add_entity(
