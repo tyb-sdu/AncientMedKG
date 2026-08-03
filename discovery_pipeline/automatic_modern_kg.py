@@ -256,7 +256,6 @@ def build_automatic_modern_bundle(
                     "external_ids": ({"doi": str(row["doi"])} if row["doi"] else {}),
                     "attributes": {
                         "doc_id": doc_id,
-                        "study_type": str(fields["study_type"]),
                         "year": str(row["year"] or ""),
                     },
                 },

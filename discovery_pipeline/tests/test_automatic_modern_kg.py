@@ -33,10 +33,9 @@ def test_modern_graph_builds_traceable_mechanism_chain(tmp_path: Path) -> None:
             ("doc:1", "Burn study", "2024", "10.1/test", "study.pdf", "a" * 64),
         )
         connection.execute("INSERT INTO chunks VALUES (?, ?, ?, ?)", ("chunk:1", "doc:1", 4, text))
+        connection.execute("INSERT INTO chunks VALUES (?, ?, ?, ?)", ("chunk:2", "doc:1", 5, text))
     structured = tmp_path / "structured.jsonl"
-    structured.write_text(
-        json.dumps(
-            {
+    first_record = {
                 "locus_id": "locus:1",
                 "candidate_id": "compound:chlorogenic_acid",
                 "chunk_id": "chunk:1",
@@ -56,8 +55,18 @@ def test_modern_graph_builds_traceable_mechanism_chain(tmp_path: Path) -> None:
                     "safety_signals": [],
                 },
             }
-        )
-        + "\n",
+    second_record = {
+        **first_record,
+        "locus_id": "locus:2",
+        "chunk_id": "chunk:2",
+        "pdf_page": 5,
+        "structured_fields": {
+            **first_record["structured_fields"],
+            "study_type": "in_vitro",
+        },
+    }
+    structured.write_text(
+        "\n".join(json.dumps(row) for row in (first_record, second_record)) + "\n",
         encoding="utf-8",
     )
     catalog = tmp_path / "catalog.json"
@@ -88,8 +97,11 @@ def test_modern_graph_builds_traceable_mechanism_chain(tmp_path: Path) -> None:
     )
     graph = build_bundle(bundle)
     assert validate_graph(graph, release=True)["valid"] is True
-    assert report["chain_counts"]["compound_target_pathway_phenotype"] == 1
+    assert report["chain_counts"]["compound_target_pathway_phenotype"] == 2
     predicates = {edge.predicate for edge in graph.edges}
     assert {"STUDIED_IN", "REPORTS_OUTCOME", "TARGETS", "PARTICIPATES_IN"} <= predicates
     assert "TREATS" not in predicates
     assert all(edge.review_status == "approved" for edge in graph.edges)
+    studies = [node for node in graph.nodes if node.entity_type == "Study"]
+    assert len(studies) == 1
+    assert "study_type" not in studies[0].attributes
