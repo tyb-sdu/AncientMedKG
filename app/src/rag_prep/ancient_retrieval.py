@@ -135,19 +135,22 @@ def query_ancient_keyword(
     db_path = ancient_database_path(cfg)
     if not db_path.exists():
         raise FileNotFoundError(f"古籍数据库不存在: {db_path}")
+    locator_hints = ancient_locator_hints(question)
     with _connect(db_path, readonly=True) as conn:
-        rows = conn.execute(
-            """
+        statement = """
             SELECT p.page_id, p.book_id, p.physical_page, p.pdf_page_label, p.text,
                    p.reading_direction, p.average_confidence, p.low_confidence,
                    b.title, b.filename, b.source_sha256
             FROM pages p
             JOIN books b USING(book_id)
-            """,
-        ).fetchall()
+            """
+        parameters: tuple[str, ...] = ()
+        if locator_hints is not None:
+            statement += " WHERE b.title LIKE ?"
+            parameters = (f"%{locator_hints[0]}%",)
+        rows = conn.execute(statement, parameters).fetchall()
 
     qnorm = normalize_search_text(question)
-    locator_hints = ancient_locator_hints(question)
     terms = [normalize_search_text(term) for term in _query_terms(question)]
     aliases = [
         normalize_search_text(alias)

@@ -315,11 +315,8 @@ def query_ancient_qwen_vector(
         raise ValueError("查询不能为空")
     if ancient_query_is_out_of_scope(question):
         return []
-    anchored = (
-        query_ancient_keyword(cfg, question, top_k)
-        if ancient_locator_hints(question) is not None
-        else []
-    )
+    if ancient_locator_hints(question) is not None:
+        return query_ancient_keyword(cfg, question, top_k)
     runtime = _load_runtime(cfg)
     qcfg = cfg.get("qwen", {})
     candidate_k = candidate_k or max(top_k, int(qcfg.get("vector_candidates", 100)))
@@ -377,15 +374,6 @@ def query_ancient_qwen_vector(
                 "qwen_model_id": runtime["manifest"]["model_id"],
             }
         )
-    if anchored:
-        vector_by_id = {row["chunk_id"]: row for row in results}
-        for row in anchored:
-            vector_row = vector_by_id.get(row["chunk_id"])
-            if vector_row is not None:
-                row["vector_score"] = vector_row.get("vector_score")
-                row["vector_rank"] = vector_row.get("vector_rank")
-            row["fusion_rank"] = row["keyword_rank"]
-        return anchored[:top_k]
     return results[:top_k]
 
 
@@ -419,6 +407,10 @@ def query_ancient_qwen_reranked_hybrid(
     question: str,
     top_k: int,
 ) -> list[dict[str, Any]]:
+    if ancient_query_is_out_of_scope(question):
+        return []
+    if ancient_locator_hints(question) is not None:
+        return query_ancient_keyword(cfg, question, top_k)
     qcfg = cfg.get("qwen", {})
     candidate_count = int(qcfg.get("reranker_candidates", 100))
     keyword = query_ancient_keyword(cfg, question, candidate_count)

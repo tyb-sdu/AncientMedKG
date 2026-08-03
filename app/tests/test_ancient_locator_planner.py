@@ -8,6 +8,10 @@ from rag_prep.ancient_retrieval import (
     ancient_query_is_out_of_scope,
     query_ancient_keyword,
 )
+from rag_prep.ancient_qwen_retrieval import (
+    query_ancient_qwen_reranked_hybrid,
+    query_ancient_qwen_vector,
+)
 
 
 def _database(path: Path) -> None:
@@ -69,6 +73,8 @@ def test_source_anchored_locator_handles_simplified_traditional_terms(tmp_path: 
     assert [row["chunk_id"] for row in results] == ["book:a:p000138"]
     assert results[0]["retrieval_planner"] == "source_anchored_locator"
     assert ancient_locator_hints(question) is not None
+    assert query_ancient_qwen_vector(cfg, question, 10) == results
+    assert query_ancient_qwen_reranked_hybrid(cfg, question, 10) == results
 
 
 def test_obviously_modern_question_abstains_before_retrieval(tmp_path: Path) -> None:
