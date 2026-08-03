@@ -86,3 +86,4 @@ def test_obviously_modern_question_abstains_before_retrieval(tmp_path: Path) -> 
     question = "哪部古籍记载了CRISPR编辑治疗烧伤？"
     assert ancient_query_is_out_of_scope(question) is True
     assert query_ancient_keyword(cfg, question, 10) == []
+    assert ancient_query_is_out_of_scope("古籍中人工智能预测烧伤瘢痕的算法。") is True

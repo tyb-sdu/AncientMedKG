@@ -25,7 +25,7 @@ def test_corpus_text_sha256_tracks_retrieval_corpus_fields() -> None:
         assert _corpus_text_sha256(changed) != baseline
 
 
-def test_lexical_recall_guard_preserves_diversified_keyword_set() -> None:
+def test_lexical_recall_guard_preserves_exact_keyword_top_k_set() -> None:
     cfg = {"search": {"max_chunks_per_document": 2}}
     keyword = [
         {"chunk_id": "a1", "doc_id": "a", "corpus": "ancient"},
@@ -41,5 +41,5 @@ def test_lexical_recall_guard_preserves_diversified_keyword_set() -> None:
         {"chunk_id": "a3", "doc_id": "a", "reranker_score": 0.4},
     ]
     result = _apply_lexical_recall_guard(cfg, keyword, ranked, top_k=3)
-    assert {row["chunk_id"] for row in result} == {"a1", "a2", "b1"}
+    assert {row["chunk_id"] for row in result} == {"a1", "a2", "a3"}
     assert all(row["lexical_recall_guard"] for row in result)
