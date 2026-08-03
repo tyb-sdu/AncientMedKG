@@ -85,6 +85,10 @@
     "SafetySignal": {
       "layer": "EXT",
       "required_attributes": []
+    },
+    "Formulation": {
+      "layer": "EXT",
+      "required_attributes": []
     }
   },
   "relationship_types": {
@@ -290,6 +294,64 @@
       ],
       "target": [
         "Compound"
+      ],
+      "key_path": false
+    },
+    "BINDS_TO": {
+      "source": [
+        "Compound"
+      ],
+      "target": [
+        "Target"
+      ],
+      "key_path": false,
+      "allowed_grades": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5"
+      ],
+      "allowed_modes": [
+        "explicit",
+        "inferred"
+      ]
+    },
+    "INHIBITS": {
+      "source": [
+        "Compound"
+      ],
+      "target": [
+        "Target"
+      ],
+      "key_path": false,
+      "allowed_grades": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5"
+      ],
+      "allowed_modes": [
+        "explicit",
+        "inferred"
+      ]
+    },
+    "METABOLITE_OF": {
+      "source": [
+        "Compound"
+      ],
+      "target": [
+        "Compound"
+      ],
+      "key_path": false
+    },
+    "FORMULATED_AS": {
+      "source": [
+        "Compound"
+      ],
+      "target": [
+        "Formulation"
       ],
       "key_path": false
     },

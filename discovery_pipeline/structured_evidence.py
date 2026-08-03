@@ -41,6 +41,12 @@ OUTCOMES = {
 }
 
 TARGETS = {
+    "HMGB1": (
+        "HMGB1",
+        "high-mobility group box 1",
+        "high mobility group box 1",
+        "高迁移率族蛋白B1",
+    ),
     "NFKB1": ("NF-kappa B", "NF-κB", "NF-kB", "NFKB1", "核因子κB"),
     "NFE2L2": ("Nrf2", "NFE2L2"),
     "HMOX1": ("HO-1", "HMOX1", "heme oxygenase-1"),
@@ -76,10 +82,46 @@ TARGET_RELATION_SIGNALS = (
     "via", "through", "mediated", "regulated", "activated", "inhibited", "targeted",
     "通过", "介导", "调控", "激活", "抑制", "靶向",
 )
-SAFETY_TERMS = (
-    "toxicity", "toxic", "adverse event", "side effect", "cytotoxicity",
-    "毒性", "不良反应", "副作用", "细胞毒",
-)
+SAFETY_SIGNALS = {
+    "hypertension": ("hypertension", "high blood pressure", "高血压"),
+    "hypokalemia": ("hypokalemia", "hypokalaemia", "low potassium", "低钾血症"),
+    "sodium_retention": (
+        "sodium retention",
+        "sodium and water retention",
+        "fluid retention",
+        "钠潴留",
+        "水钠潴留",
+    ),
+    "pseudoaldosteronism": (
+        "pseudoaldosteronism",
+        "pseudohyperaldosteronism",
+        "假性醛固酮增多症",
+    ),
+    "arrhythmia": ("arrhythmia", "cardiac arrhythmia", "心律失常"),
+    "drug_interaction": (
+        "drug interaction",
+        "interact with diuretics",
+        "interact with corticosteroids",
+        "药物相互作用",
+    ),
+    "cytotoxicity": ("cytotoxicity", "cytotoxic", "细胞毒"),
+    "general_toxicity": (
+        "toxicity",
+        "toxic",
+        "adverse event",
+        "side effect",
+        "毒性",
+        "不良反应",
+        "副作用",
+    ),
+}
+FORMULATIONS = {
+    "hydrogel": ("hydrogel", "hydrogels", "水凝胶"),
+    "wound_dressing": ("wound dressing", "wound dressings", "dressing", "创面敷料"),
+    "liposome": ("liposome", "liposomes", "liposomal", "脂质体"),
+    "nanofiber": ("nanofiber", "nanofibrous", "纳米纤维"),
+    "film": ("wound film", "chitosan-based film", "创面薄膜"),
+}
 ROUTES = {
     "topical": ("topical", "externally applied", "外用", "外敷", "涂抹"),
     "oral": ("oral", "intragastric", "gavage", "口服", "灌胃"),
@@ -101,6 +143,98 @@ def _contains(text: str, values: Iterable[str]) -> list[str]:
     return sorted({value for value in values if _normalized(value) in normalized})
 
 
+def _candidate_context(
+    text: str,
+    matched_terms: Iterable[str],
+    *,
+    radius: int = 900,
+) -> tuple[str, list[dict[str, int]]]:
+    windows: list[tuple[int, int]] = []
+    for term in sorted({str(value).strip() for value in matched_terms if str(value).strip()}):
+        latin_term = bool(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9 .+/_-]*", term))
+        pattern = (
+            rf"(?<![A-Za-z0-9]){re.escape(term)}(?![A-Za-z0-9])"
+            if latin_term
+            else re.escape(term)
+        )
+        flags = 0 if latin_term and len(term) <= 3 and term.isupper() else re.IGNORECASE
+        for match in re.finditer(pattern, text, flags):
+            windows.append((max(0, match.start() - radius), min(len(text), match.end() + radius)))
+    if not windows:
+        return text, [{"start": 0, "end": len(text)}]
+    merged: list[list[int]] = []
+    for start, end in sorted(windows):
+        if merged and start <= merged[-1][1]:
+            merged[-1][1] = max(merged[-1][1], end)
+        else:
+            merged.append([start, end])
+    spans = [{"start": start, "end": end} for start, end in merged]
+    return "\n[...candidate context...]\n".join(text[item["start"]:item["end"]] for item in spans), spans
+
+
+def _glycyrrhizic_identity(text: str) -> dict[str, Any]:
+    parent = bool(
+        re.search(
+            r"\b(?:glycyrrhizic acid|glycyrrhizin(?:ic acid)?|β-glycyrrhizin)\b|甘草酸",
+            text,
+            re.IGNORECASE,
+        )
+    )
+    dipotassium = bool(
+        re.search(r"\bdipotassium glycyrrhizin(?:ate|inate)\b|甘草酸二钾", text, re.IGNORECASE)
+    )
+    ammonium = bool(
+        re.search(r"\bammonium glycyrrhizinate\b|甘草酸铵", text, re.IGNORECASE)
+    )
+    metabolite = bool(
+        re.search(r"\bglycyrrhetinic acid\b|\benoxolone\b|甘草次酸", text, re.IGNORECASE)
+    )
+    forms = [
+        name
+        for name, matched in (
+            ("parent", parent),
+            ("dipotassium_salt", dipotassium),
+            ("ammonium_salt", ammonium),
+            ("glycyrrhetinic_metabolite", metabolite),
+        )
+        if matched
+    ]
+    return {
+        "explicit_parent_mention": parent,
+        "forms": forms,
+        "identity_scope": forms[0] if len(forms) == 1 else "mixed" if forms else "extract_only_or_unspecified",
+    }
+
+
+def _direct_target_relations(
+    candidate_id: str,
+    text: str,
+    identity: dict[str, Any],
+) -> list[dict[str, str]]:
+    if candidate_id != "compound:glycyrrhizic_acid" or not identity.get("explicit_parent_mention"):
+        return []
+    if not re.search(r"\bHMGB1\b|high[- ]mobility group box 1", text, re.IGNORECASE):
+        return []
+    relations: list[dict[str, str]] = []
+    if re.search(r"direct binding|binds? (?:directly )?(?:to )?HMGB1|binding (?:to |with )?HMGB1", text, re.IGNORECASE):
+        relations.append(
+            {
+                "target": "HMGB1",
+                "predicate": "BINDS_TO",
+                "evidence_scope": "source_reported_direct_binding",
+            }
+        )
+    if re.search(r"inhibitor of HMGB1|inhibits? HMGB1|HMGB1 inhibitor", text, re.IGNORECASE):
+        relations.append(
+            {
+                "target": "HMGB1",
+                "predicate": "INHIBITS",
+                "evidence_scope": "source_reported_functional_inhibition",
+            }
+        )
+    return relations
+
+
 def _study_type(text: str) -> tuple[str, list[str]]:
     for study_type, patterns in STUDY_PATTERNS:
         hits = [pattern for pattern in patterns if re.search(pattern, text, re.IGNORECASE)]
@@ -109,30 +243,63 @@ def _study_type(text: str) -> tuple[str, list[str]]:
     return "unspecified", []
 
 
-def _extract_fields(text: str) -> dict[str, Any]:
-    study_type, study_signals = _study_type(text)
-    outcomes = [key for key, terms in OUTCOMES.items() if _contains(text, terms)]
-    targets = [key for key, terms in TARGETS.items() if _contains(text, terms)]
-    pathways = [key for key, terms in PATHWAYS.items() if _contains(text, terms)]
-    positive = _contains(text, POSITIVE_SIGNALS)
-    negative = _contains(text, NEGATIVE_SIGNALS)
-    relation = _contains(text, TARGET_RELATION_SIGNALS)
-    safety = _contains(text, SAFETY_TERMS)
-    routes = [key for key, terms in ROUTES.items() if _contains(text, terms)]
-    doses = [match.group(0) for match in DOSE_RE.finditer(text)][:8]
+def _extract_fields(
+    text: str,
+    *,
+    candidate_id: str = "",
+    matched_terms: Iterable[str] = (),
+) -> dict[str, Any]:
+    scoped_text, context_spans = _candidate_context(text, matched_terms)
+    study_type, study_signals = _study_type(scoped_text)
+    outcomes = [key for key, terms in OUTCOMES.items() if _contains(scoped_text, terms)]
+    targets = [key for key, terms in TARGETS.items() if _contains(scoped_text, terms)]
+    pathways = [key for key, terms in PATHWAYS.items() if _contains(scoped_text, terms)]
+    positive = _contains(scoped_text, POSITIVE_SIGNALS)
+    negative = _contains(scoped_text, NEGATIVE_SIGNALS)
+    relation = _contains(scoped_text, TARGET_RELATION_SIGNALS)
+    safety = [key for key, terms in SAFETY_SIGNALS.items() if _contains(scoped_text, terms)]
+    formulations = [key for key, terms in FORMULATIONS.items() if _contains(scoped_text, terms)]
+    routes = [key for key, terms in ROUTES.items() if _contains(scoped_text, terms)]
+    doses = [match.group(0) for match in DOSE_RE.finditer(scoped_text)][:8]
+    identity = (
+        _glycyrrhizic_identity(scoped_text)
+        if candidate_id == "compound:glycyrrhizic_acid"
+        else {
+            "explicit_parent_mention": bool(tuple(matched_terms)),
+            "forms": ["catalog_candidate"],
+            "identity_scope": "catalog_candidate",
+        }
+    )
+    direct_relations = _direct_target_relations(candidate_id, scoped_text, identity)
+    if direct_relations and "HMGB1" not in targets:
+        targets.append("HMGB1")
+    metabolite_of = ""
+    if candidate_id == "compound:glycyrrhetinic_acid" and re.search(
+        r"metabol(?:ite|ized|ised|ism).{0,160}glycyrrhetinic acid|"
+        r"glycyrrhiz(?:ic acid|in).{0,160}glycyrrhetinic acid",
+        scoped_text,
+        re.IGNORECASE | re.DOTALL,
+    ):
+        metabolite_of = "compound:glycyrrhizic_acid"
     direction = "mixed" if positive and negative else "beneficial" if positive else "harmful" if negative else "unspecified"
     return {
         "study_type": study_type,
         "study_type_signals": study_signals,
         "outcomes": outcomes,
-        "targets": targets,
+        "targets": sorted(targets),
         "pathways": pathways,
         "direction": direction,
         "direction_signals": positive + negative,
         "target_relation_signals": relation,
         "safety_signals": safety,
+        "formulations": formulations,
         "routes": routes,
         "doses": doses,
+        "compound_identity": identity,
+        "direct_target_relations": direct_relations,
+        "metabolite_of": metabolite_of,
+        "candidate_context_spans": context_spans,
+        "candidate_context_sha256": _sha256_text(scoped_text),
     }
 
 
@@ -143,7 +310,7 @@ def _semantic_confidence(locus_confidence: float, fields: dict[str, Any]) -> tup
         "outcome": 0.12 if fields["outcomes"] else 0.0,
         "direction": 0.06 if fields["direction"] != "unspecified" else 0.0,
         "mechanism": 0.07 if fields["targets"] or fields["pathways"] else 0.0,
-        "dose_or_route": 0.04 if fields["doses"] or fields["routes"] else 0.0,
+        "dose_or_route": 0.04 if fields["doses"] or fields["routes"] or fields["formulations"] else 0.0,
         "safety": 0.04 if fields["safety_signals"] else 0.0,
     }
     return round(min(0.95, sum(components.values())), 6), components
@@ -203,6 +370,10 @@ def structure_modern_evidence(
     outcome_counts: Counter[str] = Counter()
     target_counts: Counter[str] = Counter()
     pathway_counts: Counter[str] = Counter()
+    safety_counts: Counter[str] = Counter()
+    formulation_counts: Counter[str] = Counter()
+    direct_relation_counts: Counter[str] = Counter()
+    identity_scope_counts: Counter[str] = Counter()
     try:
         if str(connection.execute("PRAGMA quick_check").fetchone()[0]) != "ok":
             raise StructuredEvidenceError("modern database quick_check failed")
@@ -233,7 +404,12 @@ def structure_modern_evidence(
                     equal = int(expected) == actual if field == "pdf_page" else str(expected or "") == str(actual or "")
                     if not equal:
                         issues.append(f"{field}_mismatch")
-            fields = _extract_fields(text)
+            candidate_id = str(locus.get("candidate_id", ""))
+            fields = _extract_fields(
+                text,
+                candidate_id=candidate_id,
+                matched_terms=locus.get("matched_terms", []),
+            )
             try:
                 locus_confidence = float(locus.get("candidate_confidence", 0.0))
             except (TypeError, ValueError):
@@ -244,11 +420,19 @@ def structure_modern_evidence(
             if issues:
                 confidence = 0.0
             reasons = list(issues)
+            if fields["study_type"] == "unspecified":
+                confidence = 0.0
+                reasons.append("study_type_not_explicit")
+            if not fields["outcomes"] and not fields["safety_signals"]:
+                confidence = 0.0
+                reasons.append("outcome_or_safety_not_explicit")
+            if (
+                candidate_id == "compound:glycyrrhizic_acid"
+                and not fields["compound_identity"]["explicit_parent_mention"]
+            ):
+                confidence = 0.0
+                reasons.append("glycyrrhizic_identity_not_explicit")
             if confidence < threshold:
-                if fields["study_type"] == "unspecified":
-                    reasons.append("study_type_not_explicit")
-                if not fields["outcomes"] and not fields["safety_signals"]:
-                    reasons.append("outcome_or_safety_not_explicit")
                 reasons.append("semantic_confidence_below_threshold")
             record = {
                 **locus,
@@ -271,6 +455,12 @@ def structure_modern_evidence(
                 outcome_counts.update(fields["outcomes"])
                 target_counts.update(fields["targets"])
                 pathway_counts.update(fields["pathways"])
+                safety_counts.update(fields["safety_signals"])
+                formulation_counts.update(fields["formulations"])
+                direct_relation_counts.update(
+                    value["predicate"] for value in fields["direct_target_relations"]
+                )
+                identity_scope_counts.update([fields["compound_identity"]["identity_scope"]])
             else:
                 discarded.append(record)
     finally:
@@ -310,6 +500,10 @@ def structure_modern_evidence(
             "outcome_counts": dict(sorted(outcome_counts.items())),
             "target_counts": dict(sorted(target_counts.items())),
             "pathway_counts": dict(sorted(pathway_counts.items())),
+            "safety_signal_counts": dict(sorted(safety_counts.items())),
+            "formulation_counts": dict(sorted(formulation_counts.items())),
+            "direct_target_relation_counts": dict(sorted(direct_relation_counts.items())),
+            "compound_identity_scope_counts": dict(sorted(identity_scope_counts.items())),
         }
         (temporary / "structured_evidence_report.json").write_text(
             json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"

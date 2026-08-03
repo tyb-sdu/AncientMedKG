@@ -89,3 +89,16 @@ in-vitro experiments, analytical chemistry, computational work, and reviews.
 Mechanism chains require source-supported nodes and edges and preserve their
 evidence IDs. Co-mention and pathway signals are represented as candidate
 mechanism relations. The automatic graph does not generate `TREATS` edges.
+
+Candidate-specific extraction is limited to merged text windows around the exact
+matched compound terms. This prevents targets or outcomes elsewhere on a review
+page from being assigned to the wrong compound. For glycyrrhizic acid, parent,
+salt, metabolite, and extract-only mentions are recorded separately; an
+extract-only passage cannot pass as parent-compound evidence.
+
+`BINDS_TO` and `INHIBITS` are emitted only when the candidate-scoped text
+explicitly reports the relation. `TARGETS` remains an inferred modulation edge.
+Specific safety signals include hypertension, hypokalemia, sodium retention,
+pseudoaldosteronism, arrhythmia, drug interaction, and cytotoxicity. Formulation
+mentions are normalized to hydrogel, wound dressing, liposome, nanofiber, or
+film and retain the same DOI, PDF page, chunk ID, and text hash as their evidence.

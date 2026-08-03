@@ -51,6 +51,23 @@ PATHWAY_NAMES = {
     "pathway:vegf": "VEGF signaling",
     "pathway:nlrp3": "NLRP3 inflammasome",
 }
+SAFETY_NAMES = {
+    "hypertension": "高血压",
+    "hypokalemia": "低钾血症",
+    "sodium_retention": "钠水潴留",
+    "pseudoaldosteronism": "假性醛固酮增多症",
+    "arrhythmia": "心律失常",
+    "drug_interaction": "药物相互作用",
+    "cytotoxicity": "细胞毒性",
+    "general_toxicity": "一般毒性或不良反应",
+}
+FORMULATION_NAMES = {
+    "hydrogel": "水凝胶",
+    "wound_dressing": "创面敷料",
+    "liposome": "脂质体",
+    "nanofiber": "纳米纤维",
+    "film": "创面薄膜",
+}
 ORIGINAL_STUDIES = {"randomized_trial", "controlled_clinical", "animal", "in_vitro"}
 
 
@@ -116,6 +133,14 @@ def build_automatic_modern_bundle(
     assertions: dict[tuple[str, str, str, str], dict[str, Any]] = {}
     chain_counts: Counter[str] = Counter()
     chain_examples: list[dict[str, Any]] = []
+    compound_records: Counter[str] = Counter()
+    compound_sources: defaultdict[str, set[str]] = defaultdict(set)
+    compound_targets: defaultdict[str, set[str]] = defaultdict(set)
+    compound_pathways: defaultdict[str, set[str]] = defaultdict(set)
+    compound_outcomes: defaultdict[str, set[str]] = defaultdict(set)
+    compound_safety: defaultdict[str, set[str]] = defaultdict(set)
+    compound_formulations: defaultdict[str, set[str]] = defaultdict(set)
+    compound_direct_relations: defaultdict[str, Counter[str]] = defaultdict(Counter)
 
     def add_entity(key: str, value: dict[str, Any]) -> None:
         prior = entities.setdefault(key, value)
@@ -155,6 +180,38 @@ def build_automatic_modern_bundle(
             assertions[identity] = row
         row["evidence"] = sorted({*row["evidence"], evidence_key})
         row["confidence"] = max(float(row["confidence"]), confidence)
+
+    def ensure_compound(candidate_id: str) -> None:
+        if candidate_id not in catalog:
+            raise AutomaticModernGraphError(f"unknown compound: {candidate_id}")
+        compound = catalog[candidate_id]
+        attributes = {
+            "candidate_role": str(compound.get("candidate_role", "")),
+            "herb_ids": list(compound.get("herb_ids", [])),
+        }
+        for relation_field in ("metabolite_of", "salt_of"):
+            if compound.get(relation_field):
+                attributes[relation_field] = str(compound[relation_field])
+        add_entity(
+            candidate_id,
+            {
+                "key": candidate_id,
+                "entity_type": "Compound",
+                "canonical_name": str(compound["canonical_name"]),
+                "aliases": [
+                    value
+                    for value in [compound.get("name_zh", ""), *compound.get("aliases", [])]
+                    if value
+                ],
+                "identity": {"candidate_id": candidate_id},
+                "external_ids": (
+                    {"pubchem_cid": str(compound["expected_pubchem_cid"])}
+                    if compound.get("expected_pubchem_cid")
+                    else {}
+                ),
+                "attributes": attributes,
+            },
+        )
 
     try:
         if str(connection.execute("PRAGMA quick_check").fetchone()[0]) != "ok":
@@ -197,6 +254,16 @@ def build_automatic_modern_bundle(
             }
             fields = dict(record["structured_fields"])
             grade, evidence_class = _grade(str(fields["study_type"]))
+            compound_records[candidate_id] += 1
+            compound_sources[candidate_id].add(doc_id)
+            compound_targets[candidate_id].update(fields.get("targets", []))
+            compound_pathways[candidate_id].update(fields.get("pathways", []))
+            compound_outcomes[candidate_id].update(fields.get("outcomes", []))
+            compound_safety[candidate_id].update(fields.get("safety_signals", []))
+            compound_formulations[candidate_id].update(fields.get("formulations", []))
+            compound_direct_relations[candidate_id].update(
+                value["predicate"] for value in fields.get("direct_target_relations", [])
+            )
             evidence[evidence_key] = {
                 "key": evidence_key,
                 "source": source_key,
@@ -223,30 +290,7 @@ def build_automatic_modern_bundle(
                     "semantic_confidence": confidence,
                 },
             }
-            compound = catalog[candidate_id]
-            add_entity(
-                candidate_id,
-                {
-                    "key": candidate_id,
-                    "entity_type": "Compound",
-                    "canonical_name": str(compound["canonical_name"]),
-                    "aliases": [
-                        value
-                        for value in [compound.get("name_zh", ""), *compound.get("aliases", [])]
-                        if value
-                    ],
-                    "identity": {"candidate_id": candidate_id},
-                    "external_ids": (
-                        {"pubchem_cid": str(compound["expected_pubchem_cid"])}
-                        if compound.get("expected_pubchem_cid")
-                        else {}
-                    ),
-                    "attributes": {
-                        "candidate_role": str(compound.get("candidate_role", "")),
-                        "herb_ids": list(compound.get("herb_ids", [])),
-                    },
-                },
-            )
+            ensure_compound(candidate_id)
             add_entity(
                 study_key,
                 {
@@ -319,7 +363,14 @@ def build_automatic_modern_bundle(
                 chain_counts["compound_study_outcome"] += 1
 
             target_keys: list[str] = []
-            target_relation_supported = bool(fields.get("target_relation_signals"))
+            direct_relations = {
+                (str(value["target"]), str(value["predicate"])): dict(value)
+                for value in fields.get("direct_target_relations", [])
+            }
+            direct_targets = {target for target, _ in direct_relations}
+            target_relation_supported = bool(
+                fields.get("target_relation_signals") or direct_relations
+            )
             for target in fields.get("targets", []):
                 target_key = f"target:{target}"
                 target_keys.append(target_key)
@@ -333,7 +384,7 @@ def build_automatic_modern_bundle(
                         "external_ids": {"gene_symbol": target},
                     },
                 )
-                if target_relation_supported:
+                if target_relation_supported and target not in direct_targets:
                     add_edge(
                         candidate_id,
                         "TARGETS",
@@ -344,6 +395,32 @@ def build_automatic_modern_bundle(
                         confidence=confidence,
                         attributes={"semantics": "mechanistic_modulation_not_direct_binding"},
                     )
+            for (target, predicate), relation in sorted(direct_relations.items()):
+                target_key = f"target:{target}"
+                relation_grade = {
+                    "E1": "E2",
+                    "E2": "E2",
+                    "E3": "E3",
+                    "E4": "E4",
+                    "E5": "E5",
+                }[grade]
+                add_edge(
+                    candidate_id,
+                    predicate,
+                    target_key,
+                    evidence_key,
+                    grade=relation_grade,
+                    mode="explicit",
+                    confidence=confidence,
+                    attributes={
+                        "evidence_scope": relation.get("evidence_scope", "source_reported"),
+                        "primary_binding_assay_confirmed": False,
+                        "scientific_boundary": (
+                            "The source explicitly reports this relation; the cited primary "
+                            "binding assay remains a separate verification step."
+                        ),
+                    },
+                )
 
             pathway_keys: list[str] = []
             for pathway in fields.get("pathways", []):
@@ -396,20 +473,70 @@ def build_automatic_modern_bundle(
                         }
                     )
             for signal in fields.get("safety_signals", []):
-                safety_key = "safety:" + hashlib.sha256(signal.encode("utf-8")).hexdigest()[:16]
+                safety_key = f"safety:{signal}"
                 add_entity(
                     safety_key,
                     {
                         "key": safety_key,
                         "entity_type": "SafetySignal",
-                        "canonical_name": signal,
-                        "identity": {"signal": signal},
+                        "canonical_name": SAFETY_NAMES.get(signal, signal),
+                        "identity": {"signal_id": signal},
                     },
                 )
                 add_edge(
                     study_key,
                     "HAS_SAFETY_SIGNAL",
                     safety_key,
+                    evidence_key,
+                    grade=grade,
+                    mode="explicit",
+                    confidence=confidence,
+                )
+                add_edge(
+                    candidate_id,
+                    "HAS_SAFETY_SIGNAL",
+                    safety_key,
+                    evidence_key,
+                    grade=grade,
+                    mode="explicit",
+                    confidence=confidence,
+                    attributes={
+                        "routes": list(fields.get("routes", [])),
+                        "doses": list(fields.get("doses", [])),
+                        "compound_specific_context": True,
+                    },
+                )
+            for formulation in fields.get("formulations", []):
+                formulation_key = f"formulation:{formulation}"
+                add_entity(
+                    formulation_key,
+                    {
+                        "key": formulation_key,
+                        "entity_type": "Formulation",
+                        "canonical_name": FORMULATION_NAMES.get(formulation, formulation),
+                        "identity": {"formulation_id": formulation},
+                    },
+                )
+                add_edge(
+                    candidate_id,
+                    "FORMULATED_AS",
+                    formulation_key,
+                    evidence_key,
+                    grade=grade,
+                    mode="explicit",
+                    confidence=confidence,
+                    attributes={
+                        "routes": list(fields.get("routes", [])),
+                        "not_a_treatment_claim": True,
+                    },
+                )
+            metabolite_of = str(fields.get("metabolite_of", ""))
+            if metabolite_of:
+                ensure_compound(metabolite_of)
+                add_edge(
+                    candidate_id,
+                    "METABOLITE_OF",
+                    metabolite_of,
                     evidence_key,
                     grade=grade,
                     mode="explicit",
@@ -435,8 +562,10 @@ def build_automatic_modern_bundle(
                 "human_reviewed": False,
             },
             "scientific_boundary": (
-                "TARGETS means text-supported mechanistic modulation, not direct binding; "
-                "ASSOCIATED_WITH is not a clinical treatment recommendation."
+                "TARGETS means text-supported mechanistic modulation, not direct binding. "
+                "BINDS_TO and INHIBITS preserve an explicit source statement but do not "
+                "replace primary-assay confirmation. ASSOCIATED_WITH and FORMULATED_AS "
+                "are not clinical treatment recommendations."
             ),
             "database_sha256": database_sha_before,
         },
@@ -459,6 +588,21 @@ def build_automatic_modern_bundle(
         "edges": len(graph.edges),
         "chain_counts": dict(sorted(chain_counts.items())),
         "chain_examples": chain_examples,
+        "compound_summary": {
+            candidate_id: {
+                "approved_evidence_records": compound_records[candidate_id],
+                "source_documents": len(compound_sources[candidate_id]),
+                "targets": sorted(compound_targets[candidate_id]),
+                "pathways": sorted(compound_pathways[candidate_id]),
+                "outcomes": sorted(compound_outcomes[candidate_id]),
+                "safety_signals": sorted(compound_safety[candidate_id]),
+                "formulations": sorted(compound_formulations[candidate_id]),
+                "direct_target_relations": dict(
+                    sorted(compound_direct_relations[candidate_id].items())
+                ),
+            }
+            for candidate_id in sorted(compound_records)
+        },
         "release_validation_valid": True,
         "source_database_unchanged": True,
         "database_sha256": database_sha_before,

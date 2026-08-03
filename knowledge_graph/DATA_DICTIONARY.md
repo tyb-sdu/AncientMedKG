@@ -84,6 +84,10 @@
 | `MODERN_MAPS_TO` | 古代病证/治法 | 烧伤阶段/表型 | 现代术语映射 |
 | `MECHANISM_TRANSFER` | 古代实体 | 现代扩展实体 | E4/E5 转移假设 |
 | `CONTAINS_COMPOUND` | 药材 | 化合物 | 现代成分证据 |
+| `BINDS_TO` | 化合物 | 靶点 | 来源明确陈述的结合关系，仍需核对原始结合实验 |
+| `INHIBITS` | 化合物 | 靶点 | 来源明确陈述的功能抑制关系 |
+| `METABOLITE_OF` | 化合物 | 化合物 | 母体与代谢物关系 |
+| `FORMULATED_AS` | 化合物 | 制剂 | 水凝胶、敷料、脂质体等递送形态 |
 | `TARGETS` | 化合物 | 靶点 | 靶点证据或预测 |
 | `PARTICIPATES_IN` | 靶点 | 通路 | 通路归属 |
 | `STUDIED_IN` | 实体 | 研究 | 研究来源 |

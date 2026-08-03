@@ -228,18 +228,18 @@
         "structuring_candidates": 677
       },
       "structured_release": {
-        "approved": 606,
-        "discarded": 71
+        "approved": 467,
+        "discarded": 210
       },
       "released_graph": {
-        "sources": 138,
-        "entities": 194,
-        "evidence": 606,
-        "relations": 1488,
-        "source_verified_evidence": 606
+        "sources": 129,
+        "entities": 189,
+        "evidence": 467,
+        "relations": 1166,
+        "source_verified_evidence": 467
       },
       "mechanism_output": {
-        "complete_compound_target_pathway_phenotype_chains": 97
+        "complete_compound_target_pathway_phenotype_chains": 48
       }
     }
   }
