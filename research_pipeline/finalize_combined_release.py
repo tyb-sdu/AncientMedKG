@@ -69,6 +69,7 @@ def finalize_combined_release(
     ancient_graph_dir: Path,
     modern_graph_dir: Path,
     ancient_database: Path,
+    modern_database: Path,
     output_root: Path,
     graph_version: str,
 ) -> dict[str, Any]:
@@ -96,6 +97,7 @@ def finalize_combined_release(
             graph_dir,
             neo4j_dir=neo4j_dir,
             ancient_database=ancient_database,
+            modern_database=modern_database,
         )
         if not doctor["valid"]:
             raise CombinedReleaseError(
@@ -140,6 +142,7 @@ def main() -> int:
     parser.add_argument("--ancient-graph", type=Path, required=True)
     parser.add_argument("--modern-graph", type=Path, required=True)
     parser.add_argument("--ancient-database", type=Path, required=True)
+    parser.add_argument("--modern-database", type=Path, required=True)
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--graph-version", required=True)
     args = parser.parse_args()
@@ -147,6 +150,7 @@ def main() -> int:
         ancient_graph_dir=args.ancient_graph,
         modern_graph_dir=args.modern_graph,
         ancient_database=args.ancient_database,
+        modern_database=args.modern_database,
         output_root=args.output_root,
         graph_version=args.graph_version,
     )
