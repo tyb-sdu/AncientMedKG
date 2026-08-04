@@ -1,0 +1,680 @@
+{
+  "schema_version": 1,
+  "screening_id": "burn-formula-transfer-screening-v1",
+  "target_candidate_id": "formula.rendongtang.xinwu.p138",
+  "policy": {
+    "source_confidence_floor": 0.7,
+    "exploratory_floor": 0.6,
+    "high_priority_floor": 0.75,
+    "weights": {
+      "burn_context": 0.25,
+      "phenotype_overlap": 0.2,
+      "pathogenesis_treatment_compatibility": 0.2,
+      "modern_ingredient_support": 0.15,
+      "formulation_feasibility": 0.1,
+      "safety_readiness": 0.1
+    }
+  },
+  "candidates": [
+    {
+      "candidate_id": "formula.rushengsan.pujifang.p22",
+      "formula_name": "如圣散",
+      "variant_label": "《普济方》汤火伤直接证据方",
+      "candidate_role": "direct_reference",
+      "source_confidence": 0.88,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000022",
+        "physical_page": 22,
+        "source_anchor": "如聖散治湯火所傷"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.7,
+        "pathogenesis_treatment_compatibility": 0.65,
+        "modern_ingredient_support": 0.2,
+        "formulation_feasibility": 0.65,
+        "safety_readiness": 0.4
+      },
+      "evidence_summary": "原文直接记载汤火所伤，但本页未完整展开组成，用作低信息量直接证据标尺。"
+    },
+    {
+      "candidate_id": "formula.qizhensan.pujifang.p21",
+      "formula_name": "七珍散",
+      "variant_label": "《普济方》汤火疮直接证据方",
+      "candidate_role": "direct_reference",
+      "source_confidence": 0.9,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000021",
+        "physical_page": 21,
+        "source_anchor": "七珍散治湯火瘡痛不可忍"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.8,
+        "pathogenesis_treatment_compatibility": 0.75,
+        "modern_ingredient_support": 0.35,
+        "formulation_feasibility": 0.9,
+        "safety_readiness": 0.45
+      },
+      "evidence_summary": "原文直接记载汤火疮及疼痛，用作直接烧伤证据标尺。"
+    },
+    {
+      "candidate_id": "formula.qinglianggao.pujifang.p22",
+      "formula_name": "清凉膏",
+      "variant_label": "《普济方》汤火疮直接证据方",
+      "candidate_role": "direct_reference",
+      "source_confidence": 0.94,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000022",
+        "physical_page": 22,
+        "source_anchor": "清涼膏惠方出聖治湯潑火燒止疼痛解火毒潤肌生肉"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.9,
+        "pathogenesis_treatment_compatibility": 0.9,
+        "modern_ingredient_support": 0.45,
+        "formulation_feasibility": 0.95,
+        "safety_readiness": 0.55
+      },
+      "evidence_summary": "原文直接记载汤泼火烧、止痛、解火毒、润肌生肉，用作直接烧伤证据标尺。"
+    },
+    {
+      "candidate_id": "formula.sihuangsan.pujifang.p24",
+      "formula_name": "四黄散",
+      "variant_label": "《普济方》汤火疮直接证据方",
+      "candidate_role": "direct_reference",
+      "source_confidence": 0.93,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000024",
+        "physical_page": 24,
+        "source_anchor": "四黃散出楊氏家藏方治湯潑火燒熱瘡腫痛"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.85,
+        "pathogenesis_treatment_compatibility": 0.9,
+        "modern_ingredient_support": 0.4,
+        "formulation_feasibility": 0.95,
+        "safety_readiness": 0.55
+      },
+      "evidence_summary": "原文直接记载汤泼火烧、热疮肿痛和外用方法，用作直接烧伤证据标尺。"
+    },
+    {
+      "candidate_id": "formula.mazigao.pujifang.p23",
+      "formula_name": "麻子膏",
+      "variant_label": "《普济方》火烧肉坏直接证据方",
+      "candidate_role": "direct_reference",
+      "source_confidence": 0.9,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000023",
+        "physical_page": 23,
+        "source_anchor": "麻子膏療火燒人肉壞爛"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.9,
+        "pathogenesis_treatment_compatibility": 0.8,
+        "modern_ingredient_support": 0.3,
+        "formulation_feasibility": 0.9,
+        "safety_readiness": 0.4
+      },
+      "evidence_summary": "原文直接记载火烧肉坏烂和外用膏剂，用作组织损伤直接证据标尺。"
+    },
+    {
+      "candidate_id": "formula.shuishuangsan.pujifang.p24",
+      "formula_name": "水霜散",
+      "variant_label": "《普济方》火燎皮烂直接证据方",
+      "candidate_role": "direct_reference",
+      "source_confidence": 0.88,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000024",
+        "physical_page": 24,
+        "source_anchor": "水霜散出濟生拔粹方治火燎損傷漆熱毒傷皮爛肉大痛"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.9,
+        "pathogenesis_treatment_compatibility": 0.8,
+        "modern_ingredient_support": 0.25,
+        "formulation_feasibility": 0.85,
+        "safety_readiness": 0.4
+      },
+      "evidence_summary": "原文直接记载火燎损伤、皮烂肉痛，用作深度组织损伤标尺。"
+    },
+    {
+      "candidate_id": "formula.huangbaisan.pujifang.p25",
+      "formula_name": "黄柏散",
+      "variant_label": "《普济方》汤火伤直接证据方",
+      "candidate_role": "direct_reference",
+      "source_confidence": 0.9,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000025",
+        "physical_page": 25,
+        "source_anchor": "黃栢散出危氏方治湯火傷"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.8,
+        "pathogenesis_treatment_compatibility": 0.85,
+        "modern_ingredient_support": 0.4,
+        "formulation_feasibility": 0.9,
+        "safety_readiness": 0.5
+      },
+      "evidence_summary": "原文直接记载汤火伤和水调外涂，用作直接烧伤证据标尺。"
+    },
+    {
+      "candidate_id": "formula.zhitonggao.pujifang.p26",
+      "formula_name": "止痛膏",
+      "variant_label": "《普济方》汤火损伤直接证据方",
+      "candidate_role": "direct_reference",
+      "source_confidence": 0.9,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000026",
+        "physical_page": 26,
+        "source_anchor": "止痛膏惠方出聖治炙及湯火所損晝夜啼呼止痛滅瘢"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.9,
+        "pathogenesis_treatment_compatibility": 0.8,
+        "modern_ingredient_support": 0.3,
+        "formulation_feasibility": 0.9,
+        "safety_readiness": 0.4
+      },
+      "evidence_summary": "原文直接记载汤火所损、止痛和灭瘢，用作症状与结局标尺。"
+    },
+    {
+      "candidate_id": "formula.chishizhisan.pujifang.p30",
+      "formula_name": "赤石脂散",
+      "variant_label": "《普济方》汤火赤烂热痛直接证据方",
+      "candidate_role": "direct_reference",
+      "source_confidence": 0.9,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000030",
+        "physical_page": 30,
+        "source_anchor": "治湯火所傷赤爛熱痛"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.9,
+        "pathogenesis_treatment_compatibility": 0.85,
+        "modern_ingredient_support": 0.25,
+        "formulation_feasibility": 0.9,
+        "safety_readiness": 0.45
+      },
+      "evidence_summary": "原文直接记载汤火所伤、赤烂和热痛，用作炎症与组织损伤标尺。"
+    },
+    {
+      "candidate_id": "formula.shenshengsan.pujifang.p30",
+      "formula_name": "神圣散",
+      "variant_label": "《普济方》汤火伤直接证据方",
+      "candidate_role": "direct_reference",
+      "source_confidence": 0.88,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000030",
+        "physical_page": 30,
+        "source_anchor": "神聖散治湯火所傷"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.7,
+        "pathogenesis_treatment_compatibility": 0.65,
+        "modern_ingredient_support": 0.2,
+        "formulation_feasibility": 0.8,
+        "safety_readiness": 0.4
+      },
+      "evidence_summary": "原文直接记载汤火所伤，用作配伍信息较少的直接证据标尺。"
+    },
+    {
+      "candidate_id": "formula.zhitongsan.pujifang.p31",
+      "formula_name": "止痛散",
+      "variant_label": "《普济方》火烧疮直接证据方",
+      "candidate_role": "direct_reference",
+      "source_confidence": 0.9,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000031",
+        "physical_page": 31,
+        "source_anchor": "止痛散惠方出聖治火燒瘡"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.8,
+        "pathogenesis_treatment_compatibility": 0.75,
+        "modern_ingredient_support": 0.3,
+        "formulation_feasibility": 0.9,
+        "safety_readiness": 0.4
+      },
+      "evidence_summary": "原文直接记载火烧疮和外涂方法，用作直接烧伤证据标尺。"
+    },
+    {
+      "candidate_id": "formula.kushensan.pujifang.p52",
+      "formula_name": "苦参散",
+      "variant_label": "《普济方》汤烫火烧直接证据方",
+      "candidate_role": "direct_reference",
+      "source_confidence": 0.92,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000052",
+        "physical_page": 52,
+        "source_anchor": "苦參散寶鑑出衛生治湯燙火燒瘡"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.8,
+        "pathogenesis_treatment_compatibility": 0.8,
+        "modern_ingredient_support": 0.45,
+        "formulation_feasibility": 0.95,
+        "safety_readiness": 0.5
+      },
+      "evidence_summary": "原文直接记载汤烫火烧疮和水调或油调外用，用作直接烧伤证据标尺。"
+    },
+    {
+      "candidate_id": "formula.xuanjingshisan.pujifang.p53",
+      "formula_name": "玄精石散",
+      "variant_label": "《普济方》汤火疼痛直接证据方",
+      "candidate_role": "direct_reference",
+      "source_confidence": 0.9,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000053",
+        "physical_page": 53,
+        "source_anchor": "玄精石散總錄出聖濟治湯火傷疼痛不可忍"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.8,
+        "pathogenesis_treatment_compatibility": 0.7,
+        "modern_ingredient_support": 0.2,
+        "formulation_feasibility": 0.85,
+        "safety_readiness": 0.4
+      },
+      "evidence_summary": "原文直接记载汤火伤疼痛不可忍，用作疼痛表型标尺。"
+    },
+    {
+      "candidate_id": "formula.dingtonggao.pujifang.p54",
+      "formula_name": "定痛膏",
+      "variant_label": "《普济方》火烧汤烫直接证据方",
+      "candidate_role": "direct_reference",
+      "source_confidence": 0.92,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000054",
+        "physical_page": 54,
+        "source_anchor": "定痛膏總錄出聖濟治火燒湯盪"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.8,
+        "pathogenesis_treatment_compatibility": 0.75,
+        "modern_ingredient_support": 0.25,
+        "formulation_feasibility": 0.9,
+        "safety_readiness": 0.45
+      },
+      "evidence_summary": "原文直接记载火烧汤烫和外用止痛，用作直接烧伤证据标尺。"
+    },
+    {
+      "candidate_id": "formula.jihuanggao.pujifang.p37",
+      "formula_name": "鸡黄膏",
+      "variant_label": "《普济方》汤火伤直接证据方",
+      "candidate_role": "direct_reference",
+      "source_confidence": 0.9,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000037",
+        "physical_page": 37,
+        "source_anchor": "雞黃膏治湯火所傷"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.75,
+        "pathogenesis_treatment_compatibility": 0.7,
+        "modern_ingredient_support": 0.2,
+        "formulation_feasibility": 0.9,
+        "safety_readiness": 0.45
+      },
+      "evidence_summary": "原文直接记载汤火所伤和外扫方法，用作膏剂直接证据标尺。"
+    },
+    {
+      "candidate_id": "formula.dahuanghanshuisan.pujifang.p37",
+      "formula_name": "大黄寒水散",
+      "variant_label": "《普济方》汤火疮直接证据方",
+      "candidate_role": "direct_reference",
+      "source_confidence": 0.88,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000037",
+        "physical_page": 37,
+        "source_anchor": "大黄寒水散治湯火瘡"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.75,
+        "pathogenesis_treatment_compatibility": 0.75,
+        "modern_ingredient_support": 0.3,
+        "formulation_feasibility": 0.9,
+        "safety_readiness": 0.45
+      },
+      "evidence_summary": "原文直接记载汤火疮，用作清热外用方向的直接证据标尺。"
+    },
+    {
+      "candidate_id": "formula.baoshengjiukudan.yangyidaquan.p57",
+      "formula_name": "保生救苦丹",
+      "variant_label": "《疡医大全》火烧热油直接证据方",
+      "candidate_role": "direct_reference",
+      "source_confidence": 0.88,
+      "source_locator": {
+        "book_id": "ancient:433bb852f4a329573c33",
+        "page_id": "ancient:433bb852f4a329573c33:p000057",
+        "physical_page": 57,
+        "source_anchor": "保生救苦丹治火燒熱油煥及一切狗嚙損傷"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.85,
+        "pathogenesis_treatment_compatibility": 0.75,
+        "modern_ingredient_support": 0.2,
+        "formulation_feasibility": 0.9,
+        "safety_readiness": 0.4
+      },
+      "evidence_summary": "原文直接记载火烧和热油伤，用作多外伤语境中的直接烧伤标尺。"
+    },
+    {
+      "candidate_id": "formula.zhuhuodan.yangyidaquan.p40",
+      "formula_name": "遂火丹",
+      "variant_label": "《疡医大全》汤泼火伤门直接证据方",
+      "candidate_role": "direct_reference",
+      "source_confidence": 0.9,
+      "source_locator": {
+        "book_id": "ancient:433bb852f4a329573c33",
+        "page_id": "ancient:433bb852f4a329573c33:p000040",
+        "physical_page": 40,
+        "source_anchor": "雷眞君遂火丹秘錄治無意之中忽爲湯火所傷"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.9,
+        "pathogenesis_treatment_compatibility": 0.85,
+        "modern_ingredient_support": 0.45,
+        "formulation_feasibility": 0.85,
+        "safety_readiness": 0.45
+      },
+      "evidence_summary": "原文位于汤泼火伤门并直接记载汤火所伤，用作内服直接证据标尺。"
+    },
+    {
+      "candidate_id": "formula.rendongtang.xinwu.p138",
+      "formula_name": "忍冬汤",
+      "variant_label": "《医学心悟》内外痈肿二味方",
+      "candidate_role": "transfer_candidate",
+      "source_confidence": 0.85,
+      "source_locator": {
+        "book_id": "ancient:da1657c4376cd7e6ba9e",
+        "page_id": "ancient:da1657c4376cd7e6ba9e:p000138",
+        "physical_page": 138,
+        "source_anchor": "忍冬湯一切內外癰腫皆可立消但宜蚤服金銀花四兩甘草三錢"
+      },
+      "components": {
+        "burn_context": 0.4,
+        "phenotype_overlap": 0.9,
+        "pathogenesis_treatment_compatibility": 0.9,
+        "modern_ingredient_support": 1.0,
+        "formulation_feasibility": 0.9,
+        "safety_readiness": 0.65
+      },
+      "evidence_summary": "古籍痈肿、炎症和创面表型与现代烧伤修复语境具有迁移相容性，且金银花、甘草有现代证据支撑。"
+    },
+    {
+      "candidate_id": "formula.rendongtang.xinwu.p227",
+      "formula_name": "忍冬汤",
+      "variant_label": "《医学心悟》杨梅结毒同名异方",
+      "candidate_role": "transfer_candidate",
+      "source_confidence": 0.95,
+      "source_locator": {
+        "book_id": "ancient:da1657c4376cd7e6ba9e",
+        "page_id": "ancient:da1657c4376cd7e6ba9e:p000227",
+        "physical_page": 227,
+        "source_anchor": "楊梅結毒不可搽輕粉恐毒氣入內宜服忍冬湯"
+      },
+      "components": {
+        "burn_context": 0.05,
+        "phenotype_overlap": 0.2,
+        "pathogenesis_treatment_compatibility": 0.2,
+        "modern_ingredient_support": 0.75,
+        "formulation_feasibility": 0.85,
+        "safety_readiness": 0.55
+      },
+      "evidence_summary": "虽同名且含金银花、甘草，但原文主治杨梅结毒，不能继承第138页方剂的烧伤迁移分数。"
+    },
+    {
+      "candidate_id": "formula.qianjinmudanpisan.xinwu.p137",
+      "formula_name": "千金牡丹皮散",
+      "variant_label": "痈证相似但无目标药材对照",
+      "candidate_role": "negative_control",
+      "source_confidence": 0.93,
+      "source_locator": {
+        "book_id": "ancient:da1657c4376cd7e6ba9e",
+        "page_id": "ancient:da1657c4376cd7e6ba9e:p000137",
+        "physical_page": 137,
+        "source_anchor": "腸癰也千金牡丹皮散主之"
+      },
+      "components": {
+        "burn_context": 0.05,
+        "phenotype_overlap": 0.45,
+        "pathogenesis_treatment_compatibility": 0.4,
+        "modern_ingredient_support": 0.1,
+        "formulation_feasibility": 0.8,
+        "safety_readiness": 0.6
+      },
+      "evidence_summary": "具有痈证表型相似性，但缺少目标药材与烧伤直接语境，用作表型相似对照。"
+    },
+    {
+      "candidate_id": "formula.guolaosan.xinwu.p137",
+      "formula_name": "国老散",
+      "variant_label": "含甘草但缺少烧伤语境对照",
+      "candidate_role": "negative_control",
+      "source_confidence": 0.9,
+      "source_locator": {
+        "book_id": "ancient:da1657c4376cd7e6ba9e",
+        "page_id": "ancient:da1657c4376cd7e6ba9e:p000137",
+        "physical_page": 137,
+        "source_anchor": "國老散治懸癰臟毒神效"
+      },
+      "components": {
+        "burn_context": 0.05,
+        "phenotype_overlap": 0.35,
+        "pathogenesis_treatment_compatibility": 0.4,
+        "modern_ingredient_support": 0.45,
+        "formulation_feasibility": 0.8,
+        "safety_readiness": 0.55
+      },
+      "evidence_summary": "含甘草且用于痈毒，但缺少金银花和烧伤直接语境，用作单药材支持对照。"
+    },
+    {
+      "candidate_id": "formula.jiegengtang.xinwu.p137",
+      "formula_name": "桔梗汤",
+      "variant_label": "肺痈语境负对照",
+      "candidate_role": "negative_control",
+      "source_confidence": 0.9,
+      "source_locator": {
+        "book_id": "ancient:da1657c4376cd7e6ba9e",
+        "page_id": "ancient:da1657c4376cd7e6ba9e:p000137",
+        "physical_page": 137,
+        "source_anchor": "肺癰也桔梗湯主之"
+      },
+      "components": {
+        "burn_context": 0.05,
+        "phenotype_overlap": 0.4,
+        "pathogenesis_treatment_compatibility": 0.35,
+        "modern_ingredient_support": 0.15,
+        "formulation_feasibility": 0.75,
+        "safety_readiness": 0.55
+      },
+      "evidence_summary": "主治肺痈而非皮肤烧伤或创面，用作病名相近但部位不符的负对照。"
+    },
+    {
+      "candidate_id": "formula.zhuichongwan.xinwu.p138",
+      "formula_name": "追虫丸",
+      "variant_label": "虫证语境负对照",
+      "candidate_role": "negative_control",
+      "source_confidence": 0.88,
+      "source_locator": {
+        "book_id": "ancient:da1657c4376cd7e6ba9e",
+        "page_id": "ancient:da1657c4376cd7e6ba9e:p000138",
+        "physical_page": 138,
+        "source_anchor": "蟲痛貫心傷人甚速宜急治之追蟲丸主之"
+      },
+      "components": {
+        "burn_context": 0.0,
+        "phenotype_overlap": 0.0,
+        "pathogenesis_treatment_compatibility": 0.05,
+        "modern_ingredient_support": 0.1,
+        "formulation_feasibility": 0.65,
+        "safety_readiness": 0.45
+      },
+      "evidence_summary": "与烧伤和创面修复语境不相符，用作同页邻近方剂误继承的负对照。"
+    },
+    {
+      "candidate_id": "formula.wanquangao.xinwu.p227",
+      "formula_name": "万全膏",
+      "variant_label": "杨梅结毒语境负对照",
+      "candidate_role": "negative_control",
+      "source_confidence": 0.86,
+      "source_locator": {
+        "book_id": "ancient:da1657c4376cd7e6ba9e",
+        "page_id": "ancient:da1657c4376cd7e6ba9e:p000227",
+        "physical_page": 227,
+        "source_anchor": "貼以萬全膏並用金蟬脫甲酒"
+      },
+      "components": {
+        "burn_context": 0.05,
+        "phenotype_overlap": 0.2,
+        "pathogenesis_treatment_compatibility": 0.15,
+        "modern_ingredient_support": 0.1,
+        "formulation_feasibility": 0.85,
+        "safety_readiness": 0.45
+      },
+      "evidence_summary": "页面语境为杨梅结毒而非烧伤，用作局部外用剂型但适应证不符的负对照。"
+    },
+    {
+      "candidate_id": "formula.jinchantuojiajiu.xinwu.p227",
+      "formula_name": "金蝉脱甲酒",
+      "variant_label": "杨梅疮语境负对照",
+      "candidate_role": "negative_control",
+      "source_confidence": 0.9,
+      "source_locator": {
+        "book_id": "ancient:da1657c4376cd7e6ba9e",
+        "page_id": "ancient:da1657c4376cd7e6ba9e:p000227",
+        "physical_page": 227,
+        "source_anchor": "金蟬脫甲酒治楊梅瘡不拘新久輕重皆效"
+      },
+      "components": {
+        "burn_context": 0.0,
+        "phenotype_overlap": 0.05,
+        "pathogenesis_treatment_compatibility": 0.05,
+        "modern_ingredient_support": 0.05,
+        "formulation_feasibility": 0.4,
+        "safety_readiness": 0.3
+      },
+      "evidence_summary": "原文主治杨梅疮且为酒剂，不满足烧伤迁移条件，用作明确排除对照。"
+    },
+    {
+      "candidate_id": "formula.jiajianliuweiwan.xinwu.p136",
+      "formula_name": "加减六味丸",
+      "variant_label": "含金银花与甘草但痔证语境负对照",
+      "candidate_role": "negative_control",
+      "source_confidence": 0.88,
+      "source_locator": {
+        "book_id": "ancient:da1657c4376cd7e6ba9e",
+        "page_id": "ancient:da1657c4376cd7e6ba9e:p000136",
+        "physical_page": 136,
+        "source_anchor": "並服加減六味丸及國老散自然漸次消散可免刀針藥線之苦"
+      },
+      "components": {
+        "burn_context": 0.05,
+        "phenotype_overlap": 0.3,
+        "pathogenesis_treatment_compatibility": 0.35,
+        "modern_ingredient_support": 0.8,
+        "formulation_feasibility": 0.75,
+        "safety_readiness": 0.55
+      },
+      "evidence_summary": "虽包含金银花和甘草，但原文用于痔证、悬痈语境，用作药材相同而适应证不同的负对照。"
+    },
+    {
+      "candidate_id": "formula.jiuweiluhuiwan.xinwu.p226",
+      "formula_name": "九味芦荟丸",
+      "variant_label": "下疳语境负对照",
+      "candidate_role": "negative_control",
+      "source_confidence": 0.88,
+      "source_locator": {
+        "book_id": "ancient:da1657c4376cd7e6ba9e",
+        "page_id": "ancient:da1657c4376cd7e6ba9e:p000226",
+        "physical_page": 226,
+        "source_anchor": "宜服九味蘆薈丸"
+      },
+      "components": {
+        "burn_context": 0.0,
+        "phenotype_overlap": 0.1,
+        "pathogenesis_treatment_compatibility": 0.1,
+        "modern_ingredient_support": 0.1,
+        "formulation_feasibility": 0.65,
+        "safety_readiness": 0.45
+      },
+      "evidence_summary": "原文用于下疳湿热而非烧伤，用作外科病证但适应证不符的负对照。"
+    },
+    {
+      "candidate_id": "formula.qishejiu.xinwu.p228",
+      "formula_name": "蕲蛇酒",
+      "variant_label": "含银花但大麻风语境负对照",
+      "candidate_role": "negative_control",
+      "source_confidence": 0.86,
+      "source_locator": {
+        "book_id": "ancient:da1657c4376cd7e6ba9e",
+        "page_id": "ancient:da1657c4376cd7e6ba9e:p000228",
+        "physical_page": 228,
+        "source_anchor": "宜服蘄蛇酒搽以當歸膏"
+      },
+      "components": {
+        "burn_context": 0.0,
+        "phenotype_overlap": 0.15,
+        "pathogenesis_treatment_compatibility": 0.1,
+        "modern_ingredient_support": 0.4,
+        "formulation_feasibility": 0.4,
+        "safety_readiness": 0.35
+      },
+      "evidence_summary": "虽含银花，但原文用于大麻风且为酒剂，用作单药材命中不能替代适应证匹配的负对照。"
+    },
+    {
+      "candidate_id": "formula.dangguigao.xinwu.p228",
+      "formula_name": "当归膏",
+      "variant_label": "癞风与鹅掌风语境负对照",
+      "candidate_role": "negative_control",
+      "source_confidence": 0.88,
+      "source_locator": {
+        "book_id": "ancient:da1657c4376cd7e6ba9e",
+        "page_id": "ancient:da1657c4376cd7e6ba9e:p000228",
+        "physical_page": 228,
+        "source_anchor": "當歸膏治癘風並可搽去遊丹鵝掌諸風"
+      },
+      "components": {
+        "burn_context": 0.0,
+        "phenotype_overlap": 0.2,
+        "pathogenesis_treatment_compatibility": 0.15,
+        "modern_ingredient_support": 0.15,
+        "formulation_feasibility": 0.85,
+        "safety_readiness": 0.45
+      },
+      "evidence_summary": "具有外用膏剂形式但原文适应证为癞风等皮肤病，用作剂型相似而疾病不符的负对照。"
+    }
+  ]
+}

@@ -83,6 +83,21 @@ python app/scripts/freeze_corpus.py --config app/config.yaml
 
 古籍页库构建、十部 Kanripo 定本导入以及古籍 Qwen 索引命令见 [复现指南](docs/REPRODUCE.md)。
 
+## 方剂横向筛选
+
+固定比较集包含 30 个可回读方剂记录：18 个古籍直接烧伤方作为校准标尺，2 个忍冬汤同名变体作为迁移对象，10 个病位、药材或适应证不相符的方剂作为负对照。每条记录均须定位到古籍物理页和原文锚点，并通过来源置信度不低于 `0.7` 的硬门。直接烧伤方单独报告，不与迁移候选混为同一证据层级。
+
+迁移评分由烧伤语境、创面表型、病机与治法相容性、现代药材证据、剂型可行性和安全性六项组成：
+
+```bash
+python -m research_pipeline.formula_transfer_screening \
+  --candidates research_pipeline/data/formula_transfer_candidates_v1.json \
+  --ancient-database /private/ancient_rag.db \
+  --output /private/formula_transfer_screening.json
+```
+
+在该固定比较集中，《医学心悟》第 138 页忍冬汤得分 `0.765`，在 12 个迁移候选及负对照中排名第 1，也是唯一进入高优先级层的方剂；第 227 页同名异方因主治和组成不同，得分 `0.345` 并被排除。该结果只表示后续研究优先级，不构成烧伤疗效或比较优势证明。
+
 ## 查询与溯源
 
 ```bash
