@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "release_tag": "runtime-2026.08.04",
+  "repository": "tyb-sdu/AncientMedKG",
+  "corpus": {
+    "modern": {
+      "documents": 584,
+      "pages": 9870,
+      "chunks": 10983
+    },
+    "ancient": {
+      "books": 22,
+      "pages": 26949
+    }
+  },
+  "asset_count": 6,
+  "total_asset_bytes": 1411037648,
+  "contains_original_pdf": false,
+  "contains_model_weights": false,
+  "contains_server_credentials": false,
+  "large_assets_location": "github_release",
+  "checksums": "SHA256SUMS"
+}

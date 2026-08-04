@@ -1,0 +1,15 @@
+{
+  "schema_version": 2,
+  "selection_id": "rendongtang-compound-screening-v2",
+  "analysis_mode": "compound_screening_no_pathway_inference",
+  "source_snapshot": {
+    "modern_document_count": 584,
+    "candidate_count": 13,
+    "candidate_catalog_sha256": "adda762d91ffc8fa2f274b801db652f271212cf7f5fed392cd4a0acaa917dec7",
+    "coverage_summary_sha256": "acc7d7859763134999109c2d5bc03b9c72cb113f052c457a64b7f24512afed87",
+    "pubchem_resolution_sha256": "fa128f907d7e1f657924be88ced28bb7845dce198c292b87f84d4c29753d9032"
+  },
+  "thresholds": {
+    "minimum_burn_document_count": 10
+  }
+}

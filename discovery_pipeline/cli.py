@@ -7,6 +7,11 @@ from pathlib import Path
 from typing import Any, Sequence
 
 from .automatic_loci import filter_loci_automatically
+from .compound_only_selection import (
+    CompoundOnlyInputError,
+    select_compounds_without_mechanism,
+    verify_compound_only_sources,
+)
 from .compound_scoring import ScoringInputError, score_catalog
 from .corpus_scan import scan_corpus
 from .doctor import validate_discovery_intake
@@ -71,6 +76,34 @@ def _mechanism(args: argparse.Namespace) -> int:
     return 0
 
 
+def _compound_only(args: argparse.Namespace) -> int:
+    if args.output.exists():
+        raise FileExistsError(f"refusing to overwrite {args.output}")
+    result = select_compounds_without_mechanism(
+        _load(args.input),
+        catalog_bytes=args.catalog.read_bytes(),
+        coverage_summary_bytes=args.coverage_summary.read_bytes(),
+        pubchem_resolution_bytes=args.pubchem_resolution.read_bytes(),
+    )
+    _write(args.output, result)
+    print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+    return 0
+
+
+def _compound_only_verify(args: argparse.Namespace) -> int:
+    if args.output.exists():
+        raise FileExistsError(f"refusing to overwrite {args.output}")
+    result = verify_compound_only_sources(
+        policy=_load(args.input),
+        catalog_bytes=args.catalog.read_bytes(),
+        coverage_summary_bytes=args.coverage_summary.read_bytes(),
+        pubchem_resolution_bytes=args.pubchem_resolution.read_bytes(),
+    )
+    _write(args.output, result)
+    print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+    return 0 if result["valid"] else 2
+
+
 def _doctor(args: argparse.Namespace) -> int:
     if args.output.exists():
         raise FileExistsError(f"refusing to overwrite {args.output}")
@@ -104,7 +137,7 @@ def build_parser() -> argparse.ArgumentParser:
     root = Path(__file__).resolve().parent
     parser = argparse.ArgumentParser(
         prog="python -m discovery_pipeline",
-        description="Auditable compound screening and mechanism analysis.",
+        description="Auditable compound screening with optional mechanism analysis.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -161,6 +194,51 @@ def build_parser() -> argparse.ArgumentParser:
     mechanism_parser.add_argument("--output", type=Path, required=True)
     mechanism_parser.set_defaults(handler=_mechanism)
 
+    compound_only_parser = subparsers.add_parser(
+        "compound-only",
+        help=(
+            "Screen the complete formula compound catalog by fixed-corpus frequency "
+            "and chemical identity without target or pathway inference."
+        ),
+    )
+    compound_only_parser.add_argument(
+        "--input",
+        type=Path,
+        default=root / "data" / "compound_screening_v2.json",
+    )
+    compound_only_parser.add_argument(
+        "--catalog",
+        type=Path,
+        default=root / "data" / "compound_candidates_v1.json",
+    )
+    compound_only_parser.add_argument("--coverage-summary", type=Path, required=True)
+    compound_only_parser.add_argument("--pubchem-resolution", type=Path, required=True)
+    compound_only_parser.add_argument("--output", type=Path, required=True)
+    compound_only_parser.set_defaults(handler=_compound_only)
+
+    compound_only_verify_parser = subparsers.add_parser(
+        "compound-only-verify",
+        help="Verify compound-only frequencies and identities against locked source files.",
+    )
+    compound_only_verify_parser.add_argument(
+        "--input",
+        type=Path,
+        default=root / "data" / "compound_screening_v2.json",
+    )
+    compound_only_verify_parser.add_argument(
+        "--catalog",
+        type=Path,
+        default=root / "data" / "compound_candidates_v1.json",
+    )
+    compound_only_verify_parser.add_argument(
+        "--coverage-summary", type=Path, required=True
+    )
+    compound_only_verify_parser.add_argument(
+        "--pubchem-resolution", type=Path, required=True
+    )
+    compound_only_verify_parser.add_argument("--output", type=Path, required=True)
+    compound_only_verify_parser.set_defaults(handler=_compound_only_verify)
+
     doctor_parser = subparsers.add_parser(
         "doctor", help="Validate identity and corpus-intake artifacts end to end."
     )
@@ -187,6 +265,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return int(args.handler(args))
     except (
         FileExistsError,
+        CompoundOnlyInputError,
         json.JSONDecodeError,
         MechanismInputError,
         OSError,

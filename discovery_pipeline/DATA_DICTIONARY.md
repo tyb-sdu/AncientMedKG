@@ -102,3 +102,24 @@ Specific safety signals include hypertension, hypokalemia, sodium retention,
 pseudoaldosteronism, arrhythmia, drug interaction, and cytotoxicity. Formulation
 mentions are normalized to hydrogel, wound dressing, liposome, nanofiber, or
 film and retain the same DOI, PDF page, chunk ID, and text hash as their evidence.
+
+## Compound-only screening mode
+
+`compound_screening_no_pathway_inference` is the conservative screening mode
+for the Rendongtang follow-up. It verifies all 13 formula-ingredient candidates
+against the locked catalog, corpus coverage, and PubChem identity snapshots.
+Candidates must have at least one burn-context document to remain in the
+evidence-bearing pool and at least 10 distinct burn-context documents to be
+selected for analytical follow-up. It orders the complete candidate pool by:
+
+1. distinct burn-related source documents;
+2. distinct burn-or-wound source documents;
+3. total distinct source documents;
+4. stable candidate ID as the deterministic tie breaker.
+
+Matching-locus counts are reported but do not outrank document counts, because
+long papers can produce more chunks. These values are project-corpus reference
+frequencies, not external citation metrics and not efficacy estimates. Chemical
+output is limited to identity fields from the locked PubChem resolution artifact.
+The mode always emits empty target, pathway, and phenotype claim arrays and
+cannot generate angiogenesis or wound-repair efficacy claims.

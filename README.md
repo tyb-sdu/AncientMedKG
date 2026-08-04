@@ -2,7 +2,7 @@
 
 AncientMedRAG 是面向中药烧伤研究的本地可追溯 RAG 与证据图谱工程。系统同时处理现代 PDF 文献和古籍页级文本，使用 SQLite FTS5、Qwen3-Embedding-8B、FAISS、RRF 与 Qwen3-Reranker-8B 完成检索，并保留从答案候选回到原文件、原页和原文的完整定位信息。
 
-项目只提供命令行工具，不启动网页服务，不依赖收费 API，也不内置回答大模型。Git 仓库包含复现代码、固定配置、模型版本锁和数据契约；原始 PDF、OCR 结果、SQLite 数据库、模型权重和向量索引由使用者在本地生成。
+项目只提供命令行工具，不启动网页服务，不依赖收费 API，也不内置回答大模型。Git 仓库包含复现代码、固定配置、模型版本锁和数据契约；原始 PDF 和模型权重由使用者自行准备。与代码版本对应的 SQLite 数据库、页级 JSONL、Qwen/FAISS 索引、证据导出和评测日志通过 GitHub Release `runtime-2026.08.04` 发布，下载与校验方法见 `docs/RUNTIME_RELEASE.md`。
 
 ## 核心能力
 
@@ -53,6 +53,7 @@ python -m research_pipeline.validate_domain_assets
 - `research_pipeline/`：古籍证据抽取、方剂消歧和合并发布。
 - `discovery_pipeline/`：现代证据扫描、成分筛选和候选机制链。
 - `docs/REPRODUCE.md`：从空目录到可查询 RAG 的完整复现步骤。
+- `docs/RUNTIME_RELEASE.md`：下载、校验并恢复正式运行数据库、索引、证据导出和评测日志。
 
 ## 快速开始
 
@@ -85,9 +86,9 @@ python app/scripts/freeze_corpus.py --config app/config.yaml
 
 ## 方剂横向筛选
 
-固定比较集包含 30 个可回读方剂记录：18 个古籍直接烧伤方作为校准标尺，2 个忍冬汤同名变体作为迁移对象，10 个病位、药材或适应证不相符的方剂作为负对照。每条记录均须定位到古籍物理页和原文锚点，并通过来源置信度不低于 `0.7` 的硬门。直接烧伤方单独报告，不与迁移候选混为同一证据层级。
+固定比较集包含 50 个可回读方剂记录。每条记录均标注内服、外用或不明给药途径，以及汤剂、散剂、膏剂、丸剂、酒剂等剂型和制备复杂度；来源置信度不得低于 `0.7`，书目、物理页和原文锚点必须能在正式古籍页库中回读。
 
-迁移评分由烧伤语境、创面表型、病机与治法相容性、现代药材证据、剂型可行性和安全性六项组成：
+筛选按固定顺序执行：先验证来源，再按预设铅、汞、砷及其古籍异名词表排除含重金属的外用方，然后聚焦内服汤剂，最后执行同名异方门控和六维加权评分。六个评分维度为烧伤语境、创面表型、病机与治法相容性、现代药材证据、剂型可行性和安全性。古籍直接烧伤方只作为校准标尺，不与迁移候选竞争排名。
 
 ```bash
 python -m research_pipeline.formula_transfer_screening \
@@ -96,7 +97,7 @@ python -m research_pipeline.formula_transfer_screening \
   --output /private/formula_transfer_screening.json
 ```
 
-在该固定比较集中，《医学心悟》第 138 页忍冬汤得分 `0.765`，在 12 个迁移候选及负对照中排名第 1，也是唯一进入高优先级层的方剂；第 227 页同名异方因主治和组成不同，得分 `0.345` 并被排除。该结果只表示后续研究优先级，不构成烧伤疗效或比较优势证明。
+正式古籍库验收结果为：50 条来源全部通过；7 个含重金属的外用方被排除，43 条进入下一层；其中 14 条为内服汤剂，扣除 1 条直接证据校准方后，13 条进入迁移评分。《医学心悟》第 138 页忍冬汤得分 `0.765`、排名第 1，是唯一高优先级候选；清热消毒散得分 `0.640`、排名第 2，处于探索层；第 227 页同名忍冬汤因主治和组成不同，得分 `0.345` 并被排除。该排序只表示后续研究优先级，不构成烧伤疗效、用药安全或比较优势证明。
 
 ## 查询与溯源
 
@@ -124,6 +125,32 @@ python -m research_pipeline.validate_domain_assets
 
 校验器核对 12 个阶段门、6 个不同数值阈值、硬约束、术语标识、词形冲突、来源页、组成指纹、同名异方关系和 E1/E5 证据边界；任一约束不满足即返回非零退出码。
 
+## 成分优先筛选
+
+最终成分筛选采用 `compound_screening_no_pathway_inference` 模式，从忍冬汤两味药材的 13 种候选成分开始筛选。程序先核验候选目录、现代语料覆盖统计和 PubChem 身份记录，再要求至少存在 1 篇烧伤语境文献，并以烧伤相关独立文献不少于 10 篇作为分析验证候选门槛。排序依次使用烧伤相关独立文献数、烧伤或创面相关独立文献数和总独立文献数；该模式不计算机制综合分，不输出靶点、通路、血管生成或创面修复效应断言。
+
+```bash
+python -m discovery_pipeline compound-only \
+  --input discovery_pipeline/data/compound_screening_v2.json \
+  --catalog discovery_pipeline/data/compound_candidates_v1.json \
+  --coverage-summary /private/compound_coverage_summary.json \
+  --pubchem-resolution /private/pubchem_resolution.json \
+  --output /private/compound_only_selection.json
+```
+
+客户重建现代语料与 PubChem 解析后，可核验频次和化学身份是否仍与锁定快照一致：
+
+```bash
+python -m discovery_pipeline compound-only-verify \
+  --input discovery_pipeline/data/compound_screening_v2.json \
+  --catalog discovery_pipeline/data/compound_candidates_v1.json \
+  --coverage-summary /private/compound_coverage_summary.json \
+  --pubchem-resolution /private/pubchem_resolution.json \
+  --output /private/compound_only_source_verification.json
+```
+
+这里的文献频次是锁定 584 篇现代资料后统计的项目语料频次，不是外部数据库的被引次数。筛选漏斗为 13 种候选成分、13 种身份及来源核验通过、12 种至少存在 1 篇烧伤语境文献、2 种达到烧伤相关独立文献不少于 10 篇的门槛。绿原酸为 21 篇，甘草酸为 18 篇，第三名咖啡酸为 8 篇；因此绿原酸和甘草酸分别列第 1、2 位。两者均只标记为待分析验证成分，不据此声称疗效或机制成立。
+
 ## 参考输出
 
 使用项目对应的 584 篇现代 PDF、12 部基础古籍 PDF、锁定的 10 部 Kanripo 定本及 `app/models.lock.json` 中的模型版本，可得到以下参考规模：
@@ -135,7 +162,7 @@ python -m research_pipeline.validate_domain_assets
 | 古籍图谱 | 613 个实体、1,744 条证据、3,200 条关系 |
 | 现代图谱 | 189 个实体、467 条证据、1,166 条关系 |
 | 合并图谱 | 802 个实体、2,211 条证据、4,366 条关系 |
-| 候选机制链 | 48 条成分-靶点-通路-表型链 |
+| 历史兼容机制链 | 48 条候选链，不进入成分优先筛选结论 |
 
 甘草酸专项最终保留 135 条合格记录，来自 50 篇文献。图谱分别表达来源明示的甘草酸-HMGB1 结合与抑制关系、4 类递送形式，以及高血压、低钾血症等给药相关安全信号；这些关系均保留 DOI、物理页、文本块标识与正文指纹。
 

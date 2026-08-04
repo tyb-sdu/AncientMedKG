@@ -1,0 +1,486 @@
+{
+  "analysis_mode": "compound_screening_no_pathway_inference",
+  "frequency_definition": "Counts are distinct source-document and matching-locus frequencies in the fixed project corpus. They are not external citation counts and do not establish efficacy.",
+  "mechanism_analysis": {
+    "enabled": false,
+    "pathways": [],
+    "phenotype_claims": [],
+    "targets": []
+  },
+  "ranked_candidate_pool": [
+    {
+      "candidate_id": "compound:chlorogenic_acid",
+      "candidate_role": "parent_compound",
+      "canonical_name": "chlorogenic acid",
+      "chemical_properties": {
+        "identity_status": "resolved_requires_curator_review",
+        "inchikey": "CWVRJTMFETXNAD-JUHZACGLSA-N",
+        "molecular_formula": "C16H18O9",
+        "molecular_weight": 354.31,
+        "pubchem_cid": 1794427,
+        "pubchem_title": "Chlorogenic Acid",
+        "response_sha256": "61e702db1b5c8fca61f701d037d1f756570890fe3a16a621286fb3e451434dc5"
+      },
+      "corpus_frequency": {
+        "burn_document_count": 21,
+        "burn_locus_count": 25,
+        "document_count": 111,
+        "matching_locus_count": 667,
+        "wound_or_burn_document_count": 71,
+        "wound_or_burn_locus_count": 223
+      },
+      "frequency_rank": 1,
+      "herb_ids": [
+        "herb:lonicera_japonica_flower"
+      ],
+      "name_zh": "绿原酸",
+      "scientific_claim_status": "retrieval_frequency_and_identity_only",
+      "selection_status": "selected_for_analytical_follow_up"
+    },
+    {
+      "candidate_id": "compound:glycyrrhizic_acid",
+      "candidate_role": "parent_compound",
+      "canonical_name": "glycyrrhizic acid",
+      "chemical_properties": {
+        "identity_status": "resolved_requires_curator_review",
+        "inchikey": "LPLVUJXQOOQHMX-QWBHMCJMSA-N",
+        "molecular_formula": "C42H62O16",
+        "molecular_weight": 822.9,
+        "pubchem_cid": 14982,
+        "pubchem_title": "Glycyrrhizin",
+        "response_sha256": "f8985da8d5a161a90cc8788657707304f1a3eec0d8a18ab7819a20621d9f7c8d"
+      },
+      "corpus_frequency": {
+        "burn_document_count": 18,
+        "burn_locus_count": 45,
+        "document_count": 102,
+        "matching_locus_count": 525,
+        "wound_or_burn_document_count": 58,
+        "wound_or_burn_locus_count": 185
+      },
+      "frequency_rank": 2,
+      "herb_ids": [
+        "herb:glycyrrhiza_root"
+      ],
+      "name_zh": "甘草酸",
+      "scientific_claim_status": "retrieval_frequency_and_identity_only",
+      "selection_status": "selected_for_analytical_follow_up"
+    },
+    {
+      "candidate_id": "compound:caffeic_acid",
+      "candidate_role": "backup",
+      "canonical_name": "caffeic acid",
+      "chemical_properties": {
+        "identity_status": "resolved_requires_curator_review",
+        "inchikey": "QAIPRVGONGVQAS-DUXPYHPUSA-N",
+        "molecular_formula": "C9H8O4",
+        "molecular_weight": 180.16,
+        "pubchem_cid": 689043,
+        "pubchem_title": "Caffeic Acid",
+        "response_sha256": "6f34adf8ec9af7580d479feb0482191c1a04c5576b970efa13e0b4c2f9752b0b"
+      },
+      "corpus_frequency": {
+        "burn_document_count": 8,
+        "burn_locus_count": 8,
+        "document_count": 62,
+        "matching_locus_count": 193,
+        "wound_or_burn_document_count": 28,
+        "wound_or_burn_locus_count": 56
+      },
+      "frequency_rank": 3,
+      "herb_ids": [
+        "herb:lonicera_japonica_flower"
+      ],
+      "name_zh": "咖啡酸",
+      "scientific_claim_status": "retrieval_frequency_and_identity_only",
+      "selection_status": "reserve_below_frequency_threshold"
+    },
+    {
+      "candidate_id": "compound:luteolin",
+      "candidate_role": "backup",
+      "canonical_name": "luteolin",
+      "chemical_properties": {
+        "identity_status": "resolved_requires_curator_review",
+        "inchikey": "IQPNAANSBPBGFQ-UHFFFAOYSA-N",
+        "molecular_formula": "C15H10O6",
+        "molecular_weight": 286.24,
+        "pubchem_cid": 5280445,
+        "pubchem_title": "Luteolin",
+        "response_sha256": "07758e2dbac4573a75f20c129835536b862a9033d364d797d7e09b64d25faf16"
+      },
+      "corpus_frequency": {
+        "burn_document_count": 7,
+        "burn_locus_count": 8,
+        "document_count": 47,
+        "matching_locus_count": 145,
+        "wound_or_burn_document_count": 21,
+        "wound_or_burn_locus_count": 41
+      },
+      "frequency_rank": 4,
+      "herb_ids": [
+        "herb:lonicera_japonica_flower"
+      ],
+      "name_zh": "木犀草素",
+      "scientific_claim_status": "retrieval_frequency_and_identity_only",
+      "selection_status": "reserve_below_frequency_threshold"
+    },
+    {
+      "candidate_id": "compound:rutin",
+      "candidate_role": "backup",
+      "canonical_name": "rutin",
+      "chemical_properties": {
+        "identity_status": "resolved_requires_curator_review",
+        "inchikey": "IKGXIBQEEMLURG-NVPNHPEKSA-N",
+        "molecular_formula": "C27H30O16",
+        "molecular_weight": 610.5,
+        "pubchem_cid": 5280805,
+        "pubchem_title": "Rutin",
+        "response_sha256": "5cef070dc35a80a2a67f860bb7064f204efeffc87b41e1f75dd795d14302b7b8"
+      },
+      "corpus_frequency": {
+        "burn_document_count": 6,
+        "burn_locus_count": 7,
+        "document_count": 50,
+        "matching_locus_count": 169,
+        "wound_or_burn_document_count": 28,
+        "wound_or_burn_locus_count": 61
+      },
+      "frequency_rank": 5,
+      "herb_ids": [
+        "herb:lonicera_japonica_flower"
+      ],
+      "name_zh": "芦丁",
+      "scientific_claim_status": "retrieval_frequency_and_identity_only",
+      "selection_status": "reserve_below_frequency_threshold"
+    },
+    {
+      "candidate_id": "compound:glycyrrhetinic_acid",
+      "candidate_role": "metabolite",
+      "canonical_name": "glycyrrhetinic acid",
+      "chemical_properties": {
+        "identity_status": "resolved_requires_curator_review",
+        "inchikey": "MPDGHEJMBKOTSU-YKLVYJNSSA-N",
+        "molecular_formula": "C30H46O4",
+        "molecular_weight": 470.7,
+        "pubchem_cid": 10114,
+        "pubchem_title": "Glycyrrhetinic Acid",
+        "response_sha256": "b4e390b8080e783da31a14e4a0650c5985c4c82e68f034585e89f4dcaaf384c1"
+      },
+      "corpus_frequency": {
+        "burn_document_count": 6,
+        "burn_locus_count": 7,
+        "document_count": 43,
+        "matching_locus_count": 148,
+        "wound_or_burn_document_count": 22,
+        "wound_or_burn_locus_count": 53
+      },
+      "frequency_rank": 6,
+      "herb_ids": [
+        "herb:glycyrrhiza_root"
+      ],
+      "name_zh": "甘草次酸",
+      "scientific_claim_status": "retrieval_frequency_and_identity_only",
+      "selection_status": "reserve_below_frequency_threshold"
+    },
+    {
+      "candidate_id": "compound:isoliquiritigenin",
+      "candidate_role": "backup",
+      "canonical_name": "isoliquiritigenin",
+      "chemical_properties": {
+        "identity_status": "resolved_requires_curator_review",
+        "inchikey": "DXDRHHKMWQZJHT-FPYGCLRLSA-N",
+        "molecular_formula": "C15H12O4",
+        "molecular_weight": 256.25,
+        "pubchem_cid": 638278,
+        "pubchem_title": "Isoliquiritigenin",
+        "response_sha256": "63a2cdf65abbb422914505d10e199a209b396ed0f3291af60da5ca154465ec77"
+      },
+      "corpus_frequency": {
+        "burn_document_count": 3,
+        "burn_locus_count": 3,
+        "document_count": 29,
+        "matching_locus_count": 103,
+        "wound_or_burn_document_count": 13,
+        "wound_or_burn_locus_count": 21
+      },
+      "frequency_rank": 7,
+      "herb_ids": [
+        "herb:glycyrrhiza_root"
+      ],
+      "name_zh": "异甘草素",
+      "scientific_claim_status": "retrieval_frequency_and_identity_only",
+      "selection_status": "reserve_below_frequency_threshold"
+    },
+    {
+      "candidate_id": "compound:glabridin",
+      "candidate_role": "backup",
+      "canonical_name": "glabridin",
+      "chemical_properties": {
+        "identity_status": "resolved_requires_curator_review",
+        "inchikey": "LBQIJVLKGVZRIW-ZDUSSCGKSA-N",
+        "molecular_formula": "C20H20O4",
+        "molecular_weight": 324.4,
+        "pubchem_cid": 124052,
+        "pubchem_title": "Glabridin",
+        "response_sha256": "b25f12373ff0fefa68e585ff8f8732ac79871d91496ef48e3c6264e8ba61f4d8"
+      },
+      "corpus_frequency": {
+        "burn_document_count": 3,
+        "burn_locus_count": 4,
+        "document_count": 24,
+        "matching_locus_count": 66,
+        "wound_or_burn_document_count": 12,
+        "wound_or_burn_locus_count": 20
+      },
+      "frequency_rank": 8,
+      "herb_ids": [
+        "herb:glycyrrhiza_root"
+      ],
+      "name_zh": "光甘草定",
+      "scientific_claim_status": "retrieval_frequency_and_identity_only",
+      "selection_status": "reserve_below_frequency_threshold"
+    },
+    {
+      "candidate_id": "compound:liquiritigenin",
+      "candidate_role": "backup",
+      "canonical_name": "liquiritigenin",
+      "chemical_properties": {
+        "identity_status": "resolved_requires_curator_review",
+        "inchikey": "FURUXTVZLHCCNA-AWEZNQCLSA-N",
+        "molecular_formula": "C15H12O4",
+        "molecular_weight": 256.25,
+        "pubchem_cid": 114829,
+        "pubchem_title": "Liquiritigenin",
+        "response_sha256": "db72eb2b219fb5ad4c9530706dd54d4dc249e34f22bb67c7eaa073877819cf46"
+      },
+      "corpus_frequency": {
+        "burn_document_count": 1,
+        "burn_locus_count": 1,
+        "document_count": 23,
+        "matching_locus_count": 61,
+        "wound_or_burn_document_count": 11,
+        "wound_or_burn_locus_count": 13
+      },
+      "frequency_rank": 9,
+      "herb_ids": [
+        "herb:glycyrrhiza_root"
+      ],
+      "name_zh": "甘草素",
+      "scientific_claim_status": "retrieval_frequency_and_identity_only",
+      "selection_status": "reserve_below_frequency_threshold"
+    },
+    {
+      "candidate_id": "compound:liquiritin",
+      "candidate_role": "backup",
+      "canonical_name": "liquiritin",
+      "chemical_properties": {
+        "identity_status": "resolved_requires_curator_review",
+        "inchikey": "DEMKZLAVQYISIA-ZRWXNEIDSA-N",
+        "molecular_formula": "C21H22O9",
+        "molecular_weight": 418.4,
+        "pubchem_cid": 503737,
+        "pubchem_title": "Liquiritin",
+        "response_sha256": "8f65b169707dbb799f76f93b08cfe2e980d6a7b4116bee13a6ec5d53f3dd7708"
+      },
+      "corpus_frequency": {
+        "burn_document_count": 1,
+        "burn_locus_count": 1,
+        "document_count": 20,
+        "matching_locus_count": 84,
+        "wound_or_burn_document_count": 9,
+        "wound_or_burn_locus_count": 13
+      },
+      "frequency_rank": 10,
+      "herb_ids": [
+        "herb:glycyrrhiza_root"
+      ],
+      "name_zh": "甘草苷",
+      "scientific_claim_status": "retrieval_frequency_and_identity_only",
+      "selection_status": "reserve_below_frequency_threshold"
+    },
+    {
+      "candidate_id": "compound:licochalcone_a",
+      "candidate_role": "backup",
+      "canonical_name": "licochalcone A",
+      "chemical_properties": {
+        "identity_status": "resolved_requires_curator_review",
+        "inchikey": "KAZSKMJFUPEHHW-DHZHZOJOSA-N",
+        "molecular_formula": "C21H22O4",
+        "molecular_weight": 338.4,
+        "pubchem_cid": 5318998,
+        "pubchem_title": "Licochalcone A",
+        "response_sha256": "e7533afb124ed568e579c1a175169a5d7a56c75d0523a93f0e23959cc0f418bb"
+      },
+      "corpus_frequency": {
+        "burn_document_count": 1,
+        "burn_locus_count": 1,
+        "document_count": 16,
+        "matching_locus_count": 44,
+        "wound_or_burn_document_count": 9,
+        "wound_or_burn_locus_count": 9
+      },
+      "frequency_rank": 11,
+      "herb_ids": [
+        "herb:glycyrrhiza_root"
+      ],
+      "name_zh": "甘草查尔酮A",
+      "scientific_claim_status": "retrieval_frequency_and_identity_only",
+      "selection_status": "reserve_below_frequency_threshold"
+    },
+    {
+      "candidate_id": "compound:loganin",
+      "candidate_role": "backup",
+      "canonical_name": "loganin",
+      "chemical_properties": {
+        "identity_status": "resolved_requires_curator_review",
+        "inchikey": "AMBQHHVBBHTQBF-UOUCRYGSSA-N",
+        "molecular_formula": "C17H26O10",
+        "molecular_weight": 390.4,
+        "pubchem_cid": 87691,
+        "pubchem_title": "(-)-Loganin",
+        "response_sha256": "9f09d15fed8b3557ab01c8b35dfab67d7bf407f65fb2a598327f3556727e4ac8"
+      },
+      "corpus_frequency": {
+        "burn_document_count": 1,
+        "burn_locus_count": 1,
+        "document_count": 8,
+        "matching_locus_count": 22,
+        "wound_or_burn_document_count": 1,
+        "wound_or_burn_locus_count": 1
+      },
+      "frequency_rank": 12,
+      "herb_ids": [
+        "herb:lonicera_japonica_flower"
+      ],
+      "name_zh": "马钱苷",
+      "scientific_claim_status": "retrieval_frequency_and_identity_only",
+      "selection_status": "reserve_below_frequency_threshold"
+    },
+    {
+      "candidate_id": "compound:sweroside",
+      "candidate_role": "backup",
+      "canonical_name": "sweroside",
+      "chemical_properties": {
+        "identity_status": "resolved_requires_curator_review",
+        "inchikey": "VSJGJMKGNMDJCI-ZASXJUAOSA-N",
+        "molecular_formula": "C16H22O9",
+        "molecular_weight": 358.34,
+        "pubchem_cid": 161036,
+        "pubchem_title": "(-)-Sweroside",
+        "response_sha256": "c2e5750affb9f05fe72ac8441cbf1bac2f8b2cc2486c4b31bae989fa1fd4e005"
+      },
+      "corpus_frequency": {
+        "burn_document_count": 0,
+        "burn_locus_count": 0,
+        "document_count": 5,
+        "matching_locus_count": 11,
+        "wound_or_burn_document_count": 0,
+        "wound_or_burn_locus_count": 0
+      },
+      "frequency_rank": 13,
+      "herb_ids": [
+        "herb:lonicera_japonica_flower"
+      ],
+      "name_zh": "獐牙菜苷",
+      "scientific_claim_status": "retrieval_frequency_and_identity_only",
+      "selection_status": "excluded_no_burn_document"
+    }
+  ],
+  "ranking_policy": {
+    "composite_mechanism_score": false,
+    "eligibility_threshold": "burn_document_count >= 10",
+    "primary": "burn_document_count_desc",
+    "secondary": "wound_or_burn_document_count_desc",
+    "tertiary": "document_count_desc",
+    "tie_breaker": "candidate_id_asc"
+  },
+  "schema_version": 2,
+  "scientific_boundary": "This is a reproducible 13-candidate frequency and chemical-identity screen. It prioritizes analytical follow-up only and makes no efficacy, safety, target, pathway, angiogenesis, or wound-repair claim.",
+  "screening_funnel": [
+    {
+      "count": 13,
+      "stage": "formula_ingredient_candidate_pool"
+    },
+    {
+      "count": 13,
+      "stage": "identity_and_source_verified"
+    },
+    {
+      "count": 12,
+      "stage": "at_least_one_burn_document"
+    },
+    {
+      "count": 2,
+      "stage": "minimum_burn_document_threshold",
+      "threshold": 10
+    }
+  ],
+  "selected_compounds": [
+    {
+      "candidate_id": "compound:chlorogenic_acid",
+      "candidate_role": "parent_compound",
+      "canonical_name": "chlorogenic acid",
+      "chemical_properties": {
+        "identity_status": "resolved_requires_curator_review",
+        "inchikey": "CWVRJTMFETXNAD-JUHZACGLSA-N",
+        "molecular_formula": "C16H18O9",
+        "molecular_weight": 354.31,
+        "pubchem_cid": 1794427,
+        "pubchem_title": "Chlorogenic Acid",
+        "response_sha256": "61e702db1b5c8fca61f701d037d1f756570890fe3a16a621286fb3e451434dc5"
+      },
+      "corpus_frequency": {
+        "burn_document_count": 21,
+        "burn_locus_count": 25,
+        "document_count": 111,
+        "matching_locus_count": 667,
+        "wound_or_burn_document_count": 71,
+        "wound_or_burn_locus_count": 223
+      },
+      "frequency_rank": 1,
+      "herb_ids": [
+        "herb:lonicera_japonica_flower"
+      ],
+      "name_zh": "绿原酸",
+      "scientific_claim_status": "retrieval_frequency_and_identity_only",
+      "selection_status": "selected_for_analytical_follow_up"
+    },
+    {
+      "candidate_id": "compound:glycyrrhizic_acid",
+      "candidate_role": "parent_compound",
+      "canonical_name": "glycyrrhizic acid",
+      "chemical_properties": {
+        "identity_status": "resolved_requires_curator_review",
+        "inchikey": "LPLVUJXQOOQHMX-QWBHMCJMSA-N",
+        "molecular_formula": "C42H62O16",
+        "molecular_weight": 822.9,
+        "pubchem_cid": 14982,
+        "pubchem_title": "Glycyrrhizin",
+        "response_sha256": "f8985da8d5a161a90cc8788657707304f1a3eec0d8a18ab7819a20621d9f7c8d"
+      },
+      "corpus_frequency": {
+        "burn_document_count": 18,
+        "burn_locus_count": 45,
+        "document_count": 102,
+        "matching_locus_count": 525,
+        "wound_or_burn_document_count": 58,
+        "wound_or_burn_locus_count": 185
+      },
+      "frequency_rank": 2,
+      "herb_ids": [
+        "herb:glycyrrhiza_root"
+      ],
+      "name_zh": "甘草酸",
+      "scientific_claim_status": "retrieval_frequency_and_identity_only",
+      "selection_status": "selected_for_analytical_follow_up"
+    }
+  ],
+  "selection_id": "rendongtang-compound-screening-v2",
+  "source_snapshot": {
+    "candidate_catalog_sha256": "adda762d91ffc8fa2f274b801db652f271212cf7f5fed392cd4a0acaa917dec7",
+    "candidate_count": 13,
+    "coverage_summary_sha256": "acc7d7859763134999109c2d5bc03b9c72cb113f052c457a64b7f24512afed87",
+    "modern_document_count": 584,
+    "pubchem_resolution_sha256": "fa128f907d7e1f657924be88ced28bb7845dce198c292b87f84d4c29753d9032"
+  }
+}

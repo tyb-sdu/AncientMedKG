@@ -1,0 +1,7 @@
+884981760 AncientMedKG-runtime-2026.08.04-ancient-qwen-index.tar
+43270459 AncientMedKG-runtime-2026.08.04-ancient-rag.tar.gz
+116376 AncientMedKG-runtime-2026.08.04-build-logs.tar.gz
+22448071 AncientMedKG-runtime-2026.08.04-evidence-evaluation.tar.gz
+360673280 AncientMedKG-runtime-2026.08.04-modern-qwen-index.tar
+99547702 AncientMedKG-runtime-2026.08.04-modern-rag.tar.gz
+1411037648 total

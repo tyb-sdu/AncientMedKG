@@ -1,11 +1,18 @@
 {
-  "schema_version": 1,
-  "screening_id": "burn-formula-transfer-screening-v1",
+  "schema_version": 3,
+  "screening_id": "burn-formula-transfer-screening-v3-50",
   "target_candidate_id": "formula.rendongtang.xinwu.p138",
   "policy": {
     "source_confidence_floor": 0.7,
     "exploratory_floor": 0.6,
     "high_priority_floor": 0.75,
+    "documentation_prechecks": [
+      "formula_name_present",
+      "composition_anchor_verified",
+      "route_anchor_verified",
+      "administration_route_resolved",
+      "dosage_form_resolved"
+    ],
     "weights": {
       "burn_context": 0.25,
       "phenotype_overlap": 0.2,
@@ -13,6 +20,30 @@
       "modern_ingredient_support": 0.15,
       "formulation_feasibility": 0.1,
       "safety_readiness": 0.1
+    },
+    "heavy_metal_aliases": {
+      "mercury": [
+        "水銀",
+        "水银",
+        "輕粉",
+        "轻粉",
+        "膩粉",
+        "腻粉"
+      ],
+      "lead": [
+        "鉛丹",
+        "铅丹",
+        "黃丹",
+        "黄丹",
+        "胡粉",
+        "密陀僧"
+      ],
+      "arsenic": [
+        "雄黃",
+        "雄黄",
+        "砒霜",
+        "信石"
+      ]
     }
   },
   "candidates": [
@@ -675,6 +706,1022 @@
         "safety_readiness": 0.45
       },
       "evidence_summary": "具有外用膏剂形式但原文适应证为癞风等皮肤病，用作剂型相似而疾病不符的负对照。"
+    },
+    {
+      "candidate_id": "formula.tanghuoyao.pujifang.p19",
+      "formula_name": "治汤火药",
+      "variant_label": "《普济方》外用重金属安全排除样本",
+      "candidate_role": "safety_exclusion",
+      "source_confidence": 0.9,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000019",
+        "physical_page": 19,
+        "source_anchor": "治湯火藥大黃黃芩黃栢黃連知母貝毋乳香沒藥輕粉甘草蜜陀僧山梔子"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.75,
+        "pathogenesis_treatment_compatibility": 0.7,
+        "modern_ingredient_support": 0.2,
+        "formulation_feasibility": 0.6,
+        "safety_readiness": 0.1
+      },
+      "evidence_summary": "直接用于汤火伤，但含轻粉、密陀僧且外擦，进入重金属外用排除层。"
+    },
+    {
+      "candidate_id": "formula.qiandanfu.pujifang.p21",
+      "formula_name": "铅丹敷方",
+      "variant_label": "《普济方》外用含铅安全排除样本",
+      "candidate_role": "safety_exclusion",
+      "source_confidence": 0.92,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000021",
+        "physical_page": 21,
+        "source_anchor": "用鉛丹敷之"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.7,
+        "pathogenesis_treatment_compatibility": 0.55,
+        "modern_ingredient_support": 0.05,
+        "formulation_feasibility": 0.75,
+        "safety_readiness": 0.05
+      },
+      "evidence_summary": "原文仅以铅丹外敷汤火疮，作为含铅外用方安全排除样本。"
+    },
+    {
+      "candidate_id": "formula.sanhuangsan.zhengzhizhunsheng.p29",
+      "formula_name": "三黄散",
+      "variant_label": "《证治准绳》外用多重重金属排除样本",
+      "candidate_role": "safety_exclusion",
+      "source_confidence": 0.93,
+      "source_locator": {
+        "book_id": "ancient:b89d0582c50216beae11",
+        "page_id": "ancient:b89d0582c50216beae11:p000029",
+        "physical_page": 29,
+        "source_anchor": "三黃散治風熱疳熱生瘡水浸淫膿流處便濕爛"
+      },
+      "components": {
+        "burn_context": 0.05,
+        "phenotype_overlap": 0.55,
+        "pathogenesis_treatment_compatibility": 0.5,
+        "modern_ingredient_support": 0.2,
+        "formulation_feasibility": 0.7,
+        "safety_readiness": 0.05
+      },
+      "evidence_summary": "外用方含黄丹、轻粉、雄黄，按预设铅汞砷词表排除。"
+    },
+    {
+      "candidate_id": "formula.badusan.zhengzhizhunsheng.p34",
+      "formula_name": "拔毒散",
+      "variant_label": "《证治准绳》雄黄外用安全排除样本",
+      "candidate_role": "safety_exclusion",
+      "source_confidence": 0.92,
+      "source_locator": {
+        "book_id": "ancient:b89d0582c50216beae11",
+        "page_id": "ancient:b89d0582c50216beae11:p000034",
+        "physical_page": 34,
+        "source_anchor": "拔毒散治證同前及疥癩瘡癬"
+      },
+      "components": {
+        "burn_context": 0.05,
+        "phenotype_overlap": 0.4,
+        "pathogenesis_treatment_compatibility": 0.4,
+        "modern_ingredient_support": 0.15,
+        "formulation_feasibility": 0.7,
+        "safety_readiness": 0.1
+      },
+      "evidence_summary": "外糁或油调搽且含雄黄，进入含砷矿物药外用排除层。"
+    },
+    {
+      "candidate_id": "formula.shuiyingao.zhengzhizhunsheng.p40",
+      "formula_name": "水银膏",
+      "variant_label": "《证治准绳》汞铅外用安全排除样本",
+      "candidate_role": "safety_exclusion",
+      "source_confidence": 0.95,
+      "source_locator": {
+        "book_id": "ancient:b89d0582c50216beae11",
+        "page_id": "ancient:b89d0582c50216beae11:p000040",
+        "physical_page": 40,
+        "source_anchor": "水銀膏治月蝕瘡多在兩耳上及竅旁隨月虛盈"
+      },
+      "components": {
+        "burn_context": 0.0,
+        "phenotype_overlap": 0.35,
+        "pathogenesis_treatment_compatibility": 0.3,
+        "modern_ingredient_support": 0.05,
+        "formulation_feasibility": 0.65,
+        "safety_readiness": 0.0
+      },
+      "evidence_summary": "方中含水银、胡粉并反复外涂，作为汞铅外用排除样本。"
+    },
+    {
+      "candidate_id": "formula.longquansan.pujifang.p34",
+      "formula_name": "龙泉散",
+      "variant_label": "《普济方》外用非重金属途径对照",
+      "candidate_role": "route_control",
+      "source_confidence": 0.91,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000034",
+        "physical_page": 34,
+        "source_anchor": "龍泉散總錄出聖濟治湯火盪燒熱焮腫"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.8,
+        "pathogenesis_treatment_compatibility": 0.7,
+        "modern_ingredient_support": 0.15,
+        "formulation_feasibility": 0.8,
+        "safety_readiness": 0.45
+      },
+      "evidence_summary": "直接治汤火伤但为油调外涂，安全门后转入外用途径旁路。"
+    },
+    {
+      "candidate_id": "formula.xieyegao.pujifang.p34",
+      "formula_name": "薤叶膏",
+      "variant_label": "《普济方》外用膏剂途径对照",
+      "candidate_role": "route_control",
+      "source_confidence": 0.91,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000034",
+        "physical_page": 34,
+        "source_anchor": "薤葉膏總錄出聖濟治湯火所傷熱痛用之永無瘢痴"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.85,
+        "pathogenesis_treatment_compatibility": 0.7,
+        "modern_ingredient_support": 0.25,
+        "formulation_feasibility": 0.75,
+        "safety_readiness": 0.45
+      },
+      "evidence_summary": "直接治汤火伤但为外敷膏剂，不进入内服汤剂候选池。"
+    },
+    {
+      "candidate_id": "formula.heishensan.pujifang.p53",
+      "formula_name": "黑神散",
+      "variant_label": "《普济方》外用散剂途径对照",
+      "candidate_role": "route_control",
+      "source_confidence": 0.9,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000053",
+        "physical_page": 53,
+        "source_anchor": "黑神散選方出百一治火湯所傷"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.75,
+        "pathogenesis_treatment_compatibility": 0.65,
+        "modern_ingredient_support": 0.1,
+        "formulation_feasibility": 0.85,
+        "safety_readiness": 0.5
+      },
+      "evidence_summary": "白面炒焦后调涂，为外用散剂途径对照。"
+    },
+    {
+      "candidate_id": "formula.qingjinggao.pujifang.p54",
+      "formula_name": "清净膏",
+      "variant_label": "《普济方》外用膏剂途径对照",
+      "candidate_role": "route_control",
+      "source_confidence": 0.91,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000054",
+        "physical_page": 54,
+        "source_anchor": "清浄膏總錄出聖濟治湯火所傷"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.75,
+        "pathogenesis_treatment_compatibility": 0.65,
+        "modern_ingredient_support": 0.15,
+        "formulation_feasibility": 0.85,
+        "safety_readiness": 0.5
+      },
+      "evidence_summary": "直接治汤火伤但为捣膏外涂，转入外用途径旁路。"
+    },
+    {
+      "candidate_id": "formula.shenxusan.pujifang.p52",
+      "formula_name": "神须散",
+      "variant_label": "《普济方》外用散剂途径对照",
+      "candidate_role": "route_control",
+      "source_confidence": 0.9,
+      "source_locator": {
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000052",
+        "physical_page": 52,
+        "source_anchor": "神須散總錄出聖濟治火湯燒傷熱毒瘡痴"
+      },
+      "components": {
+        "burn_context": 1.0,
+        "phenotype_overlap": 0.75,
+        "pathogenesis_treatment_compatibility": 0.7,
+        "modern_ingredient_support": 0.1,
+        "formulation_feasibility": 0.8,
+        "safety_readiness": 0.5
+      },
+      "evidence_summary": "赤石脂油调或蛋清调敷，为外用非重金属途径对照。"
+    },
+    {
+      "candidate_id": "formula.jiuweijiedusan.zhengzhizhunsheng.p25",
+      "formula_name": "九味解毒散",
+      "variant_label": "热毒疮疡内服汤剂候选",
+      "candidate_role": "transfer_candidate",
+      "source_confidence": 0.93,
+      "source_locator": {
+        "book_id": "ancient:b89d0582c50216beae11",
+        "page_id": "ancient:b89d0582c50216beae11:p000025",
+        "physical_page": 25,
+        "source_anchor": "九味解毒散治熱毒胎毒而發瘡瘍之類未潰作痛者"
+      },
+      "components": {
+        "burn_context": 0.15,
+        "phenotype_overlap": 0.75,
+        "pathogenesis_treatment_compatibility": 0.75,
+        "modern_ingredient_support": 0.65,
+        "formulation_feasibility": 0.8,
+        "safety_readiness": 0.6
+      },
+      "evidence_summary": "原文治热毒疮疡未溃作痛并水煎服，进入内服汤剂迁移评分。"
+    },
+    {
+      "candidate_id": "formula.jiaweiqingliangyin.zhengzhizhunsheng.p26",
+      "formula_name": "加味清凉饮",
+      "variant_label": "热毒内结疮疡内服汤剂候选",
+      "candidate_role": "transfer_candidate",
+      "source_confidence": 0.94,
+      "source_locator": {
+        "book_id": "ancient:b89d0582c50216beae11",
+        "page_id": "ancient:b89d0582c50216beae11:p000026",
+        "physical_page": 26,
+        "source_anchor": "加味清涼飲治熱毒積毒在內患瘡瘍大便不通而欲痛作渴者"
+      },
+      "components": {
+        "burn_context": 0.15,
+        "phenotype_overlap": 0.75,
+        "pathogenesis_treatment_compatibility": 0.8,
+        "modern_ingredient_support": 0.55,
+        "formulation_feasibility": 0.8,
+        "safety_readiness": 0.55
+      },
+      "evidence_summary": "治热毒积毒在内、疮疡痛渴且水煎服，进入内服汤剂评分。"
+    },
+    {
+      "candidate_id": "formula.lianqiaofangfengtang.zhengzhizhunsheng.p27",
+      "formula_name": "连翘防风汤",
+      "variant_label": "风热时毒头面疮内服汤剂候选",
+      "candidate_role": "transfer_candidate",
+      "source_confidence": 0.92,
+      "source_locator": {
+        "book_id": "ancient:b89d0582c50216beae11",
+        "page_id": "ancient:b89d0582c50216beae11:p000027",
+        "physical_page": 27,
+        "source_anchor": "連翹防風湯治小兒肝脾風熱時毒頭面生瘡"
+      },
+      "components": {
+        "burn_context": 0.1,
+        "phenotype_overlap": 0.65,
+        "pathogenesis_treatment_compatibility": 0.65,
+        "modern_ingredient_support": 0.55,
+        "formulation_feasibility": 0.8,
+        "safety_readiness": 0.6
+      },
+      "evidence_summary": "治风热时毒头面生疮并水煎服，作为表型相近候选。"
+    },
+    {
+      "candidate_id": "formula.heganbupitang.zhengzhizhunsheng.p28",
+      "formula_name": "和肝补脾汤",
+      "variant_label": "风热疮疹兼脾虚内服对照",
+      "candidate_role": "negative_control",
+      "source_confidence": 0.92,
+      "source_locator": {
+        "book_id": "ancient:b89d0582c50216beae11",
+        "page_id": "ancient:b89d0582c50216beae11:p000028",
+        "physical_page": 28,
+        "source_anchor": "和肝補脾湯治風熱瘡疹脾土不及肝木太過"
+      },
+      "components": {
+        "burn_context": 0.05,
+        "phenotype_overlap": 0.45,
+        "pathogenesis_treatment_compatibility": 0.45,
+        "modern_ingredient_support": 0.45,
+        "formulation_feasibility": 0.8,
+        "safety_readiness": 0.65
+      },
+      "evidence_summary": "虽为水煎内服，但病机偏脾虚肝旺，用作病机不完全匹配对照。"
+    },
+    {
+      "candidate_id": "formula.yipiqinggantang.zhengzhizhunsheng.p28",
+      "formula_name": "益脾清肝汤",
+      "variant_label": "肝脾风热疮内服汤剂候选",
+      "candidate_role": "transfer_candidate",
+      "source_confidence": 0.91,
+      "source_locator": {
+        "book_id": "ancient:b89d0582c50216beae11",
+        "page_id": "ancient:b89d0582c50216beae11:p000028",
+        "physical_page": 28,
+        "source_anchor": "益脾清肝湯治肝脾風熱瘡寒熱體痛脾胃虛弱"
+      },
+      "components": {
+        "burn_context": 0.05,
+        "phenotype_overlap": 0.5,
+        "pathogenesis_treatment_compatibility": 0.5,
+        "modern_ingredient_support": 0.45,
+        "formulation_feasibility": 0.8,
+        "safety_readiness": 0.6
+      },
+      "evidence_summary": "水煎内服且涉及风热疮，但病机兼脾胃虚弱，进入低优先级评分。"
+    },
+    {
+      "candidate_id": "formula.yangxintang.zhengzhizhunsheng.p32",
+      "formula_name": "养心汤",
+      "variant_label": "心气不足虚热疮疡内服对照",
+      "candidate_role": "negative_control",
+      "source_confidence": 0.9,
+      "source_locator": {
+        "book_id": "ancient:b89d0582c50216beae11",
+        "page_id": "ancient:b89d0582c50216beae11:p000032",
+        "physical_page": 32,
+        "source_anchor": "養心湯治心氣不足虛熱上攻而患瘡瘍者"
+      },
+      "components": {
+        "burn_context": 0.05,
+        "phenotype_overlap": 0.35,
+        "pathogenesis_treatment_compatibility": 0.3,
+        "modern_ingredient_support": 0.35,
+        "formulation_feasibility": 0.75,
+        "safety_readiness": 0.6
+      },
+      "evidence_summary": "内服水煎但主病机为心气不足、虚热上攻，作为虚证对照。"
+    },
+    {
+      "candidate_id": "formula.niuhuangjiedusan.zhengzhizhunsheng.p33",
+      "formula_name": "牛黄解毒散",
+      "variant_label": "内服散剂剂型对照",
+      "candidate_role": "route_control",
+      "source_confidence": 0.93,
+      "source_locator": {
+        "book_id": "ancient:b89d0582c50216beae11",
+        "page_id": "ancient:b89d0582c50216beae11:p000033",
+        "physical_page": 33,
+        "source_anchor": "牛黃解毒散治胎毒頭面生癩或延及遍身痒痛不安及眉煉瘡浸淫不愈"
+      },
+      "components": {
+        "burn_context": 0.05,
+        "phenotype_overlap": 0.5,
+        "pathogenesis_treatment_compatibility": 0.55,
+        "modern_ingredient_support": 0.55,
+        "formulation_feasibility": 0.55,
+        "safety_readiness": 0.5
+      },
+      "evidence_summary": "虽为内服，但以末剂乳汁调服或甘草煎送服，不归入内服汤剂池。"
+    },
+    {
+      "candidate_id": "formula.manjingzitang.zhengzhizhunsheng.p42",
+      "formula_name": "蔓荆子汤",
+      "variant_label": "内热耳脓内服汤剂对照",
+      "candidate_role": "negative_control",
+      "source_confidence": 0.92,
+      "source_locator": {
+        "book_id": "ancient:b89d0582c50216beae11",
+        "page_id": "ancient:b89d0582c50216beae11:p000042",
+        "physical_page": 42,
+        "source_anchor": "蔓荆子湯治內熱耳出膿汁"
+      },
+      "components": {
+        "burn_context": 0.05,
+        "phenotype_overlap": 0.45,
+        "pathogenesis_treatment_compatibility": 0.5,
+        "modern_ingredient_support": 0.4,
+        "formulation_feasibility": 0.75,
+        "safety_readiness": 0.55
+      },
+      "evidence_summary": "水煎内服但主治内热耳脓，与烧伤创面表型距离较远。"
+    },
+    {
+      "candidate_id": "formula.dongyuanqingweisan.zhengzhizhunsheng.p60",
+      "formula_name": "东垣清胃散",
+      "variant_label": "胃热口舌疮内服汤剂候选",
+      "candidate_role": "transfer_candidate",
+      "source_confidence": 0.92,
+      "source_locator": {
+        "book_id": "ancient:b89d0582c50216beae11",
+        "page_id": "ancient:b89d0582c50216beae11:p000060",
+        "physical_page": 60,
+        "source_anchor": "東垣清胃散治胃經有熱齒牙作痛或飲冷作渴口舌生瘡"
+      },
+      "components": {
+        "burn_context": 0.05,
+        "phenotype_overlap": 0.5,
+        "pathogenesis_treatment_compatibility": 0.5,
+        "modern_ingredient_support": 0.45,
+        "formulation_feasibility": 0.75,
+        "safety_readiness": 0.6
+      },
+      "evidence_summary": "水煎内服且治胃热口舌疮，作为热证黏膜损伤候选。"
+    },
+    {
+      "candidate_id": "formula.qingrexiaodusan.zhengzhizhunsheng.p61",
+      "formula_name": "清热消毒散",
+      "variant_label": "实热疮疡肿痛内服汤剂候选",
+      "candidate_role": "transfer_candidate",
+      "source_confidence": 0.95,
+      "source_locator": {
+        "book_id": "ancient:b89d0582c50216beae11",
+        "page_id": "ancient:b89d0582c50216beae11:p000061",
+        "physical_page": 61,
+        "source_anchor": "清熱消毒散治實熱口舌生瘡及一切瘡瘍腫痛形病俱實者"
+      },
+      "components": {
+        "burn_context": 0.2,
+        "phenotype_overlap": 0.8,
+        "pathogenesis_treatment_compatibility": 0.8,
+        "modern_ingredient_support": 0.8,
+        "formulation_feasibility": 0.85,
+        "safety_readiness": 0.65
+      },
+      "evidence_summary": "水煎内服，含金银花、甘草并治实热疮疡肿痛，是较强迁移候选。"
     }
-  ]
+  ],
+  "formula_characteristics": {
+    "formula.rushengsan.pujifang.p22": {
+      "administration_route": "unknown",
+      "dosage_form": "unknown",
+      "preparation_complexity": "unknown",
+      "route_evidence": {
+        "source_anchor": "如聖散治湯火所傷"
+      },
+      "composition_evidence": {
+        "source_anchor": "如聖散治湯火所傷"
+      }
+    },
+    "formula.qizhensan.pujifang.p21": {
+      "administration_route": "external",
+      "dosage_form": "powder",
+      "preparation_complexity": "moderate",
+      "route_evidence": {
+        "source_anchor": "七珍散治湯火瘡痛不可忍"
+      },
+      "composition_evidence": {
+        "source_anchor": "七珍散治湯火瘡痛不可忍"
+      }
+    },
+    "formula.qinglianggao.pujifang.p22": {
+      "administration_route": "external",
+      "dosage_form": "ointment",
+      "preparation_complexity": "moderate",
+      "route_evidence": {
+        "source_anchor": "清涼膏惠方出聖治湯潑火燒止疼痛解火毒潤肌生肉"
+      },
+      "composition_evidence": {
+        "source_anchor": "清涼膏惠方出聖治湯潑火燒止疼痛解火毒潤肌生肉"
+      }
+    },
+    "formula.sihuangsan.pujifang.p24": {
+      "administration_route": "external",
+      "dosage_form": "paste",
+      "preparation_complexity": "moderate",
+      "route_evidence": {
+        "source_anchor": "四黃散出楊氏家藏方治湯潑火燒熱瘡腫痛"
+      },
+      "composition_evidence": {
+        "source_anchor": "四黃散出楊氏家藏方治湯潑火燒熱瘡腫痛"
+      }
+    },
+    "formula.mazigao.pujifang.p23": {
+      "administration_route": "external",
+      "dosage_form": "ointment",
+      "preparation_complexity": "moderate",
+      "route_evidence": {
+        "source_anchor": "麻子膏療火燒人肉壞爛"
+      },
+      "composition_evidence": {
+        "source_anchor": "麻子膏療火燒人肉壞爛"
+      }
+    },
+    "formula.shuishuangsan.pujifang.p24": {
+      "administration_route": "external",
+      "dosage_form": "powder",
+      "preparation_complexity": "moderate",
+      "route_evidence": {
+        "source_anchor": "水霜散出濟生拔粹方治火燎損傷漆熱毒傷皮爛肉大痛"
+      },
+      "composition_evidence": {
+        "source_anchor": "明朴硝寒水石生青黛輕粉"
+      }
+    },
+    "formula.huangbaisan.pujifang.p25": {
+      "administration_route": "external",
+      "dosage_form": "paste",
+      "preparation_complexity": "simple",
+      "route_evidence": {
+        "source_anchor": "黃栢散出危氏方治湯火傷"
+      },
+      "composition_evidence": {
+        "source_anchor": "黃栢散出危氏方治湯火傷"
+      }
+    },
+    "formula.zhitonggao.pujifang.p26": {
+      "administration_route": "external",
+      "dosage_form": "ointment",
+      "preparation_complexity": "moderate",
+      "route_evidence": {
+        "source_anchor": "止痛膏惠方出聖治炙及湯火所損晝夜啼呼止痛滅瘢"
+      },
+      "composition_evidence": {
+        "source_anchor": "止痛膏惠方出聖治炙及湯火所損晝夜啼呼止痛滅瘢"
+      }
+    },
+    "formula.chishizhisan.pujifang.p30": {
+      "administration_route": "external",
+      "dosage_form": "powder",
+      "preparation_complexity": "simple",
+      "route_evidence": {
+        "source_anchor": "治湯火所傷赤爛熱痛"
+      },
+      "composition_evidence": {
+        "source_anchor": "治湯火所傷赤爛熱痛"
+      }
+    },
+    "formula.shenshengsan.pujifang.p30": {
+      "administration_route": "external",
+      "dosage_form": "powder",
+      "preparation_complexity": "simple",
+      "route_evidence": {
+        "source_anchor": "神聖散治湯火所傷"
+      },
+      "composition_evidence": {
+        "source_anchor": "神聖散治湯火所傷"
+      }
+    },
+    "formula.zhitongsan.pujifang.p31": {
+      "administration_route": "external",
+      "dosage_form": "powder",
+      "preparation_complexity": "simple",
+      "route_evidence": {
+        "source_anchor": "止痛散惠方出聖治火燒瘡"
+      },
+      "composition_evidence": {
+        "source_anchor": "止痛散惠方出聖治火燒瘡"
+      }
+    },
+    "formula.kushensan.pujifang.p52": {
+      "administration_route": "external",
+      "dosage_form": "paste",
+      "preparation_complexity": "simple",
+      "route_evidence": {
+        "source_anchor": "苦參散寶鑑出衛生治湯燙火燒瘡"
+      },
+      "composition_evidence": {
+        "source_anchor": "苦參散寶鑑出衛生治湯燙火燒瘡"
+      }
+    },
+    "formula.xuanjingshisan.pujifang.p53": {
+      "administration_route": "external",
+      "dosage_form": "paste",
+      "preparation_complexity": "simple",
+      "route_evidence": {
+        "source_anchor": "玄精石散總錄出聖濟治湯火傷疼痛不可忍"
+      },
+      "composition_evidence": {
+        "source_anchor": "玄精石散總錄出聖濟治湯火傷疼痛不可忍"
+      }
+    },
+    "formula.dingtonggao.pujifang.p54": {
+      "administration_route": "external",
+      "dosage_form": "ointment",
+      "preparation_complexity": "simple",
+      "route_evidence": {
+        "source_anchor": "定痛膏總錄出聖濟治火燒湯盪"
+      },
+      "composition_evidence": {
+        "source_anchor": "定痛膏總錄出聖濟治火燒湯盪"
+      }
+    },
+    "formula.jihuanggao.pujifang.p37": {
+      "administration_route": "external",
+      "dosage_form": "ointment",
+      "preparation_complexity": "moderate",
+      "route_evidence": {
+        "source_anchor": "雞黃膏治湯火所傷"
+      },
+      "composition_evidence": {
+        "source_anchor": "熟雞子文黄炒十箇取腻粉"
+      }
+    },
+    "formula.dahuanghanshuisan.pujifang.p37": {
+      "administration_route": "external",
+      "dosage_form": "paste",
+      "preparation_complexity": "simple",
+      "route_evidence": {
+        "source_anchor": "大黄寒水散治湯火瘡"
+      },
+      "composition_evidence": {
+        "source_anchor": "大黄寒水散治湯火瘡"
+      }
+    },
+    "formula.baoshengjiukudan.yangyidaquan.p57": {
+      "administration_route": "external",
+      "dosage_form": "paste",
+      "preparation_complexity": "simple",
+      "route_evidence": {
+        "source_anchor": "保生救苦丹治火燒熱油煥及一切狗嚙損傷"
+      },
+      "composition_evidence": {
+        "source_anchor": "保生救苦丹治火燒熱油煥及一切狗嚙損傷"
+      }
+    },
+    "formula.zhuhuodan.yangyidaquan.p40": {
+      "administration_route": "internal",
+      "dosage_form": "decoction",
+      "preparation_complexity": "complex",
+      "route_evidence": {
+        "source_anchor": "水煎服一劑痛減半二劑痛全減三劑瘡口全愈"
+      },
+      "composition_evidence": {
+        "source_anchor": "雷眞君遂火丹秘錄治無意之中忽爲湯火所傷"
+      }
+    },
+    "formula.rendongtang.xinwu.p138": {
+      "administration_route": "internal",
+      "dosage_form": "decoction",
+      "preparation_complexity": "simple",
+      "route_evidence": {
+        "source_anchor": "水煎頓服能飲者用酒煎服"
+      },
+      "composition_evidence": {
+        "source_anchor": "金銀花四兩甘草三錢"
+      }
+    },
+    "formula.rendongtang.xinwu.p227": {
+      "administration_route": "internal",
+      "dosage_form": "decoction",
+      "preparation_complexity": "moderate",
+      "route_evidence": {
+        "source_anchor": "水煎每日一劑須盡飲"
+      },
+      "composition_evidence": {
+        "source_anchor": "忍冬湯金銀花一雨草二錢黑料豆二兩甘土茯苓四兩"
+      }
+    },
+    "formula.qianjinmudanpisan.xinwu.p137": {
+      "administration_route": "internal",
+      "dosage_form": "decoction",
+      "preparation_complexity": "moderate",
+      "route_evidence": {
+        "source_anchor": "水煎服若大便閉結不通加大黃一錢五分"
+      },
+      "composition_evidence": {
+        "source_anchor": "腸癰也千金牡丹皮散主之"
+      }
+    },
+    "formula.guolaosan.xinwu.p137": {
+      "administration_route": "internal",
+      "dosage_form": "powder",
+      "preparation_complexity": "simple",
+      "route_evidence": {
+        "source_anchor": "國老散治懸癰臟毒神效"
+      },
+      "composition_evidence": {
+        "source_anchor": "國老散治懸癰臟毒神效"
+      }
+    },
+    "formula.jiegengtang.xinwu.p137": {
+      "administration_route": "internal",
+      "dosage_form": "decoction",
+      "preparation_complexity": "unknown",
+      "route_evidence": {
+        "source_anchor": "肺癰也桔梗湯主之"
+      },
+      "composition_evidence": {
+        "source_anchor": "肺癰也桔梗湯主之"
+      }
+    },
+    "formula.zhuichongwan.xinwu.p138": {
+      "administration_route": "internal",
+      "dosage_form": "pill",
+      "preparation_complexity": "complex",
+      "route_evidence": {
+        "source_anchor": "蟲痛貫心傷人甚速宜急治之追蟲丸主之"
+      },
+      "composition_evidence": {
+        "source_anchor": "蟲痛貫心傷人甚速宜急治之追蟲丸主之"
+      }
+    },
+    "formula.wanquangao.xinwu.p227": {
+      "administration_route": "external",
+      "dosage_form": "ointment",
+      "preparation_complexity": "moderate",
+      "route_evidence": {
+        "source_anchor": "貼以萬全膏並用金蟬脫甲酒"
+      },
+      "composition_evidence": {
+        "source_anchor": "貼以萬全膏並用金蟬脫甲酒"
+      }
+    },
+    "formula.jinchantuojiajiu.xinwu.p227": {
+      "administration_route": "internal",
+      "dosage_form": "wine",
+      "preparation_complexity": "simple",
+      "route_evidence": {
+        "source_anchor": "金蟬脫甲酒治楊梅瘡不拘新久輕重皆效"
+      },
+      "composition_evidence": {
+        "source_anchor": "金蟬脫甲酒治楊梅瘡不拘新久輕重皆效"
+      }
+    },
+    "formula.jiajianliuweiwan.xinwu.p136": {
+      "administration_route": "internal",
+      "dosage_form": "pill",
+      "preparation_complexity": "complex",
+      "route_evidence": {
+        "source_anchor": "並服加減六味丸及國老散自然漸次消散可免刀針藥線之苦"
+      },
+      "composition_evidence": {
+        "source_anchor": "並服加減六味丸及國老散自然漸次消散可免刀針藥線之苦"
+      }
+    },
+    "formula.jiuweiluhuiwan.xinwu.p226": {
+      "administration_route": "internal",
+      "dosage_form": "pill",
+      "preparation_complexity": "complex",
+      "route_evidence": {
+        "source_anchor": "宜服九味蘆薈丸"
+      },
+      "composition_evidence": {
+        "source_anchor": "宜服九味蘆薈丸"
+      }
+    },
+    "formula.qishejiu.xinwu.p228": {
+      "administration_route": "internal",
+      "dosage_form": "wine",
+      "preparation_complexity": "complex",
+      "route_evidence": {
+        "source_anchor": "宜服蘄蛇酒搽以當歸膏"
+      },
+      "composition_evidence": {
+        "source_anchor": "宜服蘄蛇酒搽以當歸膏"
+      }
+    },
+    "formula.dangguigao.xinwu.p228": {
+      "administration_route": "external",
+      "dosage_form": "ointment",
+      "preparation_complexity": "moderate",
+      "route_evidence": {
+        "source_anchor": "當歸膏治癘風並可搽去遊丹鵝掌諸風"
+      },
+      "composition_evidence": {
+        "source_anchor": "當歸膏治癘風並可搽去遊丹鵝掌諸風"
+      }
+    },
+    "formula.tanghuoyao.pujifang.p19": {
+      "administration_route": "external",
+      "dosage_form": "paste",
+      "preparation_complexity": "complex",
+      "route_evidence": {
+        "source_anchor": "右碾為細末用雞子青加蜜調擦不住手掃"
+      },
+      "composition_evidence": {
+        "source_anchor": "治湯火藥大黃黃芩黃栢黃連知母貝毋乳香沒藥輕粉甘草蜜陀僧山梔子"
+      }
+    },
+    "formula.qiandanfu.pujifang.p21": {
+      "administration_route": "external",
+      "dosage_form": "powder",
+      "preparation_complexity": "simple",
+      "route_evidence": {
+        "source_anchor": "用鉛丹敷之"
+      },
+      "composition_evidence": {
+        "source_anchor": "用鉛丹敷之"
+      }
+    },
+    "formula.sanhuangsan.zhengzhizhunsheng.p29": {
+      "administration_route": "external",
+      "dosage_form": "powder",
+      "preparation_complexity": "complex",
+      "route_evidence": {
+        "source_anchor": "右七味為末用瑩肌散煎洗滲之乾者油敷"
+      },
+      "composition_evidence": {
+        "source_anchor": "松香五倍子黃連黃丹海螵蛸輕粉雄黃"
+      }
+    },
+    "formula.badusan.zhengzhizhunsheng.p34": {
+      "administration_route": "external",
+      "dosage_form": "powder",
+      "preparation_complexity": "complex",
+      "route_evidence": {
+        "source_anchor": "右六味各另為末乾糝患處或用油調搽"
+      },
+      "composition_evidence": {
+        "source_anchor": "拔毒散治證同前及疥癩瘡癬黃芩黃連白礬生用三味俱雄黃"
+      }
+    },
+    "formula.shuiyingao.zhengzhizhunsheng.p40": {
+      "administration_route": "external",
+      "dosage_form": "ointment",
+      "preparation_complexity": "complex",
+      "route_evidence": {
+        "source_anchor": "先以鹽湯洗淨瘡塗敷日三五度"
+      },
+      "composition_evidence": {
+        "source_anchor": "水銀雨四半二錢胡粉松脂黃連各半兩去鬚為末猪脂"
+      }
+    },
+    "formula.longquansan.pujifang.p34": {
+      "administration_route": "external",
+      "dosage_form": "powder",
+      "preparation_complexity": "simple",
+      "route_evidence": {
+        "source_anchor": "右研為細散油調塗"
+      },
+      "composition_evidence": {
+        "source_anchor": "井泉石赤白脂"
+      }
+    },
+    "formula.xieyegao.pujifang.p34": {
+      "administration_route": "external",
+      "dosage_form": "paste",
+      "preparation_complexity": "simple",
+      "route_evidence": {
+        "source_anchor": "右搗研如泥敷瘡上"
+      },
+      "composition_evidence": {
+        "source_anchor": "薤葉半和两白用赤石脂各一"
+      }
+    },
+    "formula.heishensan.pujifang.p53": {
+      "administration_route": "external",
+      "dosage_form": "powder",
+      "preparation_complexity": "simple",
+      "route_evidence": {
+        "source_anchor": "候冷取研細每用一匙頭新水調塗患處",
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000054",
+        "physical_page": 54
+      },
+      "composition_evidence": {
+        "source_anchor": "以白麵不拘多少炒令焦黑"
+      }
+    },
+    "formula.qingjinggao.pujifang.p54": {
+      "administration_route": "external",
+      "dosage_form": "ointment",
+      "preparation_complexity": "simple",
+      "route_evidence": {
+        "source_anchor": "塗在上疼痛立止不成瘢痕"
+      },
+      "composition_evidence": {
+        "source_anchor": "以生山蘋不拘多少去皮爛研成膏"
+      }
+    },
+    "formula.shenxusan.pujifang.p52": {
+      "administration_route": "external",
+      "dosage_form": "powder",
+      "preparation_complexity": "simple",
+      "route_evidence": {
+        "source_anchor": "以赤石脂研為散生油調塗之濕則摻或雞子青調敷",
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000053",
+        "physical_page": 53
+      },
+      "composition_evidence": {
+        "source_anchor": "以赤石脂研為散生油調塗之濕則摻或雞子青調敷",
+        "book_id": "ancient:c0b843332f4954fab894",
+        "page_id": "ancient:c0b843332f4954fab894:p000053",
+        "physical_page": 53
+      }
+    },
+    "formula.jiuweijiedusan.zhengzhizhunsheng.p25": {
+      "administration_route": "internal",
+      "dosage_form": "decoction",
+      "preparation_complexity": "moderate",
+      "route_evidence": {
+        "source_anchor": "右九味作一劑水煎母子並服",
+        "book_id": "ancient:b89d0582c50216beae11",
+        "page_id": "ancient:b89d0582c50216beae11:p000026",
+        "physical_page": 26
+      },
+      "composition_evidence": {
+        "source_anchor": "九味解毒散治熱毒胎毒而發瘡瘍之類未潰作痛者"
+      }
+    },
+    "formula.jiaweiqingliangyin.zhengzhizhunsheng.p26": {
+      "administration_route": "internal",
+      "dosage_form": "decoction",
+      "preparation_complexity": "moderate",
+      "route_evidence": {
+        "source_anchor": "右六味水煎服"
+      },
+      "composition_evidence": {
+        "source_anchor": "加味清涼飲治熱毒積毒在內患瘡瘍大便不通而欲痛作渴者"
+      }
+    },
+    "formula.lianqiaofangfengtang.zhengzhizhunsheng.p27": {
+      "administration_route": "internal",
+      "dosage_form": "decoction",
+      "preparation_complexity": "complex",
+      "route_evidence": {
+        "source_anchor": "右十三味每服二錢水煎服",
+        "book_id": "ancient:b89d0582c50216beae11",
+        "page_id": "ancient:b89d0582c50216beae11:p000028",
+        "physical_page": 28
+      },
+      "composition_evidence": {
+        "source_anchor": "連翹防風湯治小兒肝脾風熱時毒頭面生瘡"
+      }
+    },
+    "formula.heganbupitang.zhengzhizhunsheng.p28": {
+      "administration_route": "internal",
+      "dosage_form": "decoction",
+      "preparation_complexity": "complex",
+      "route_evidence": {
+        "source_anchor": "右九味分二劑水煎服"
+      },
+      "composition_evidence": {
+        "source_anchor": "和肝補脾湯治風熱瘡疹脾土不及肝木太過"
+      }
+    },
+    "formula.yipiqinggantang.zhengzhizhunsheng.p28": {
+      "administration_route": "internal",
+      "dosage_form": "decoction",
+      "preparation_complexity": "complex",
+      "route_evidence": {
+        "source_anchor": "右九味水煎服",
+        "book_id": "ancient:b89d0582c50216beae11",
+        "page_id": "ancient:b89d0582c50216beae11:p000029",
+        "physical_page": 29
+      },
+      "composition_evidence": {
+        "source_anchor": "益脾清肝湯治肝脾風熱瘡寒熱體痛脾胃虛弱"
+      }
+    },
+    "formula.yangxintang.zhengzhizhunsheng.p32": {
+      "administration_route": "internal",
+      "dosage_form": "decoction",
+      "preparation_complexity": "complex",
+      "route_evidence": {
+        "source_anchor": "右十一味每服一二錢薑棗水煎為末服亦可",
+        "book_id": "ancient:b89d0582c50216beae11",
+        "page_id": "ancient:b89d0582c50216beae11:p000033",
+        "physical_page": 33
+      },
+      "composition_evidence": {
+        "source_anchor": "養心湯治心氣不足虛熱上攻而患瘡瘍者"
+      }
+    },
+    "formula.niuhuangjiedusan.zhengzhizhunsheng.p33": {
+      "administration_route": "internal",
+      "dosage_form": "powder",
+      "preparation_complexity": "simple",
+      "route_evidence": {
+        "source_anchor": "右三味各為末每服二三分乳汁調服或用甘草煎"
+      },
+      "composition_evidence": {
+        "source_anchor": "牛黃解毒散治胎毒頭面生癩或延及遍身痒痛不安及眉煉瘡浸淫不愈"
+      }
+    },
+    "formula.manjingzitang.zhengzhizhunsheng.p42": {
+      "administration_route": "internal",
+      "dosage_form": "decoction",
+      "preparation_complexity": "complex",
+      "route_evidence": {
+        "source_anchor": "右十一味用薑棗水煎食後服"
+      },
+      "composition_evidence": {
+        "source_anchor": "蔓荆子湯治內熱耳出膿汁"
+      }
+    },
+    "formula.dongyuanqingweisan.zhengzhizhunsheng.p60": {
+      "administration_route": "internal",
+      "dosage_form": "decoction",
+      "preparation_complexity": "moderate",
+      "route_evidence": {
+        "source_anchor": "右五味水煎服嬰兒母亦服",
+        "book_id": "ancient:b89d0582c50216beae11",
+        "page_id": "ancient:b89d0582c50216beae11:p000061",
+        "physical_page": 61
+      },
+      "composition_evidence": {
+        "source_anchor": "東垣清胃散治胃經有熱齒牙作痛或飲冷作渴口舌生瘡"
+      }
+    },
+    "formula.qingrexiaodusan.zhengzhizhunsheng.p61": {
+      "administration_route": "internal",
+      "dosage_form": "decoction",
+      "preparation_complexity": "complex",
+      "route_evidence": {
+        "source_anchor": "右九味水煎服嬰兒母同服"
+      },
+      "composition_evidence": {
+        "source_anchor": "清熱消毒散治實熱口舌生瘡及一切瘡瘍腫痛形病俱實者"
+      }
+    }
+  }
 }
